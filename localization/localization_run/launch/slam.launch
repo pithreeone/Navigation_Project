@@ -3,6 +3,7 @@
   <arg name="map_frame" default="map"/>
   <arg name="odom_frame" default="odom"/>
   <arg name="base_frame" default="base_footprint"/>
+  <arg name="laser_frame" default="laser_link"/>
 
   <!-- Odometry -->
   <node pkg="localization_run" type="odometry" name="odometry" output="screen">
@@ -10,6 +11,13 @@
     <param name="base_frame" type="str" value="$(arg base_frame)"/>
     <param name="rate"  value="50.0"/>
   </node>
+
+  <!-- YDLidar -->
+  <include file="$(find ydlidar_ros_driver)/launch/G6_G7.launch">
+    <arg name="base_frame" value="$(arg base_frame)"/>
+    <arg name="laser_frame" value="$(arg laser_frame)"/>
+  </include>
+
 
   <!-- Run the EKF Localization node -->
   <!-- <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
