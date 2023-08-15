@@ -1,0 +1,27 @@
+<launch>
+  <!-- Set Frame Name -->
+  <arg name="map_frame" default="map"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_footprint"/>
+
+  <!-- Odometry -->
+  <node pkg="localization_run" type="odometry" name="odometry" output="screen">
+    <param name="odom_frame" type="str" value="$(arg odom_frame)"/>
+    <param name="base_frame" type="str" value="$(arg base_frame)"/>
+    <param name="rate"  value="50.0"/>
+  </node>
+
+  <!-- Run the EKF Localization node -->
+  <!-- <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+    <rosparam command="load" file="$(find localization_run)/config/ekf_localization.yaml"/>
+  </node> -->
+
+  <!-- Gmapping -->
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="base_frame" value="$(arg base_frame)"/>
+    <param name="odom_frame" value="$(arg odom_frame)"/>
+    <param name="map_frame"  value="$(arg map_frame)"/>
+    <rosparam command="load" file="$(find localization_run)/config/gmapping_params.yaml"/>
+  </node>
+
+</launch>

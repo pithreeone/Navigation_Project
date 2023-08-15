@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -149,6 +150,10 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+add_executable(odometry src/odometry.cpp )
+add_dependencies(odometry ${catkin_EXPORTED_TARGETS})
+target_link_libraries(odometry ${catkin_LIBRARIES})
 
 #############
 ## Install ##
