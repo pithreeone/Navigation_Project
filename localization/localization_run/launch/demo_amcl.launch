@@ -1,14 +1,14 @@
 <launch>
     <node pkg="tf" type="static_transform_publisher" name="base_footprint_to_base_scan" args="0 0 0.5 0 0 0 base_footprint base_scan 30" />
 
-    <!-- MAP SERVER -->
+  <!-- Map Server -->
     <include file="$(find map_server)/launch/map_server.launch" >
         
     </include>
 
     <!-- GAZEBO -->
     <!-- <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch" /> -->
-    <!-- <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" /> -->
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" />
 
     <!-- AMCL -->
     <node pkg="amcl" type="amcl" name="amcl" output="log">
@@ -20,10 +20,12 @@
         <param name="initial_pose_y" value="0"/>
         <param name="initial_pose_a" value="0"/>
 
+        <rosparam command="load" file="$(find localization_run)/config/amcl.yaml" />
         <rosparam command="load" file="$(find amcl)/cfg/amcl.yaml" />
     </node>
 
     <!-- RVIZ -->
-    <node pkg="rviz" type="rviz" name="rviz2" args="-d $(find localization_run)/rviz/demo.rviz" />
+    <node pkg="rviz" type="rviz" name="rviz2" args="-d $(find localization_run)/rviz/demo_amcl.rviz" />
+    
 
 </launch>
