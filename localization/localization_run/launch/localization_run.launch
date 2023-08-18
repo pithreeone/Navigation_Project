@@ -8,8 +8,6 @@
   <arg name="mode" default="slam" doc="robot mode [slam, localization]"/>
 
   <!-- Static Tranformation -->
-  <node pkg="tf" type="static_transform_publisher" name="base_frame_to_laser_frame" args="0 0 0.5 0 0 0 $(arg base_frame) $(arg laser_frame) 30" />
-
 
   <!-- Map Server -->
   <include file="$(find map_server)/launch/map_server.launch" if="$(eval (arg('mode')=='localization'))">
@@ -52,6 +50,6 @@
   </node>
 
   <!-- RVIZ -->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find localization_run)/rviz/slam.rviz" if="$(eval (arg('mode')=='slam'))"/>
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find localization_run)/rviz/localization.rviz" if="$(eval (arg('mode')=='localization'))"/>
+  <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find localization_run)/rviz/slam.rviz" if="$(eval (arg('mode')=='slam'))"/>
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find localization_run)/rviz/localization.rviz" if="$(eval (arg('mode')=='localization'))"/> -->
 </launch>

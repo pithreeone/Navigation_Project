@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="rviz" type="rviz" name="rviz_slam" args="-d $(find localization_run)/rviz/slam.rviz"/>
+
+
+</launch>
