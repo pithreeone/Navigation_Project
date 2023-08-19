@@ -1,7 +1,8 @@
 <launch>
     <!-- GAZEBO -->
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" />
-    <!-- <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch" /> -->
+    <!-- <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" /> -->
+    <include file="$(find gazebo_simulation)/launch/turtlebot3_engineering_building.launch" />
+
 
     <!-- GMAPPING -->
     <include file="$(find turtlebot3_slam)/launch/turtlebot3_slam.launch" >
