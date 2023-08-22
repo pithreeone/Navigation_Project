@@ -21,7 +21,7 @@
         <param name="initial_pose_a" value="0"/>
 
         <rosparam command="load" file="$(find localization_run)/config/amcl.yaml" />
-        <rosparam command="load" file="$(find amcl)/cfg/amcl.yaml" />
+        <!-- <rosparam command="load" file="$(find amcl)/cfg/amcl.yaml" /> -->
     </node>
 
     <!-- RVIZ -->

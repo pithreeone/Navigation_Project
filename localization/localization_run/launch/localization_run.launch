@@ -2,7 +2,7 @@
   <!-- Set Frame Name -->
   <arg name="map_frame" default="map"/>
   <arg name="odom_frame" default="odom"/>
-  <arg name="base_frame" default="base_footprint"/>
+  <arg name="base_frame" default="base_link"/>
   <arg name="laser_frame" default="base_scan"/>
 
   <arg name="mode" default="slam" doc="robot mode [slam, localization]"/>
