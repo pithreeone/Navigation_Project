@@ -1,0 +1,24 @@
+<launch>
+    <!-- choose what the mode you want. Simulation or Run Real Robot -->
+    <arg name="is_run" default="true" />
+    <arg name="is_sim" default="false" />
+
+    <!-- which robot -->
+    <arg name="is_robot" default="false" />
+    <arg name="is_robot1" default="false" />
+    <arg name="is_robot2" default="false" />
+    <arg name="is_rival1" default="false" />
+    <arg name="is_rival2" default="false" />
+
+    <node name="dock_tracker" pkg="path_tracker" type="dockTracker" output="screen">
+        <rosparam file="$(find path_tracker)/params/dockTracker.yaml" command="load" />
+        <!-- 0 -> nav_msgs::Odometry -->
+        <!-- 1 -> geometry_msgs::PoseWithCovarianceStamped -->
+        <param name="odom_type" value="0" if="$(arg is_sim)"/>
+        <param name="odom_type" value="1" if="$(arg is_run)"/>
+        <remap from="cmd_vel" to="dock_tracker_cmd_vel"/>
+        <remap from="dock_goal" to="dock_tracker_goal"/>
+    
+    </node>
+
+</launch>

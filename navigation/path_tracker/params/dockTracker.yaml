@@ -1,0 +1,26 @@
+active: true
+control_frequency: 50
+#   ________
+#  /|       \
+# / |        \
+#   %(max:0.5)
+profile_percent: 0.2
+# linear_max_velocity: 0.2
+# angular_max_velocity: 0.8
+point_stop_tolerance: 0.01
+angle_stop_tolerance: 0.01
+# rival_tolerance: 0.41
+
+# cake-mode
+cake_linear_max_velocity: 0.2
+cake_angular_max_velocity: 1.2
+
+# cherry-mode
+cherry_linear_max_velocity: 0.08
+cherry_angular_max_velocity: 0.05
+
+# vibrate-mode
+vibrate_time: 10
+vibrate_lin_distance: 0.04
+vibrate_linear_max_velocity: 0.15
+vibrate_tolerance: 0.01

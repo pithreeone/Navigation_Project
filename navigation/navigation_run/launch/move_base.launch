@@ -1,0 +1,16 @@
+<launch>
+
+    <!-- Subscribe: /move_base_simple/goal -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" unless="$(arg is_rival)">
+        <!--when using pathTracker, needed to remap cmd_vel to another topic name-->
+        <remap from="cmd_vel" to ="vel_obseleted" />
+
+        <rosparam file="$(find navigation_run)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <!-- <rosparam file="$(find navigation_run)/config/costmap_common_params.yaml" command="load" ns="local_costmap" /> -->
+        <rosparam file="$(find navigation_run)/config/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find navigation_run)/config/global_planner_params.yaml" command="load" />
+        <rosparam file="$(find navigation_run)/config/move_base_params.yaml" command="load" />
+
+    </node>
+
+</launch>

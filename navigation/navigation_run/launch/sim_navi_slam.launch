@@ -1,0 +1,27 @@
+<launch>
+    <!-- SLAM-Gmapping -->
+    <include file="$(find localization_run)/launch/sim_mapping.launch"/>
+    
+    <!-- Navigation -->
+    <!-- Subscribe: /move_base_simple/goal -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+        <!--when using pathTracker, needed to remap cmd_vel to another topic name-->
+        <remap from="cmd_vel" to ="vel_obseleted" />
+
+        <rosparam file="$(find navigation_run)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <!-- <rosparam file="$(find navigation_run)/config/costmap_common_params.yaml" command="load" ns="local_costmap" /> -->
+        <rosparam file="$(find navigation_run)/config/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find navigation_run)/config/global_planner_params.yaml" command="load" />
+        <rosparam file="$(find navigation_run)/config/move_base_params.yaml" command="load" />
+
+    </node>
+
+    <!-- PathTracker -->
+    <include file="$(find path_tracker)/launch/pathTracker.launch"/>
+
+    <!-- RVIZ -->
+    <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/>
+
+
+
+</launch>
