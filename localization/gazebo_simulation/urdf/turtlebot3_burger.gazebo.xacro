@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot name="turtlebot3_burger_sim" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:arg name="laser_visual" default="false"/>
+  <xacro:arg name="laser_visual" default="true"/>
   <xacro:arg name="imu_visual"   default="false"/>
 
   <gazebo reference="base_link">
@@ -109,7 +109,7 @@
         <scan>
           <horizontal>
             <samples>360</samples>
-            <resolution>0.1</resolution>
+            <resolution>1</resolution>
             <min_angle>0.0</min_angle>
             <max_angle>6.28319</max_angle>
           </horizontal>

@@ -2,11 +2,6 @@
     <!-- GAZEBO -->
     <include file="$(find gazebo_simulation)/launch/turtlebot3_engineering_building.launch" />
 
-    <!-- TurtleBot3 -->
-    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
-        <arg name="model" value="burger" />
-    </include>
-
     <!-- GMAPPING -->
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
         <param name="base_frame" value="base_footprint"/>
