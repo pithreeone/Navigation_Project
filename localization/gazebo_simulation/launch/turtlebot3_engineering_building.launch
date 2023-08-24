@@ -1,8 +1,10 @@
 <launch>
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-  <arg name="x_pos" default="-3.0"/>
-  <arg name="y_pos" default="-1.0"/>
+  <arg name="x_pos" default="-1.4"/>
+  <arg name="y_pos" default="-0.5"/>
   <arg name="z_pos" default="0.0"/>
+  <arg name="odom_type" default="omni" doc="omni type [diff, omni]"/>
+
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find gazebo_simulation)/worlds/floor_3_v2.world"/>
@@ -12,11 +14,18 @@
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
   </include>
-  
+
   <!-- $(find gazebo_simulation)/urdf/turtlebot3_$(arg model).urdf.xacro -->
   <!-- $(find open_base)/xacro/main.urdf.xacro -->
-  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find gazebo_simulation)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find gazebo_simulation)/urdf/turtlebot3_$(arg model).urdf.xacro" 
+  if="$(eval (arg('odom_type')=='diff'))"/>
 
-  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3test -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
-    <!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3test -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -file $(find gazebo_simulation)/urdf/turtlebot3_$(arg model).urdf.xacro" /> -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3test -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" 
+  if="$(eval (arg('odom_type')=='diff'))"/>
+
+  <include file="$(find open_base)/launch/velocity_controller.launch" if="$(eval (arg('odom_type')=='omni'))">
+		<arg name="x_pos" value="$(arg x_pos)"/>
+		<arg name="y_pos" value="$(arg y_pos)"/>
+		<arg name="z_pos" value="$(arg z_pos)"/>
+  </include>
 </launch>

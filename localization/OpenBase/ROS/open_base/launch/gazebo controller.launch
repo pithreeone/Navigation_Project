@@ -1,31 +1,18 @@
 <launch>
 
 	<include file="$(find open_base)/launch/parameter.launch"/>
-	<arg
-		name="debug"
-		default="false"
-	/>
-	<arg
-		name="gui"
-		default="true"
-	/>
-	<arg
-		name="headless"
-		default="false"
-	/>
-	<arg
-		name="paused"
-		default="true"
-	/>
-	<arg
-		name="use_sim_time"
-		default="true"
-	/>
-	<arg
-		name="height"
-		default="0"
-	/>
-	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+
+	<arg name="debug" default="false"/>
+	<arg name="gui" default="true"/>
+	<arg name="headless" default="false"/>
+	<arg name="paused" default="true"/>
+	<arg name="use_sim_time" default="true"/>
+	<arg name="x_pos" default="0.0" />
+	<arg name="y_pos" default="0.0" />
+	<arg name="z_pos" default="-0.1" />
+
+	<!-- Replaced by engineering_building world -->
+	<!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
 
 		<arg
 			name="debug"
@@ -51,37 +38,16 @@
 			name="world_name"
 			value="worlds/empty.world"
 		/>
-		<!--arg
-			name="physics"
-			value="simbody"
-		/-->
 
-	</include>
-	<node
-		name="open_base_spawner"
-		pkg="gazebo_ros"
-		type="spawn_model"
-		args="-urdf -model robot -param robot_description -model open_base -z $(arg height)"
-		ns="open_base"
-	/>
-	<node
-		name="robot_state_publisher"
-		pkg="robot_state_publisher"
-		type="robot_state_publisher"
-		respawn="false"
-		output="screen"
-		ns="open_base"
-	>
+	</include> -->
+	<node name="open_base_spawner" pkg="gazebo_ros" type="spawn_model"
+		args="-urdf -model robot -param robot_description -model open_base -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos)" ns="open_base"/>
+		
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+		respawn="false" output="screen" ns="open_base">
 
-		<param
-			name="publish_frequency"
-			type="double"
-			value="30.0"
-		/>
-		<remap
-			from="/joint_states"
-			to="/open_base/joint_states"
-		/>
+		<param name="publish_frequency" type="double" value="30.0"/>
+		<remap from="/joint_states" to="/open_base/joint_states"/>
 
 	</node>
 
