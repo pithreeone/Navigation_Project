@@ -1,34 +1,38 @@
 <?xml version="1.0"?>
-<robot
-	xmlns:xacro="http://www.ros.org/wiki/xacro"
-	name="open_base"
->
+<robot name="open_base" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 	<xacro:include filename="$(find open_base)/xacro/rim.urdf.xacro"/>
 	<xacro:include filename="$(find open_base)/xacro/omni.gazebo.xacro"/>
+	<xacro:property name="scale" value="7.5"/>
+
+	<gazebo reference="base_link">
+		<material>Gazebo/White</material>
+	</gazebo>
+
+	<gazebo reference="base_scan">
+		<material>Gazebo/Black</material>
+	</gazebo>
 
 	<link name="origin_link"/>
 
 	<link name="base_link">
 		<inertial>
-			<mass value="0.07862944645"/>
-			<inertia
-				ixx="0.00002035985530754" ixy="0" ixz="0" iyy="0.00002035985530754" iyz="0" izz="0.00003945961663220"
-			/>
+      <mass value="1.0" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.45" ixy="0.0" ixz="0.0"
+               iyy="0.45" iyz="0.0"
+               izz="0.45" />
 		</inertial>
 
 		<visual>
 			<geometry>
-				<mesh filename="package://open_base/mesh/base.stl"/>
+				<mesh filename="package://open_base/mesh/base.stl" scale="${scale} ${scale} ${scale}"/>
 			</geometry>
-			<material name="base_material">
-				<color rgba="1 1 1 1"/>
-			</material>
 		</visual>
 		
 		<collision>
 			<geometry>
-				<mesh filename="package://open_base/mesh/base.stl"/>
+				<mesh filename="package://open_base/mesh/base.stl" scale="${scale} ${scale} ${scale}"/>
 			</geometry>
 		</collision>
 	</link>
@@ -43,9 +47,8 @@
     <visual>
       <origin xyz="0 0 0.0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://turtlebot3_description/meshes/sensors/lds.stl" scale="0.0004 0.0004 0.0004"/>
+        <mesh filename="package://turtlebot3_description/meshes/sensors/lds.stl" scale="${0.0004*scale} ${0.0004*scale} ${0.0004*scale}"/>
       </geometry>
-      <material name="base_material"/>
     </visual>
 
     <collision>
@@ -56,46 +59,43 @@
     </collision>
 
     <inertial>
-      <mass value="0.0114" />
+      <mass value="0.1" />
       <origin xyz="0 0 0" />
-      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
-               iyy="0.001" iyz="0.0"
-               izz="0.001" />
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0"
+               iyy="0.0" iyz="0.0"
+               izz="0.005" />
     </inertial>
   </link>
 
 	<joint name="scan_joint" type="fixed">
 		<parent link="base_link" />
 		<child link="base_scan" />
-		<origin xyz="0 0 0.01905"/>
+		<origin xyz="0 0 ${0.01905*scale}"/>
 	</joint>
 
 	<xacro:rim_macro
 		name="left"
-		color="0.3 0 0"
-		xyz="-0.03464101615 0.02 0"
+		color="Red"
+		xyz="${-0.03464101615*scale} ${0.02*scale} 0"
 		rpy="1.570796326794896 0 1.047197551196597"
 	/>
 	<xacro:rim_macro
 		name="back"
-		color="0 0.3 0"
-		xyz="0 -0.04 0"
+		color="Green"
+		xyz="0 ${-0.04*scale} 0"
 		rpy="1.570796326794896 0 3.141592653589793"
 	/>
 	<xacro:rim_macro
 		name="right"
-		color="0 0 0.3"
-		xyz="0.03464101615 0.02 0"
+		color="Blue"
+		xyz="${0.03464101615*scale} ${0.02*scale} 0"
 		rpy="1.570796326794896 0 -1.047197551196597"
 	/>
+
 	<gazebo>
-
 		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-
 			<robotNamespace>/open_base</robotNamespace>
-
 		</plugin>
-
 	</gazebo>
 
 </robot>

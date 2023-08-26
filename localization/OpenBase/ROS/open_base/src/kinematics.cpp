@@ -90,7 +90,10 @@ int main(int argc, char **argv){
         }
         KDL::Frame frame = chain.getSegment(0).pose(0);
         L = std::sqrt(std::pow(frame.p.x() - 0.0L, 2.0L) + std::pow(frame.p.y() - 0.0L, 2.0L));
-        node.setParam("parameter/wheel/distance", (double) L);
+        double wheel_distance;
+        node.getParam("parameter/wheel/distance", wheel_distance);
+        // L = wheel_distance;
+        std::cout << "wheel distance: " << L << std::endl;
         L3 = 3.0L * L;
         sqrt3 = std::sqrt(3.0L);
         double parameter;

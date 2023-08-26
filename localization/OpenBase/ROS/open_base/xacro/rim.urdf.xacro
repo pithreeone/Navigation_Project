@@ -1,59 +1,52 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+	<!-- <material name="Gazebo/Red">
+		<color rgba="0.8 0.0 0.0 1.0"/>
+	</material>
+	<material name="Gazebo/Red">
+		<color rgba="0.8 0.0 0.0 1.0"/>
+	</material> -->
+
 	<xacro:include filename="$(find open_base)/xacro/roller.urdf.xacro"/>
 
-	<xacro:macro
-		name="rim_macro"
-		params="name color xyz rpy"
-	>
+	<xacro:macro name="rim_macro" params="name color xyz rpy">
+
+		<gazebo reference="rim_${name}_link">
+			<material>Gazebo/${color}</material>
+		</gazebo>
 
 		<link name="rim_${name}_link">
-
 			<inertial>
-
 				<origin xyz="0 0 -0.000343"/>
-				<mass value="0.00835758"/>
+				<mass value="0.1"/>
+				<!-- use cylinder to simulate the rim, Izz=0.5*m*r^2, Ixx=Iyy=1/12*m*(3*r^2+h^2) -->
 				<inertia
-					ixx="6.63684e-07"
+					ixx="${1/12*0.1*(3*0.101625*0.101625+0.04125*0.04125)}"
 					ixy="0"
 					ixz="0"
-					iyy="6.63684e-07"
+					iyy="${1/12*0.1*(3*0.101625*0.101625+0.04125*0.04125)}"
 					iyz="0"
-					izz="9.40333e-07"
+					izz="${0.5*0.1*0.101625*0.101625}"
 				/>
-
 			</inertial>
+
 			<visual>
-
 				<geometry>
-
-					<mesh filename="package://open_base/mesh/rim.stl"/>
-
+					<mesh filename="package://open_base/mesh/rim.stl" scale="${scale} ${scale} ${scale}"/>
 				</geometry>
-				<material name="rim_${name}_material">
-
-					<color rgba="${color} 1"/>
-
-				</material>
 
 			</visual>
+
 			<collision>
-
 				<geometry>
-
-					<mesh filename="package://open_base/mesh/rim.stl"/>
-
+					<mesh filename="package://open_base/mesh/rim.stl" scale="${scale} ${scale} ${scale}"/>
 				</geometry>
-
 			</collision>
 
 		</link>
-		<joint
-			name="rim_${name}_joint"
-			type="continuous"
-		>
 
+		<joint name="rim_${name}_joint" type="continuous">
 			<parent link="base_link" />
 			<child link="rim_${name}_link" />
 			<axis xyz="0 0 1"/>
@@ -61,54 +54,54 @@
 				xyz="${xyz}"
 				rpy="${rpy}"
 			/>
-
 		</joint>
+		
 		<xacro:roller_macro
 			parent="${name}"
 			name="e"
-			xyz="0.01355 0 0.0055"
+			xyz="${0.01355*scale} 0 ${0.0055*scale}"
 			rpy="-1.570796326794896 0 0"
 		/>
 		<xacro:roller_macro
 			parent="${name}"
 			name="ne"
-			xyz="0.00958129689 0.00958129689 -0.0055"
+			xyz="${0.00958129689*scale} ${0.00958129689*scale} ${-0.0055*scale}"
 			rpy="-1.570796326794896 0 0.7853981633974483"
 		/>
 		<xacro:roller_macro
 			parent="${name}"
 			name="n"
-			xyz="0 0.01355 0.0055"
+			xyz="0 ${0.01355*scale} ${0.0055*scale}"
 			rpy="-1.570796326794896 0 1.570796326794896"
 		/>
 		<xacro:roller_macro
 			parent="${name}"
 			name="nw"
-			xyz="-0.00958129689 0.00958129689 -0.0055"
+			xyz="${-0.00958129689*scale} ${0.00958129689*scale} ${-0.0055*scale}"
 			rpy="-1.570796326794896 0 2.356194490192345"
 		/>
 		<xacro:roller_macro
 			parent="${name}"
 			name="w"
-			xyz="-0.01355 0 0.0055"
+			xyz="${-0.01355*scale} 0 ${0.0055*scale}"
 			rpy="-1.570796326794896 0 3.141592653589793"
 		/>
 		<xacro:roller_macro
 			parent="${name}"
 			name="sw"
-			xyz="-0.00958129689 -0.00958129689 -0.0055"
+			xyz="${-0.00958129689*scale} ${-0.00958129689*scale} ${-0.0055*scale}"
 			rpy="-1.570796326794896 0 -2.356194490192345"
 		/>
 		<xacro:roller_macro
 			parent="${name}"
 			name="s"
-			xyz="0 -0.01355 0.0055"
+			xyz="0 ${-0.01355*scale} ${0.0055*scale}"
 			rpy="-1.570796326794896 0 -1.570796326794896"
 		/>
 		<xacro:roller_macro
 			parent="${name}"
 			name="se"
-			xyz="0.00958129689 -0.00958129689 -0.0055"
+			xyz="${0.00958129689*scale} ${-0.00958129689*scale} ${-0.0055*scale}"
 			rpy="-1.570796326794896 0 -0.7853981633974483"
 		/>
 		<transmission name="rim_${name}_transmission">
@@ -116,12 +109,12 @@
 			<type>transmission_interface/SimpleTransmission</type>
 			<joint name="rim_${name}_joint">
 
-				<hardwareInterface>EffortJointInterface</hardwareInterface>
+				<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 
 			</joint>
 			<actuator name="rim_${name}_motor">
 
-				<hardwareInterface>EffortJointInterface</hardwareInterface>
+				<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 				<mechanicalReduction>1</mechanicalReduction>
 
 			</actuator>
