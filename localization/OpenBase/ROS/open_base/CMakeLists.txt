@@ -12,7 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
   effort_controllers
   roscpp
   sensor_msgs
-  message_generation)
+  message_generation
+  geometry_msgs
+)
 find_package(cmake_modules REQUIRED)
 
 ## System dependencies are found with CMake's conventions
@@ -121,7 +123,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp sensor_msgs message_runtime
+  CATKIN_DEPENDS roscpp sensor_msgs message_runtime geometry_msgs
   DEPENDS Eigen3 orocos_kdl kdl_parser # system_lib
 )
 
@@ -192,6 +194,11 @@ target_link_libraries(
   ${catkin_LIBRARIES}
 )
 add_dependencies(${PROJECT_NAME}_main open_base_generate_messages_cpp)
+
+add_executable(interface src/interface.cpp )
+target_link_libraries(interface ${catkin_LIBRARIES})
+add_dependencies(interface ${catkin_EXPORTED_TARGETS})
+
 
 #############
 ## Install ##

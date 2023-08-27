@@ -7,14 +7,14 @@ open_base:
     left_joint_velocity_controller:
         type: effort_controllers/JointVelocityController
         joint: rim_left_joint
-        pid: {p: 1, i: 10, d: 0.0001}
+        pid: {p: 0.1, i: 50, d: 0.0001, i_clamp_max: 100.0, i_clamp_min: -100.0}
 
     back_joint_velocity_controller:
         type: effort_controllers/JointVelocityController
         joint: rim_back_joint
-        pid: {p: 1, i: 10, d: 0.0001}
+        pid: {p: 0.1, i: 50, d: 0.0001, i_clamp_max: 100.0, i_clamp_min: -100.0}
 
     right_joint_velocity_controller:
         type: effort_controllers/JointVelocityController
         joint: rim_right_joint
-        pid: {p: 1, i: 10, d: 0.0001}
+        pid: {p: 0.1, i: 50, d: 0.0001, i_clamp_max: 100.0, i_clamp_min: -100.0}

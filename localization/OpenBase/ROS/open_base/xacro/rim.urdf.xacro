@@ -50,10 +50,8 @@
 			<parent link="base_link" />
 			<child link="rim_${name}_link" />
 			<axis xyz="0 0 1"/>
-			<origin
-				xyz="${xyz}"
-				rpy="${rpy}"
-			/>
+			<origin xyz="${xyz}" rpy="${rpy}"/>
+			<safety_controller k_position="100" k_velocity="1000" soft_lower_limit="-10" soft_upper_limit="10"/>
 		</joint>
 		
 		<xacro:roller_macro
@@ -104,19 +102,16 @@
 			xyz="${0.00958129689*scale} ${-0.00958129689*scale} ${-0.0055*scale}"
 			rpy="-1.570796326794896 0 -0.7853981633974483"
 		/>
+
 		<transmission name="rim_${name}_transmission">
 
 			<type>transmission_interface/SimpleTransmission</type>
 			<joint name="rim_${name}_joint">
-
 				<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-
 			</joint>
 			<actuator name="rim_${name}_motor">
-
 				<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 				<mechanicalReduction>1</mechanicalReduction>
-
 			</actuator>
 
 		</transmission>

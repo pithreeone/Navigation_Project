@@ -4,13 +4,13 @@
 	<xacro:macro name="roller_macro" params="parent name xyz rpy">
 		<gazebo reference="roller_${name}_rim_${parent}_link">
 			<material>Gazebo/Grey</material>
-			<mu>1.0</mu>
-			<mu2>1.0</mu2>
-			<kp>1e15</kp>
-			<kd>1e12</kd>
+			<mu>1000.0</mu>
+			<mu2>0.0</mu2>
+			<kp>100</kp>
+			<kd>100</kd>
 			<minDepth>0.005</minDepth>
 			<maxVel>0.1</maxVel>
-			<fdir1>1 0 0</fdir1>
+			<fdir1>0 0 1</fdir1>
 		</gazebo>
 
 		<link name="roller_${name}_rim_${parent}_link">
@@ -39,7 +39,7 @@
 
 		</link>
 		
-		<joint name="roller_${name}_rim_${parent}_joint" type="continuous">
+		<joint name="roller_${name}_rim_${parent}_joint" type="fixed">
 
 			<parent link="rim_${parent}_link"/>
 			<child link="roller_${name}_rim_${parent}_link"/>

@@ -3,7 +3,7 @@
 
 	<xacro:include filename="$(find open_base)/xacro/rim.urdf.xacro"/>
 	<xacro:include filename="$(find open_base)/xacro/omni.gazebo.xacro"/>
-	<xacro:property name="scale" value="7.5"/>
+	<xacro:property name="scale" value="3.0"/>
 
 	<gazebo reference="base_link">
 		<material>Gazebo/White</material>
@@ -17,11 +17,11 @@
 
 	<link name="base_link">
 		<inertial>
-      <mass value="1.0" />
+      <mass value="0.5" />
       <origin xyz="0 0 0" />
-      <inertia ixx="0.45" ixy="0.0" ixz="0.0"
-               iyy="0.45" iyz="0.0"
-               izz="0.45" />
+      <inertia ixx="0.045" ixy="0.0" ixz="0.0"
+               iyy="0.045" iyz="0.0"
+               izz="0.045" />
 		</inertial>
 
 		<visual>
@@ -52,14 +52,14 @@
     </visual>
 
     <collision>
-      <origin xyz="0.015 0 -0.0065" rpy="0 0 0"/>
+      <origin xyz="0.0 0 0.0" rpy="0 0 0"/>
       <geometry>
         <cylinder length="0.0315" radius="0.055"/>
       </geometry>
     </collision>
 
     <inertial>
-      <mass value="0.1" />
+      <mass value="0.02" />
       <origin xyz="0 0 0" />
       <inertia ixx="0.0" ixy="0.0" ixz="0.0"
                iyy="0.0" iyz="0.0"
