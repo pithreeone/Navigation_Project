@@ -27,7 +27,7 @@
 
 	<param name="open_base/parameter/stop/angle" value="0.1047197551196597705355242034774843062905347323976457118988037109375"/><!-- pi / 30 -->
 	<param name="open_base/parameter/stop/distance" value="0.001"/>
-	<param name="open_base/parameter/wheel/radius" value="0.075"/>
+	<param name="open_base/parameter/wheel/radius" value="0.0575"/>
 	<!-- <param name="open_base/parameter/wheel/distance" value="0.01"/> -->
 
 </launch>

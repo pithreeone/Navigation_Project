@@ -1,6 +1,10 @@
 <launch>
+    <arg name="odom_type" default="omni" doc="omni type [diff, omni]"/>
+
     <!-- GAZEBO -->
-    <include file="$(find gazebo_simulation)/launch/turtlebot3_engineering_building.launch" />
+    <include file="$(find gazebo_simulation)/launch/simul_robot.launch">
+        <arg name="odom_type" value="$(arg odom_type)"/>
+    </include>
 
     <!-- GMAPPING -->
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">

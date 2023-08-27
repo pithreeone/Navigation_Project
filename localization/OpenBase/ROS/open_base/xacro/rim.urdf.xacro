@@ -35,7 +35,7 @@
 				<geometry>
 					<mesh filename="package://open_base/mesh/rim.stl" scale="${scale} ${scale} ${scale}"/>
 				</geometry>
-
+				<material name="${color}"/>
 			</visual>
 
 			<collision>

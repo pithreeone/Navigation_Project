@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   message_generation
   geometry_msgs
+  tf2_ros
 )
 find_package(cmake_modules REQUIRED)
 

@@ -53,25 +53,21 @@ void onEncoderMessage(const open_base::Velocity::ConstPtr& input){
     timeCurrent = ros::Time::now();
     duration = (timeCurrent - timePrevious).toSec();
     timePrevious = timeCurrent;
-    kinematicsForwardWorld.call(service);
-    poseWorld.x     = (service.response.output.x     * duration) + poseWorld.x    ;
-    poseWorld.y     = (service.response.output.y     * duration) + poseWorld.y    ;
-    poseWorld.theta = (service.response.output.theta * duration) + poseWorld.theta;
-    if ((!std::isnan(poseWorld.x)) && (!std::isnan(poseWorld.y)) && (!std::isnan(poseWorld.theta))) {
-        publisherWorld.publish(poseWorld);
-        poseWorld.x     = poseWorld.x    ;
-        poseWorld.y     = poseWorld.y    ;
-        poseWorld.theta = poseWorld.theta;
-    }
+
     kinematicsForwardMobile.call(service);
-    poseWorld.x     = (service.response.output.x     * duration) + poseMobile.x    ;
-    poseWorld.y     = (service.response.output.y     * duration) + poseMobile.y    ;
-    poseWorld.theta = (service.response.output.theta * duration) + poseMobile.theta;
-    if ((!std::isnan(poseWorld.x)) && (!std::isnan(poseWorld.y)) && (!std::isnan(poseWorld.theta))) {
-        publisherMobile.publish(poseWorld);
-        poseMobile.x     = poseWorld.x    ;
-        poseMobile.y     = poseWorld.y    ;
-        poseMobile.theta = poseWorld.theta;
+    // transform to odom frame
+    double vx_odom = service.response.output.x;
+    double vy_odom = service.response.output.y;
+    double w_odom = service.response.output.theta;
+    double delta_x = (vx_odom * cos(poseMobile.theta) - vy_odom * sin(poseMobile.theta)) * duration;
+    double delta_y = (vx_odom * sin(poseMobile.theta) + vy_odom * cos(poseMobile.theta)) * duration;
+    double delta_th = w_odom * duration;
+    // ROS_INFO("dx:%f, dy:%f, dth:%f", delta_x, delta_y, delta_th);
+    poseMobile.x     = delta_x + poseMobile.x    ;
+    poseMobile.y     = delta_y + poseMobile.y    ;
+    poseMobile.theta = delta_th + poseMobile.theta;
+    if ((!std::isnan(poseMobile.x)) && (!std::isnan(poseMobile.y)) && (!std::isnan(poseMobile.theta))) {
+        publisherMobile.publish(poseMobile);
     }
 }
 
@@ -114,23 +110,12 @@ int main(int argc, char **argv){
         }
         poseMobile.theta = poseWorld.theta  = parameter;
     }
-    ros::Subscriber subscriber;
-    {
-        std::string poseCheatString = "pose_cheat";
-        std::string argument;
-        bool poseCheatFound = false;
-        for (int j = 0; j < argc; j++) {
-            argument = std::string(argv[j]);
-            if (poseCheatString.compare(argument) == 0) {
-                poseCheatFound = true;
-            }
-        }
-        if (poseCheatFound) {
-            subscriber = node.subscribe("/gazebo/link_states", 1, onGazeboMessage);
-        } else {
-            subscriber = node.subscribe("sensor/wheel_velocity", 1, onEncoderMessage);
-        }
-    }
+    ros::Subscriber subscriber_link_state;
+    ros::Subscriber subscriber_wheel_vel;
+    subscriber_link_state = node.subscribe("/gazebo/link_states", 1, onGazeboMessage);
+    subscriber_wheel_vel = node.subscribe("sensor/wheel_velocity", 1, onEncoderMessage);
+
+    
     kinematicsForwardWorld  = node.serviceClient<open_base::KinematicsForward>("kinematics_forward_world" );
     kinematicsForwardMobile = node.serviceClient<open_base::KinematicsForward>("kinematics_forward_mobile");
     publisherWorld  = node.advertise<geometry_msgs::Pose2D>("pose/world" , 1);

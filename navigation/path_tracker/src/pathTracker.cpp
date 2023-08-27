@@ -140,6 +140,7 @@ bool PathTracker::initializeParams(std_srvs::Empty::Request& req, std_srvs::Empt
 }
 
 void PathTracker::Timer_Callback(const ros::TimerEvent& e) {
+    ROS_INFO("[PathTracker]: working_mode:%d", working_mode_);
     switch (working_mode_) {
         case MODE::GLOBAL_PATH_RECEIVED: {
             if (working_mode_pre_ == MODE::IDLE || working_mode_pre_ == MODE::GLOBAL_PATH_RECEIVED) {

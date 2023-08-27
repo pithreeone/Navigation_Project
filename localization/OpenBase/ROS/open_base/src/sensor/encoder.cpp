@@ -28,11 +28,11 @@ long double v_right;
 void onJointStateMessage(const sensor_msgs::JointState::ConstPtr& input){
     timeCurrent = ros::Time::now();
     for (i = 0; i < input->name.size(); i++) {
-        if (input->name[i].c_str()[0] == 'l') {
+        if (input->name[i].c_str()[4] == 'l') {
             theta_left_current = input->position[i];
-        } else if (input->name[i].c_str()[0] == 'b') {
+        } else if (input->name[i].c_str()[4] == 'b') {
             theta_back_current = input->position[i];
-        } else if (input->name[i].c_str()[0] == 'r') {
+        } else if (input->name[i].c_str()[4] == 'r') {
             theta_right_current = input->position[i];
         }
     }

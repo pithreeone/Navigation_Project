@@ -3,6 +3,7 @@
 
 	<xacro:include filename="$(find open_base)/xacro/rim.urdf.xacro"/>
 	<xacro:include filename="$(find open_base)/xacro/omni.gazebo.xacro"/>
+	<xacro:include filename="$(find open_base)/xacro/material.xacro"/>
 	<xacro:property name="scale" value="3.0"/>
 
 	<gazebo reference="base_link">
@@ -28,6 +29,7 @@
 			<geometry>
 				<mesh filename="package://open_base/mesh/base.stl" scale="${scale} ${scale} ${scale}"/>
 			</geometry>
+			<material name="White"/>
 		</visual>
 		
 		<collision>
@@ -45,14 +47,15 @@
 
   <link name="base_scan">
     <visual>
-      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://turtlebot3_description/meshes/sensors/lds.stl" scale="${0.0004*scale} ${0.0004*scale} ${0.0004*scale}"/>
       </geometry>
+			<material name="Brown"/>
     </visual>
 
     <collision>
-      <origin xyz="0.0 0 0.0" rpy="0 0 0"/>
+      <origin xyz="0.0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder length="0.0315" radius="0.055"/>
       </geometry>
@@ -70,7 +73,7 @@
 	<joint name="scan_joint" type="fixed">
 		<parent link="base_link" />
 		<child link="base_scan" />
-		<origin xyz="0 0 ${0.01905*scale}"/>
+		<origin xyz="0 0 ${0.03+0.01905*scale}"/>
 	</joint>
 
 	<xacro:rim_macro

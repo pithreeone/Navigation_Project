@@ -15,12 +15,12 @@ blocked_lookahead_distance: 0.2
 # acceleration
 # linear_max_velocity: 0.7 #0.4
 # linear_acceleration: 0.5 #0.2
-linear_max_velocity: 0.4 #0.4
+linear_max_velocity: 0.2 #0.4
 linear_acceleration: 0.4 #0.2
 linear_acceleration_profile: linear
 
 # transition
-linear_transition_velocity: 0.3
+linear_transition_velocity: 0.2
 linear_transition_acceleration: 0.6
 
 # deceleration

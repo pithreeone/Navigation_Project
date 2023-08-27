@@ -4,6 +4,7 @@
 
         <rosparam file="$(find path_tracker)/params/pathTracker.yaml" command="load"/>
         <param name="frame" type="string" value="map" />
+        <remap from="/odom" to="open_base/odom"/>
 
     </node>
 

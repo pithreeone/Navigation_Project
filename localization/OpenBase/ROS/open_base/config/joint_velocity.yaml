@@ -18,3 +18,4 @@ open_base:
         type: effort_controllers/JointVelocityController
         joint: rim_right_joint
         pid: {p: 0.1, i: 50, d: 0.0001, i_clamp_max: 100.0, i_clamp_min: -100.0}
+
