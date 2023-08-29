@@ -1,6 +1,7 @@
 active: true
 robot_type: omni
-frame: map
+map_frame: map
+odom_frame: odom
 control_frequency: 30
 lookahead_distance: 0.1
 waiting_timeout: 5

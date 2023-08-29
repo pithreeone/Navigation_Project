@@ -72,7 +72,8 @@ bool PathTracker::initializeParams(std_srvs::Empty::Request& req, std_srvs::Empt
     std::string odom_topic_name_;
 
     nh_local_.param<bool>("active", p_active_, true);
-    nh_local_.param<std::string>("frame", frame_, "map");
+    nh_local_.param<std::string>("map_frame", map_frame_, "map");
+    nh_local_.param<std::string>("odom_frame", odom_frame_, "odom");
     nh_local_.param<double>("control_frequency", control_frequency_, 50);
     nh_local_.param<double>("lookahead_distance", lookahead_d_, 0.2);
     nh_local_.param<double>("waiting_timeout", waiting_timeout_, 3);
@@ -140,7 +141,7 @@ bool PathTracker::initializeParams(std_srvs::Empty::Request& req, std_srvs::Empt
 }
 
 void PathTracker::Timer_Callback(const ros::TimerEvent& e) {
-    ROS_INFO("[PathTracker]: working_mode:%d", working_mode_);
+    // ROS_INFO("[PathTracker]: working_mode:%d", working_mode_);
     switch (working_mode_) {
         case MODE::GLOBAL_PATH_RECEIVED: {
             if (working_mode_pre_ == MODE::IDLE || working_mode_pre_ == MODE::GLOBAL_PATH_RECEIVED) {
@@ -271,7 +272,7 @@ void PathTracker::Switch_Mode(MODE next_mode) {
 
 bool PathTracker::Planner_Client(RobotState cur_pos, RobotState goal_pos) {
     geometry_msgs::PoseStamped cur;
-    cur.header.frame_id = frame_;
+    cur.header.frame_id = map_frame_;
     cur.pose.position.x = cur_pos.x_;
     cur.pose.position.y = cur_pos.y_;
     cur.pose.position.z = 0;
@@ -284,7 +285,7 @@ bool PathTracker::Planner_Client(RobotState cur_pos, RobotState goal_pos) {
     cur.pose.orientation.w = q.w();
 
     geometry_msgs::PoseStamped goal;
-    goal.header.frame_id = frame_;
+    goal.header.frame_id = map_frame_;
     goal.pose.position.x = goal_pos.x_;
     goal.pose.position.y = goal_pos.y_;
     goal.pose.position.z = 0;
@@ -336,10 +337,49 @@ bool PathTracker::Planner_Client(RobotState cur_pos, RobotState goal_pos) {
 }
 
 void PathTracker::Pose_type0_Callback(const nav_msgs::Odometry::ConstPtr& pose_msg) {
-    cur_pose_.x_ = pose_msg->pose.pose.position.x;
-    cur_pose_.y_ = pose_msg->pose.pose.position.y;
+
+    geometry_msgs::PoseStamped pose_in_odom, pose_in_map;
+    pose_in_odom.header.frame_id = odom_frame_;
+    pose_in_odom.header.stamp = ros::Time::now();
+    pose_in_odom.pose.position.x = pose_msg->pose.pose.position.x;
+    pose_in_odom.pose.position.y = pose_msg->pose.pose.position.y;
+    pose_in_odom.pose.position.z = 0;
+    pose_in_odom.pose.orientation = pose_msg->pose.pose.orientation;
+    
+    // get transform from odom to map
+
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener(tfBuffer);
+    geometry_msgs::TransformStamped odom_to_map_tf;
+
+    try{
+        // if(tfBuffer.canTransform(map_frame_, "base_footprint", ros::Time(0), ros::Duration(1.0))){
+        //     odom_to_map_tf = tfBuffer.lookupTransform(map_frame_, "base_footprint", ros::Time(0));
+        //     ROS_INFO("transform successfully");
+        // }
+        // std::cout << "time1 " << ros::Time::now() << std::endl;
+        if(listener.waitForTransform(map_frame_, "base_footprint", ros::Time(0), ros::Duration(1.0))){
+            // std::cout << "time2 " << ros::Time::now() << std::endl;
+            listener.lookupTransform(map_frame_, "base_footprint", ros::Time(0), transform);
+            // ROS_INFO("transform successfully");
+        }
+        
+    }
+    catch(tf::TransformException &ex){
+        ROS_WARN("%s", ex.what());
+    }
+    // ROS_INFO("tf: x:%f, y:%f, z:%f", odom_to_map_tf.transform.translation.x, odom_to_map_tf.transform.translation.y, odom_to_map_tf.transform.translation.z);
+    // transform from odom to map
+    // tf2::doTransform(pose_in_odom, pose_in_map, odom_to_map_tf);
+    // ROS_INFO("pose odom: x:%f, y:%f, map: x:%f, y:%f", pose_in_odom.pose.position.x, pose_in_odom.pose.position.y, pose_in_map.pose.position.x, pose_in_map.pose.position.y);
+    cur_pose_.x_ = transform.getOrigin().x();
+    cur_pose_.y_ = transform.getOrigin().y();
     tf2::Quaternion q;
-    tf2::fromMsg(pose_msg->pose.pose.orientation, q);
+    q.setX(transform.getRotation().x());
+    q.setY(transform.getRotation().y());
+    q.setZ(transform.getRotation().z());
+    q.setW(transform.getRotation().w());
+    // tf2::fromMsg(transform.getRotation(), q);
     tf2::Matrix3x3 qt(q);
     double _, yaw;
     qt.getRPY(_, _, yaw);
@@ -488,7 +528,7 @@ RobotState PathTracker::Rolling_Window(RobotState cur_pos, std::vector<RobotStat
 
     // for rviz visualization
     // geometry_msgs::PoseStamped pos_msg;
-    // pos_msg.header.frame_id = frame_;
+    // pos_msg.header.frame_id = map_frame_;
     // pos_msg.header.stamp = ros::Time::now();
     // pos_msg.pose.position.x = local_goal.x_;
     // pos_msg.pose.position.y = local_goal.y_;
@@ -540,7 +580,7 @@ std::vector<RobotState> PathTracker::Orientation_Filter(std::vector<RobotState> 
 
     // Rviz visualize processed path
     geometry_msgs::PoseArray arr_msg;
-    arr_msg.header.frame_id = frame_;
+    arr_msg.header.frame_id = map_frame_;
     arr_msg.header.stamp = ros::Time::now();
     std::vector<geometry_msgs::Pose> poses;
 
