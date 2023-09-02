@@ -14,7 +14,7 @@
         <rosparam command="load" file="$(find localization_run)/config/gmapping_params.yaml"/>
     </node>
 
-    <!-- <node pkg="rviz" type="rviz" name="rviz_slam" args="-d $(find localization_run)/rviz/sim_mapping.rviz"/> -->
+    <node pkg="rviz" type="rviz" name="rviz_slam" args="-d $(find localization_run)/rviz/sim_mapping.rviz"/>
 
 
 </launch>
