@@ -1,4 +1,4 @@
 map_frame: map
 base_frame: base_footprint
 thresh: 50
-clear_frontiers: 20
+clear_frontiers: 40

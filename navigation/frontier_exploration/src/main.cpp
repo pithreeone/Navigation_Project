@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "nav_msgs/OccupancyGrid.h"
+#include "std_msgs/Char.h"
 #include "frontier_exploration/main.h"
 #include "geometry_msgs/PoseStamped.h"
 #include <tf/transform_listener.h>
@@ -11,13 +12,12 @@
 void Frontier_Exploration::initialize()
 {
     sub_map_ = nh_.subscribe("map", 100, &Frontier_Exploration::mapCallback, this);
+    sub_odom_feedback_ = nh_.subscribe("finishornot", 100, &Frontier_Exploration::odomFeedbackCallback, this);
     pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("nav_goal", 1);
     pub_frontier_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_map", 1);
     pub_frontier_groups_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_groups_map", 1);
+    pub_frontier_center_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_center_map", 1);
     initializeParam();
-    cur_pose_x_ = 0;
-    cur_pose_y_ = 0;
-    cur_pose_theta_ = 0;
     if_map_updated_ = false;
 
 }
@@ -41,8 +41,8 @@ void Frontier_Exploration::getRobotPose()
     catch(tf::TransformException &ex){
         ROS_WARN("%s", ex.what());
     }
-    cur_pose_x_ = transform_.getOrigin().x();
-    cur_pose_y_ = transform_.getOrigin().y();
+    cur_pose_.x_ = transform_.getOrigin().x();
+    cur_pose_.y_ = transform_.getOrigin().y();
     tf::Quaternion q;
     q.setX(transform_.getRotation().x());
     q.setY(transform_.getRotation().y());
@@ -52,7 +52,7 @@ void Frontier_Exploration::getRobotPose()
     tf::Matrix3x3 qt(q);
     double _, yaw;
     qt.getRPY(_, _, yaw);
-    cur_pose_theta_ = yaw;
+    cur_pose_.theta_ = yaw;
 }
 
 void Frontier_Exploration::copyGridMap(nav_msgs::OccupancyGrid map, nav_msgs::OccupancyGrid& map_copy)
@@ -109,8 +109,8 @@ void Frontier_Exploration::WFD()
     }
     if_map_updated_ = false;
     // initialize
-    while(!frontier_points_.empty())
-        frontier_points_.pop();
+    if(!frontier_points_.empty())
+        frontier_points_.clear();
     n_frontier_group_ = 0;
     copyGridMap(map_buffer_, map_);
     origin_map_.setMap(map_);
@@ -120,11 +120,10 @@ void Frontier_Exploration::WFD()
     // line-1
     std::queue <Pose> qm;
     // line-2
-    Pose cur_pose(cur_pose_x_, cur_pose_y_, cur_pose_theta_);
-    qm.push(cur_pose);
+    qm.push(cur_pose_);
     // // line-3
     int cur_cell_x = 0, cur_cell_y = 0;
-    origin_map_.worldToMap(cur_pose, cur_cell_x, cur_cell_y);
+    origin_map_.worldToMap(cur_pose_, cur_cell_x, cur_cell_y);
     // std::cout << "x" << cur_cell_x << " y" << cur_cell_y << std::endl;
     origin_map_.setIndicatorData(cur_cell_x, cur_cell_y, Point_Indicator::Map_Open_List);
 
@@ -209,7 +208,7 @@ void Frontier_Exploration::WFD()
                 Pose p_f = new_frontier.front();
                 new_frontier.pop();
                 Frontier frontier_p(p_f, n_frontier_group_);
-                frontier_points_.push(frontier_p);
+                frontier_points_.push_back(frontier_p);
                 // line-25
                 int pfx, pfy;
                 origin_map_.mapToWorld(pfx, pfy, p_f);
@@ -270,41 +269,95 @@ void Frontier_Exploration::WFD()
     // pub_frontier_groups_map_.publish(frontier_groups_map); 
 }
 
+void Frontier_Exploration::deleteSmallFrontier()
+{
+    n_frontier_group_ = 0;
+    std::vector<Frontier> temp;
+    for(int i=0; i<frontier_points_.size(); i++){
+        int n = 1;
+        while(i!=frontier_points_.size()-1 && frontier_points_[i].id_ == frontier_points_[i+1].id_){
+            i++;
+            n++;
+        }
+        if(n > clear_frontiers_){
+            for(int j=0; j<n; j++){
+                temp.push_back(frontier_points_[i-j]);
+            }
+            n_frontier_group_++;
+        }
+    }
+    frontier_points_.clear();
+    for(int i=0;i<temp.size(); i++){
+        frontier_points_.push_back(temp[i]);
+    }
+}
+
+bool Frontier_Exploration::calculateNearestFrontier(Pose& p)
+{
+    if(!origin_map_.ifSetMap())
+        return false;
+    if(n_frontier_group_ == 0)
+        return false;
+
+    int n = 0;
+    double min_dist = 10000000;
+    int min_id;
+    std::cout << "n_frontier_group: " << n_frontier_group_ << std::endl;
+    std::cout << "frontier_points.size: " << frontier_points_.size() << std::endl;
+    frontier_centers_.resize(n_frontier_group_);
+    for(int i=0; i<n_frontier_group_; i++){
+        int groups_n = 0;
+        // find center of a group of frontier
+        do{
+            frontier_centers_[i] += frontier_points_[n++];
+            groups_n++;
+            if(n == frontier_points_.size())
+                break;
+        }while(frontier_points_[n].id_ == frontier_points_[n-1].id_);
+        frontier_centers_[i] /= groups_n;
+        // find minimum distance between center and current pose
+        Pose diff = frontier_centers_[i] - cur_pose_;
+        double d = diff.distance();
+        if(d < min_dist){
+            min_dist = d;
+            min_id = i;
+        }
+    }
+    p = frontier_centers_[min_id];
+
+    return true;
+}
+
+
 void Frontier_Exploration::publishFrontierGroupsMap()
 {
-    WFD();
+    if(!origin_map_.ifSetMap())
+        return;
     nav_msgs::OccupancyGrid frontier_groups_map;
     frontier_groups_map.info = map_.info;
     frontier_groups_map.data.resize(origin_map_.getWidth() * origin_map_.getHeight());
-
-    int n_groups = 0;
-    while(!frontier_points_.empty()){
-        int n_frontier = 0;
-        int id;
-        std::queue <Frontier> q_frontier_buf;
-        do{
-            Frontier f = frontier_points_.front();
-            frontier_points_.pop();
-            q_frontier_buf.push(f);
-            id = f.id_;
-            n_frontier++;
-        }while(id == frontier_points_.front().id_);
-
-        if(n_frontier <= clear_frontiers_)
-            continue;
-
-        int f_cell_x, f_cell_y;
-        while(!q_frontier_buf.empty()){
-            Frontier f = q_frontier_buf.front();
-            q_frontier_buf.pop();
-            origin_map_.worldToMap(f, f_cell_x, f_cell_y);
-            // std::cout << id << " ";
-            frontier_groups_map.data[f_cell_y * origin_map_.getWidth() + f_cell_x] = 100;
-        }
-        n_groups++;
+    for(int i=0; i<frontier_points_.size(); i++){
+        int fx, fy;
+        origin_map_.worldToMap(frontier_points_[i], fx, fy);
+        frontier_groups_map.data[fy * origin_map_.getWidth() + fx] = 100;
     }
-    ROS_INFO("Frontier_exploration: There are %d groups of frontier", n_groups);
     pub_frontier_groups_map_.publish(frontier_groups_map); 
+}
+
+void Frontier_Exploration::publishFrontierCenterMap()
+{
+    if(!origin_map_.ifSetMap())
+        return;
+    nav_msgs::OccupancyGrid frontier_center_map;
+    frontier_center_map.info = map_.info;
+    frontier_center_map.data.resize(origin_map_.getWidth() * origin_map_.getHeight());
+
+    for(int i=0; i<n_frontier_group_; i++){
+        int fx, fy;
+        origin_map_.worldToMap(frontier_centers_[i], fx, fy);
+        frontier_center_map.data[fy * origin_map_.getWidth() + fx] = 100;
+    }
+    pub_frontier_center_map_.publish(frontier_center_map); 
 }
 
 void Frontier_Exploration::mapCallback(const nav_msgs::OccupancyGrid::ConstPtr &msg) 
@@ -312,6 +365,10 @@ void Frontier_Exploration::mapCallback(const nav_msgs::OccupancyGrid::ConstPtr &
     copyGridMap(*msg, map_buffer_);
     ROS_INFO("Frontier_Exploration: map Updated!");
     if_map_updated_ = true;
+}
+
+void Frontier_Exploration::odomFeedbackCallback(const std_msgs::Char::ConstPtr & msg)
+{
 }
 
 int main(int argc, char **argv){
@@ -323,8 +380,12 @@ int main(int argc, char **argv){
     Frontier_Exploration frontier_exploration(nh, nh_local);
     frontier_exploration.initialize();
     while(ros::ok()){
-        // frontier_exploration.publishFrontierMap();
+        frontier_exploration.WFD();
+        frontier_exploration.deleteSmallFrontier();
+        Pose p;
+        frontier_exploration.calculateNearestFrontier(p);
         frontier_exploration.publishFrontierGroupsMap();
+        frontier_exploration.publishFrontierCenterMap();
         ros::spinOnce();
         r.sleep();
     }

@@ -14,10 +14,10 @@ enum class Direction{
     Left,
     Back,
     Right,
-    Front_Left,
-    Back_Left,
-    Back_Right,
-    Front_Right
+    // Front_Left,
+    // Back_Left,
+    // Back_Right,
+    // Front_Right
 };
 
 class Pose{
@@ -26,12 +26,40 @@ class Pose{
         double y_;
         double theta_;
         Pose(){
-
+            x_ = 0.0;
+            y_ = 0.0;
+            theta_ = 0.0;
         }
 
         Pose(double x, double y, double theta){
             x_ = x; y_ = y; theta_ = theta;
         }
+        double distance(){
+            return sqrt(pow(x_, 2) + pow(y_, 2));
+        }
+
+        Pose operator+(const Pose& p){
+            Pose ans(this->x_ + p.x_, this->y_ + p.y_, this->theta_ + p.theta_);
+            return ans;
+        }
+        Pose operator-(const Pose& p){
+            Pose ans(this->x_ - p.x_, this->y_ - p.y_, this->theta_ - p.theta_);
+            return ans;
+        }
+        Pose operator/(const double& den){
+            Pose ans(this->x_ / den, this->y_ / den, this->theta_ / den);
+            return ans;
+        }
+        void operator=(const Pose& p){
+            x_ = p.x_; y_ = p.y_; theta_ = p.theta_;
+        }
+        void operator+=(const Pose& p){
+            *this = *this + p;
+        }
+        void operator/=(const double& den){
+            *this = *this / den;
+        }
+
 };
 
 class Frontier: public Pose{
@@ -49,15 +77,17 @@ class Map{
     Point_Indicator **indicator_map_;
     double res_;
     double thresh_;
-
+    bool if_set_map_;
     public:
 
         Map(){
+            if_set_map_ = false;
         }
 
         Map(nav_msgs::OccupancyGrid map, int thresh);
         
         void setMap(nav_msgs::OccupancyGrid map){
+            if_set_map_ = true;
             grid_map_ = map;
             res_ = map.info.resolution;
             // memory allocation
@@ -70,6 +100,9 @@ class Map{
                     indicator_map_[i][j] = Point_Indicator::UDF;
                 }
             }
+        }
+        bool ifSetMap(){
+            return if_set_map_;
         }
 
         void setThresh(int thresh){

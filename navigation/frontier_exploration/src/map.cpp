@@ -3,6 +3,7 @@
 
 Map::Map(nav_msgs::OccupancyGrid map, int thresh)
 {
+    if_set_map_ = true;
     grid_map_ = map;
     thresh_ = thresh;
     res_ = map.info.resolution;
@@ -76,6 +77,7 @@ Point_Indicator Map::getNeighborIndicator(int idx, int idy, Direction dir)
     }else if(dir == Direction::Right){
         return indicator_map_[idx+1][idy];
     }
+    return Point_Indicator::UDF;
 }
 
 bool Map::ifHasMapOpenSpaceNeighbor(int idx, int idy)
