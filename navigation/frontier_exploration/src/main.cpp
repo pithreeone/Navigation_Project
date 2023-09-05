@@ -17,8 +17,11 @@ void Frontier_Exploration::initialize()
     pub_frontier_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_map", 1);
     pub_frontier_groups_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_groups_map", 1);
     pub_frontier_center_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_center_map", 1);
+
     initializeParam();
-    if_map_updated_ = false;
+    if_set_map_ = false;
+    timer_ = nh_.createTimer(ros::Duration(double(1/process_frequency_)), &Frontier_Exploration::processCallback, this);
+    state_ = Process_State::Stop;
 
 }
 
@@ -29,6 +32,7 @@ void Frontier_Exploration::initializeParam()
     nh_local_.param<std::string>("base_frame", base_frame_, "base");
     nh_local_.param<int>("thresh", thresh_, 50);
     nh_local_.param<int>("clear_frontiers", clear_frontiers_, 10);
+    nh_local_.param<double>("process_frequency", process_frequency_, 1);
 }
 
 void Frontier_Exploration::getRobotPose()
@@ -79,35 +83,32 @@ void Frontier_Exploration::copyGridMap(nav_msgs::OccupancyGrid map, nav_msgs::Oc
     }
 }
 
-void Frontier_Exploration::publishFrontierMap()
-{       
-    copyGridMap(map_buffer_, map_);
-    origin_map_.setMap(map_);
-    origin_map_.setThresh(thresh_); 
-    nav_msgs::OccupancyGrid frontier_map;
-    frontier_map.info = map_.info;
-    for(int i=0; i<map_buffer_.info.width * map_buffer_.info.height; i++){
-        frontier_map.data.push_back(0);
+void Frontier_Exploration::printProcessState(){
+    switch(state_){
+        case Process_State::Stop:
+            ROS_INFO("Frontier_Exploration: Process state -> Stop");
+            break;
+        case Process_State::Explore:
+            ROS_INFO("Frontier_Exploration: Process state -> Explore");
+            break;
+        case Process_State::Move:
+            ROS_INFO("Frontier_Exploration: Process state -> Move");
+            break;
+        case Process_State::Arrive:
+            ROS_INFO("Frontier_Exploration: Process state -> Arrive");
+            break;
+        case Process_State::Finish_Explore:
+            ROS_INFO("Frontier_Exploration: Process state -> Finish_Explore");
+            break;
     }
-
-    for(int i=0; i< map_.info.width; i++){
-        for(int j=0; j<map_.info.height; j++){
-            if(origin_map_.ifFrontierPoint(i, j) == true)
-                frontier_map.data[j * map_.info.width + i] = 100;
-            else
-                frontier_map.data[j * map_.info.width + i] = 0;
-        }
-    }
-    pub_frontier_map_.publish(frontier_map);
 }
 
 void Frontier_Exploration::WFD()
 {
-    if(if_map_updated_ == false){
-        ROS_INFO("Frontier_exploration: waiting for map updated");
+    if(if_set_map_ == false){
+        ROS_WARN("Frontier_exploration: Can not subscribe to map-topic");
         return;
     }
-    if_map_updated_ = false;
     // initialize
     if(!frontier_points_.empty())
         frontier_points_.clear();
@@ -269,7 +270,7 @@ void Frontier_Exploration::WFD()
     // pub_frontier_groups_map_.publish(frontier_groups_map); 
 }
 
-void Frontier_Exploration::deleteSmallFrontier()
+int Frontier_Exploration::deleteSmallFrontier()
 {
     n_frontier_group_ = 0;
     std::vector<Frontier> temp;
@@ -290,6 +291,7 @@ void Frontier_Exploration::deleteSmallFrontier()
     for(int i=0;i<temp.size(); i++){
         frontier_points_.push_back(temp[i]);
     }
+    return n_frontier_group_;
 }
 
 bool Frontier_Exploration::calculateNearestFrontier(Pose& p)
@@ -302,8 +304,8 @@ bool Frontier_Exploration::calculateNearestFrontier(Pose& p)
     int n = 0;
     double min_dist = 10000000;
     int min_id;
-    std::cout << "n_frontier_group: " << n_frontier_group_ << std::endl;
-    std::cout << "frontier_points.size: " << frontier_points_.size() << std::endl;
+    // std::cout << "n_frontier_group: " << n_frontier_group_ << std::endl;
+    // std::cout << "frontier_points.size: " << frontier_points_.size() << std::endl;
     frontier_centers_.resize(n_frontier_group_);
     for(int i=0; i<n_frontier_group_; i++){
         int groups_n = 0;
@@ -324,10 +326,32 @@ bool Frontier_Exploration::calculateNearestFrontier(Pose& p)
         }
     }
     p = frontier_centers_[min_id];
-
+    publishFrontierGroupsMap();
+    publishFrontierCenterMap();
     return true;
 }
 
+void Frontier_Exploration::publishFrontierMap()
+{       
+    copyGridMap(map_buffer_, map_);
+    origin_map_.setMap(map_);
+    origin_map_.setThresh(thresh_); 
+    nav_msgs::OccupancyGrid frontier_map;
+    frontier_map.info = map_.info;
+    for(int i=0; i<map_buffer_.info.width * map_buffer_.info.height; i++){
+        frontier_map.data.push_back(0);
+    }
+
+    for(int i=0; i< map_.info.width; i++){
+        for(int j=0; j<map_.info.height; j++){
+            if(origin_map_.ifFrontierPoint(i, j) == true)
+                frontier_map.data[j * map_.info.width + i] = 100;
+            else
+                frontier_map.data[j * map_.info.width + i] = 0;
+        }
+    }
+    pub_frontier_map_.publish(frontier_map);
+}
 
 void Frontier_Exploration::publishFrontierGroupsMap()
 {
@@ -364,28 +388,83 @@ void Frontier_Exploration::mapCallback(const nav_msgs::OccupancyGrid::ConstPtr &
 {   
     copyGridMap(*msg, map_buffer_);
     ROS_INFO("Frontier_Exploration: map Updated!");
-    if_map_updated_ = true;
+    if_set_map_ = true;
 }
 
 void Frontier_Exploration::odomFeedbackCallback(const std_msgs::Char::ConstPtr & msg)
 {
+    if(msg->data == 1){
+        setProcessState(Process_State::Arrive);
+    }
+}
+
+void Frontier_Exploration::processCallback(const ros::TimerEvent &)
+{
+    printProcessState();
+    switch(state_){
+        case Process_State::Stop:
+        {
+            if(!if_set_map_){
+                ROS_WARN("Frontier_exploration: Can not subscribe to map-topic");
+                return;
+            }
+            getRobotPose();
+            WFD();
+            int n = deleteSmallFrontier();
+            if(n >= 1){
+                setProcessState(Process_State::Explore);
+            }else{
+                setProcessState(Process_State::Finish_Explore);
+            }
+            break;
+        }
+        case Process_State::Explore:
+        {
+            Pose nearest_p;
+            bool if_frontiers = calculateNearestFrontier(nearest_p);
+            geometry_msgs::PoseStamped goal;
+            uint32_t seq = 0;
+            goal.header.seq = seq++;
+            goal.header.stamp = ros::Time::now();
+            goal.header.frame_id = map_frame_;
+            goal.pose.position.x = nearest_p.x_;
+            goal.pose.position.y = nearest_p.y_;
+            goal.pose.position.z = 0;
+            tf::Quaternion q;
+            q.setRPY(0, 0, cur_pose_.theta_);
+            goal.pose.orientation.x = q.x();
+            goal.pose.orientation.y = q.y();
+            goal.pose.orientation.z = q.z();
+            goal.pose.orientation.w = q.w();
+            pub_goal_.publish(goal);
+            setProcessState(Process_State::Move);
+            break;
+        }
+        case Process_State::Move:
+        {
+            break;
+        }
+        case Process_State::Arrive:
+        {
+            setProcessState(Process_State::Stop);
+            break;
+        }
+        case Process_State::Finish_Explore:
+        {
+            break;
+        }
+    }
 }
 
 int main(int argc, char **argv){
     ros::init(argc, argv, "frontier_exploration");
     ros::NodeHandle nh(""); 
     ros::NodeHandle nh_local("~");
-    ros::Rate r(1);
+    ros::Rate r(100);
 
     Frontier_Exploration frontier_exploration(nh, nh_local);
     frontier_exploration.initialize();
     while(ros::ok()){
-        frontier_exploration.WFD();
-        frontier_exploration.deleteSmallFrontier();
-        Pose p;
-        frontier_exploration.calculateNearestFrontier(p);
-        frontier_exploration.publishFrontierGroupsMap();
-        frontier_exploration.publishFrontierCenterMap();
         ros::spinOnce();
         r.sleep();
     }

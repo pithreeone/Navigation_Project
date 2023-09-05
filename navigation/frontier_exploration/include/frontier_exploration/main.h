@@ -2,10 +2,12 @@
 #include <tf/transform_listener.h>
 #include <queue>
 #include <frontier_exploration/map.h>
-enum Robot_State{
-    Explore,
+enum Process_State{
     Stop,
+    Explore,
+    Move,
     Arrive,
+    Finish_Explore,
 };
 
 class Frontier_Exploration{
@@ -22,8 +24,8 @@ class Frontier_Exploration{
         nav_msgs::OccupancyGrid map_;
         nav_msgs::OccupancyGrid map_buffer_;
         Map origin_map_; 
-        bool if_map_updated_;
-        Robot_State state_;
+        bool if_set_map_;
+        Process_State state_;
         Pose cur_pose_;
         std::vector<Frontier> frontier_centers_;
 
@@ -32,11 +34,13 @@ class Frontier_Exploration{
         std::string base_frame_;
         int thresh_;
         int clear_frontiers_;
+        double process_frequency_;
 
         // tf for getting base_footprint to map
         tf::TransformListener listener_;
         tf::StampedTransform transform_;
 
+        ros::Timer timer_;
     public:
         int n_frontier_group_;
         std::vector<Frontier> frontier_points_;
@@ -55,16 +59,24 @@ class Frontier_Exploration{
 
         void copyGridMap(nav_msgs::OccupancyGrid map, nav_msgs::OccupancyGrid& map_copy);
 
-        void publishFrontierMap();
+        void setProcessState(Process_State state){
+            state_ = state;
+        }
+
+        /// @brief print the process state variable value now
+        void printProcessState();
+
         void WFD();
 
         /// @brief if groups of frontier is smaller than clear_frontiers_, then delete.
-        void deleteSmallFrontier();
+        int deleteSmallFrontier();
 
         /// @brief calculate nearest frontiers center
         /// @param p the answer will store in this argument
         /// @return if no any frontier return false
         bool calculateNearestFrontier(Pose& p);
+
+        void publishFrontierMap();
 
         /// @brief publish frontier points which is in frontier_points_ 
         void publishFrontierGroupsMap();
@@ -73,5 +85,7 @@ class Frontier_Exploration{
 
         void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg);
         void odomFeedbackCallback(const std_msgs::Char::ConstPtr& msg);
+        void processCallback(const ros::TimerEvent& e);
+
 
 };
