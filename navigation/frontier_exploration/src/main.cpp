@@ -7,7 +7,6 @@
 #include <tf/transform_listener.h>
 #include <tf/LinearMath/Quaternion.h>
 #include <tf/LinearMath/Transform.h>
-#include <mutex>
 
 void Frontier_Exploration::initialize()
 {
