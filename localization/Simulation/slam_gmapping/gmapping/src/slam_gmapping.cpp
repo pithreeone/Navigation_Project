@@ -163,6 +163,22 @@ SlamGMapping::SlamGMapping(long unsigned int seed, long unsigned int max_duratio
   init();
 }
 
+void SlamGMapping::resetCallback(const std_msgs::Bool::ConstPtr& msg)
+{
+  if(msg->data == true){
+    reset();
+  }
+}
+
+void SlamGMapping::reset(){
+  delete gsp_;
+  delete tfB_;
+  laser_count_ = 0;
+  delete gsp_laser_;
+  delete gsp_odom_;
+  init();
+  ROS_INFO("SlamGMapping: reset successfully");
+}
 
 void SlamGMapping::init()
 {
@@ -277,6 +293,8 @@ void SlamGMapping::startLiveSlam()
   scan_filter_->registerCallback(boost::bind(&SlamGMapping::laserCallback, this, _1));
 
   transform_thread_ = new boost::thread(boost::bind(&SlamGMapping::publishLoop, this, transform_publish_period_));
+
+  sub_ = private_nh_.subscribe("reset", 10, &SlamGMapping::resetCallback, this);
 }
 
 void SlamGMapping::startReplay(const std::string & bag_fname, std::string scan_topic)
