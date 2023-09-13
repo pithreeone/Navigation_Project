@@ -150,7 +150,7 @@ include
 #   ${catkin_LIBRARIES}
 # )
 
-add_executable(robot_interface src/robot_interface.cpp src/fsm.cpp src/fsm_item.cpp)
+add_executable(robot_interface src/robot_interface.cpp src/fsm.cpp)
 add_dependencies(robot_interface ${catkin_EXPORTED_TARGETS})
 target_link_libraries(robot_interface ${catkin_LIBRARIES})
 
