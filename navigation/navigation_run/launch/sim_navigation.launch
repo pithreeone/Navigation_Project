@@ -24,8 +24,11 @@
     <!-- PathTracker -->
     <!-- <include file="$(find path_tracker)/launch/pathTracker.launch"/> -->
 
+    <!-- Interface -->
+    <!-- <include ="$(find robot_interface)/launch/interface.launch" /> -->
+
     <!-- RVIZ -->
-    <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/>
+    <!-- <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/> -->
 
 
 

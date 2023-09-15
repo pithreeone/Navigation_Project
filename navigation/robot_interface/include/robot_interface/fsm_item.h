@@ -12,6 +12,7 @@ public:
         CONTROL_MOVING,
         // mission
         MOVE_TO_GOAL,
+        MOVE_TO_GOAL_KEY, // move to goal by position name
         RECORD_COORDINATE,
         // slam
         START_MAPPING,
@@ -31,6 +32,7 @@ public:
         E_FINISH_CHECK_MAP,
 
         E_MOVE_TO_GOAL,
+        E_MOVE_TO_GOAL_KEY,
         E_FINISH_MOVE,
 
         E_RECORD_COORDINATE,

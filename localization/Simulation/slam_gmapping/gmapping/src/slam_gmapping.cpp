@@ -163,19 +163,29 @@ SlamGMapping::SlamGMapping(long unsigned int seed, long unsigned int max_duratio
   init();
 }
 
-void SlamGMapping::resetCallback(const std_msgs::Bool::ConstPtr& msg)
+void SlamGMapping::resetCallback(const std_msgs::Int8::ConstPtr& msg)
 {
-  if(msg->data == true){
+  if(msg->data == 0){
+    // stop();
+  }else if(msg->data == 1){
+    init();
+  }else if(msg->data == 2){
     reset();
   }
 }
 
-void SlamGMapping::reset(){
+void SlamGMapping::stop()
+{
   delete gsp_;
   delete tfB_;
   laser_count_ = 0;
   delete gsp_laser_;
   delete gsp_odom_;
+  ROS_INFO("SlamGMapping: stop successfully");
+}
+
+void SlamGMapping::reset(){
+  stop();
   init();
   ROS_INFO("SlamGMapping: reset successfully");
 }

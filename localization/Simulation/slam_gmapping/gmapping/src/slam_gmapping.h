@@ -32,7 +32,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "std_msgs/Float64.h"
-#include "std_msgs/Bool.h"
+#include "std_msgs/Int8.h"
 #include "nav_msgs/GetMap.h"
 #include "tf/transform_listener.h"
 #include "tf/transform_broadcaster.h"
@@ -53,6 +53,7 @@ class SlamGMapping
     ~SlamGMapping();
 
     void init();
+    void stop();
     void reset();
     void startLiveSlam();
     void startReplay(const std::string & bag_fname, std::string scan_topic);
@@ -61,7 +62,7 @@ class SlamGMapping
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
     bool mapCallback(nav_msgs::GetMap::Request  &req,
                      nav_msgs::GetMap::Response &res);
-    void resetCallback(const std_msgs::Bool::ConstPtr& msg);
+    void resetCallback(const std_msgs::Int8::ConstPtr& msg);
     void publishLoop(double transform_publish_period);
 
   private:
