@@ -24,8 +24,13 @@ public:
     // according to different event, change the current state to next state
     void handleEvent(FSMItem::Events event);
 
+    bool ifFinishMission();
+    void setFinishMission(bool if_finish);
+    FSMItem::State getState();
+
 private:
     FSMItem::State cur_state_;
+    bool finish_;
     std::vector<FSMItem*> fsm_table_;
     /// @brief initial FSM　table
     void initFSMTable();

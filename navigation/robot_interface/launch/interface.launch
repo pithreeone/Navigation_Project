@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="robot_interface" name="robot_interface" type="robot_interface" output="screen">
+        <rosparam file="$(find robot_interface)/config/interface.yaml" command="load"/>
+    </node>
+</launch>

@@ -17,27 +17,23 @@ public:
         START_MAPPING,
         AUTO_MAPPING,
         CONTROL_MAPPING,
-        FINISH_MAPPING,
+        CONFIRM_MAP,
     };
     // enumerate all events
     enum Events
     {
         E_NAN = 0,
-        E_STOP_2_START_MAPPING,
-        E_AUTO_MAPPING_2_CONTROL_MAPPING,
-        E_CONTROL_MAPPING_2_AUTO_MAPPING,
-        E_AUTO_MAPPING_2_FINISH_MAPPING,
-        E_CONTROL_MAPPING_2_FINISH_MAPPING,
-        E_FINISH_MAPPING_2_CONTROL_MAPPING,
-        E_FINISH_MAPPING_2_STOP,
+        E_START_MAPPING,
+        E_FAST_V,
+        E_SLOW_V,
+        E_FINISH_AUTO_MAPPING,
+        E_FINISH_CONTROL_MAPPING,
+        E_FINISH_CHECK_MAP,
 
-        E_STOP_2_CONTROL_MOVING,
-        E_CONTROL_MOVING_2_STOP,
+        E_MOVE_TO_GOAL,
+        E_FINISH_MOVE,
 
-        E_STOP_2_MOVE_TO_GOAL,
-        E_MOVE_TO_GOAL_2_STOP,
-
-        E_STOP_2_RECORD_COORDINATE,
+        E_RECORD_COORDINATE,
 
     };
 
@@ -49,7 +45,7 @@ public:
     State cur_state_;
     State next_state_;
     Events event_;
-
+    void(*action_)();
 
 };
 
