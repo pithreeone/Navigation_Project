@@ -1,6 +1,6 @@
 <launch>
 
-    <node name="frontier_exploration" pkg="frontier_exploration" type="main" output="log">
+    <node name="frontier_exploration" pkg="frontier_exploration" type="main" output="screen">
         <rosparam file="$(find frontier_exploration)/config/param.yaml" command="load"/>
     </node>
 </launch>

@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "nav_msgs/OccupancyGrid.h"
+#include "std_msgs/Bool.h"
 #include "std_msgs/Char.h"
 #include "frontier_exploration/main.h"
 #include "geometry_msgs/PoseStamped.h"
@@ -11,16 +12,18 @@
 void Frontier_Exploration::initialize()
 {
     sub_map_ = nh_.subscribe("map", 100, &Frontier_Exploration::mapCallback, this);
+    sub_mission_ = nh_.subscribe("fron_exp_mission", 1, &Frontier_Exploration::fronExpMissionCallback, this);
     sub_odom_feedback_ = nh_.subscribe("finishornot", 100, &Frontier_Exploration::odomFeedbackCallback, this);
     pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("nav_goal", 1);
     pub_frontier_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_map", 1);
     pub_frontier_groups_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_groups_map", 1);
     pub_frontier_center_map_ = nh_.advertise<nav_msgs::OccupancyGrid>("frontier_center_map", 1);
+    pub_finish_exploration_ = nh_.advertise<std_msgs::Bool>("finish_exploration", 1);
 
     initializeParam();
     if_set_map_ = false;
     timer_ = nh_.createTimer(ros::Duration(double(1/process_frequency_)), &Frontier_Exploration::processCallback, this);
-    state_ = Process_State::Stop;
+    setProcessState(Process_State::Wait);
 
 }
 
@@ -84,6 +87,9 @@ void Frontier_Exploration::copyGridMap(nav_msgs::OccupancyGrid map, nav_msgs::Oc
 
 void Frontier_Exploration::printProcessState(){
     switch(state_){
+        case Process_State::Wait:
+            ROS_INFO("Frontier_Exploration: Process state -> Wait");
+            break;
         case Process_State::Stop:
             ROS_INFO("Frontier_Exploration: Process state -> Stop");
             break;
@@ -401,6 +407,11 @@ void Frontier_Exploration::processCallback(const ros::TimerEvent &)
 {
     printProcessState();
     switch(state_){
+        case Process_State::Wait:
+        {
+            // just waiting
+            break;
+        }
         case Process_State::Stop:
         {
             if(!if_set_map_){
@@ -414,6 +425,9 @@ void Frontier_Exploration::processCallback(const ros::TimerEvent &)
                 setProcessState(Process_State::Explore);
             }else{
                 setProcessState(Process_State::Finish_Explore);
+                std_msgs::Bool data;
+                data.data = true;
+                pub_finish_exploration_.publish(data);
             }
             break;
         }
@@ -449,9 +463,18 @@ void Frontier_Exploration::processCallback(const ros::TimerEvent &)
             break;
         }
         case Process_State::Finish_Explore:
-        {
+        {   
+            setProcessState(Process_State::Wait);
             break;
         }
+    }
+}
+
+void Frontier_Exploration::fronExpMissionCallback(const std_msgs::Int8::ConstPtr & msg)
+{
+    if(msg->data == 1){
+        // start
+        setProcessState(Process_State::Stop);
     }
 }
 

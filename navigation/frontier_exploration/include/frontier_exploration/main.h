@@ -2,7 +2,9 @@
 #include <tf/transform_listener.h>
 #include <queue>
 #include <frontier_exploration/map.h>
+#include "std_msgs/Int8.h"
 enum Process_State{
+    Wait, // haven't start
     Stop,
     Explore,
     Move,
@@ -16,11 +18,14 @@ class Frontier_Exploration{
         ros::NodeHandle nh_local_;
         ros::Subscriber sub_map_;
         ros::Subscriber sub_pose_;
+        ros::Subscriber sub_mission_;
         ros::Subscriber sub_odom_feedback_;
         ros::Publisher pub_goal_;
         ros::Publisher pub_frontier_map_;
         ros::Publisher pub_frontier_groups_map_;
         ros::Publisher pub_frontier_center_map_;
+        ros::Publisher pub_finish_exploration_;
+
         nav_msgs::OccupancyGrid map_;
         nav_msgs::OccupancyGrid map_buffer_;
         Map origin_map_; 
@@ -85,6 +90,7 @@ class Frontier_Exploration{
 
         void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg);
         void odomFeedbackCallback(const std_msgs::Char::ConstPtr& msg);
+        void fronExpMissionCallback(const std_msgs::Int8::ConstPtr& msg);
         void processCallback(const ros::TimerEvent& e);
 
 
