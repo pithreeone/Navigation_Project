@@ -19,6 +19,7 @@ public:
         AUTO_MAPPING,
         CONTROL_MAPPING,
         CONFIRM_MAP,
+        SAVE_MAP,
     };
     // enumerate all events
     enum Events

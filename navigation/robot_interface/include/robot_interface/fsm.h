@@ -27,9 +27,11 @@ public:
     bool ifFinishMission();
     void setFinishMission(bool if_finish);
     FSMItem::State getState();
+    FSMItem::State getPreviousState();
 
 private:
     FSMItem::State cur_state_;
+    FSMItem::State pre_state_;
     bool finish_;
     std::vector<FSMItem*> fsm_table_;
     /// @brief initial FSM　table

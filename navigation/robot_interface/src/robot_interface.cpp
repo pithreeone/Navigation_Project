@@ -28,7 +28,7 @@ void Interface::initialize()
     sub_arrived_ = nh_.subscribe("finishornot", 10, &Interface::finishCB, this);
     sub_finish_exploration_ = nh_.subscribe("finish_exploration", 10, &Interface::finishExplorationCB, this);
 
-    pub_start_gmapping_ = nh_.advertise<std_msgs::Bool>("slam_gmapping/reset", 1);
+    pub_start_gmapping_ = nh_.advertise<std_msgs::Int8>("slam_gmapping/reset", 1);
     pub_vel_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 10);
     pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("nav_goal", 10);
     pub_start_exploration_ = nh_.advertise<std_msgs::Int8>("fron_exp_mission", 1);
@@ -81,14 +81,26 @@ void Interface::execute()
         switch(fsm->getState()){
             case FSMItem::State::AUTO_MAPPING:{
                 // start gmapping
-                std_msgs::Int8 msg;
-                msg.data = 2;
-                pub_start_gmapping_.publish(msg);
-                std_msgs::Int8 msg_exp;
+                if(fsm->getPreviousState() == FSMItem::State::START_MAPPING){
+                    std_msgs::Int8 msg;
+                    msg.data = 2;
+                    pub_start_gmapping_.publish(msg);
+                }
+
                 // start frontier_exploration
+                std_msgs::Int8 msg_exp;
                 msg_exp.data = 1;
                 pub_start_exploration_.publish(msg_exp);
                 break;
+            }
+            case FSMItem::State::SAVE_MAP:{
+                if(!interface_buf_.map_ok)
+                    return;
+                std::string str;
+                str = "rosrun map_server map_saver -f " + interface_buf_.map_name;
+                const char *command = str.c_str();
+                ROS_INFO("Robot_Interface: save map file using '%s'", command);
+                int _ = std::system(command);
             }
             case FSMItem::State::RECORD_COORDINATE:{
                 user_position_dict_[interface_buf_.position_key] = {pose_buf_.getX(), pose_buf_.getY(), pose_buf_.getTheta()};

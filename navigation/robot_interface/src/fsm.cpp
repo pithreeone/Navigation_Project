@@ -61,6 +61,7 @@ void FSM::handleEvent(FSMItem::Events event)
     for (int i=0; i<fsm_table_.size(); i++){
         if(event == fsm_table_[i]->event_ && cur_state == fsm_table_[i]->cur_state_){
             flag = true;
+            pre_state_ = cur_state;
             next_state = fsm_table_[i]->next_state_;
             // ROS_INFO("cur_state: %d, event: %d", cur_state, event);
             // only change the finish_ to false when changing current state.
@@ -89,6 +90,11 @@ FSMItem::State FSM::getState()
     return cur_state_;
 }
 
+FSMItem::State FSM::getPreviousState()
+{
+    return pre_state_;
+}
+
 void FSM::initFSMTable()
 {
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_START_MAPPING, FSMItem::State::START_MAPPING));
@@ -98,7 +104,8 @@ void FSM::initFSMTable()
     fsm_table_.push_back(new FSMItem(FSMItem::State::AUTO_MAPPING, FSMItem::Events::E_FINISH_AUTO_MAPPING, FSMItem::State::CONFIRM_MAP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::CONTROL_MAPPING, FSMItem::Events::E_FINISH_CONTROL_MAPPING, FSMItem::State::CONFIRM_MAP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::CONFIRM_MAP, FSMItem::Events::E_FAST_V, FSMItem::State::CONTROL_MAPPING));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::CONFIRM_MAP, FSMItem::Events::E_FINISH_CHECK_MAP, FSMItem::State::STOP));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::CONFIRM_MAP, FSMItem::Events::E_FINISH_CHECK_MAP, FSMItem::State::SAVE_MAP));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::SAVE_MAP, FSMItem::Events::E_NAN, FSMItem::State::STOP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_FAST_V, FSMItem::State::CONTROL_MOVING));
     fsm_table_.push_back(new FSMItem(FSMItem::State::CONTROL_MOVING, FSMItem::Events::E_SLOW_V, FSMItem::State::STOP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_MOVE_TO_GOAL, FSMItem::State::MOVE_TO_GOAL));
