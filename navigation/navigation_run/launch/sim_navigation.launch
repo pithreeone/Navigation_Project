@@ -3,7 +3,7 @@
     <include file="$(find localization_run)/launch/sim_all.launch"/>
     
     <!-- Navigation -->
-    <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" />
+    <!-- <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" /> -->
 
 
     <!-- Map Server -->
@@ -31,7 +31,7 @@
 
 
     <!-- RVIZ -->
-    <!-- <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/> -->
+    <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/>
 
 
 

@@ -53,6 +53,8 @@ void Interface::updateState()
         fsm->handleEvent(FSMItem::Events::E_FINISH_CONTROL_MAPPING);
     }else if(interface_buf_.mission.compare("check_map") == 0){
         fsm->handleEvent(FSMItem::Events::E_FINISH_CHECK_MAP);
+    }else if(interface_buf_.mission.compare("choose_map") == 0){
+        fsm->handleEvent(FSMItem::Events::E_CHOOSE_MAP);
     }else if(interface_buf_.mission.compare("move_goal") == 0){
         fsm->handleEvent(FSMItem::Events::E_MOVE_TO_GOAL);
     }else if(interface_buf_.mission.compare("move_goal_key") == 0){
@@ -79,7 +81,8 @@ void Interface::execute()
     // if have not finished mission, just do it!
     if(!fsm->ifFinishMission()){
         switch(fsm->getState()){
-            case FSMItem::State::AUTO_MAPPING:{
+            case FSMItem::State::AUTO_MAPPING:
+            {
                 // start gmapping
                 if(fsm->getPreviousState() == FSMItem::State::START_MAPPING){
                     std_msgs::Int8 msg;
@@ -93,26 +96,39 @@ void Interface::execute()
                 pub_start_exploration_.publish(msg_exp);
                 break;
             }
-            case FSMItem::State::SAVE_MAP:{
+            case FSMItem::State::SAVE_MAP:
+            {
                 if(!interface_buf_.map_ok)
                     return;
                 std::string str;
-                str = "rosrun map_server map_saver -f " + interface_buf_.map_name;
+                str = "rosrun map_server map_saver -f " + interface_buf_.set_map_name;
                 const char *command = str.c_str();
                 ROS_INFO("Robot_Interface: save map file using '%s'", command);
                 int _ = std::system(command);
             }
-            case FSMItem::State::RECORD_COORDINATE:{
+            case FSMItem::State::NAVIGATION_MODE:
+            {
+                cur_map_ = interface_buf_.choose_map_name;
+                std::string str;
+                str = "rosrun map_server map_server ${MAP_PATH}/" + cur_map_ + ".yaml";
+                const char *command = str.c_str();
+                ROS_INFO("Robot_Interface: open map file using '%s'", command);
+                popen(command, "r");
+            }
+            case FSMItem::State::RECORD_COORDINATE:
+            {
                 user_position_dict_[interface_buf_.position_key] = {pose_buf_.getX(), pose_buf_.getY(), pose_buf_.getTheta()};
                 break;
             }
-            case FSMItem::State::MOVE_TO_GOAL:{
+            case FSMItem::State::MOVE_TO_GOAL:
+            {
                 geometry_msgs::PoseStamped goal;
                 goal = interface_buf_.goal;
                 pub_goal_.publish(goal);
                 break;
             }
-            case FSMItem::State::MOVE_TO_GOAL_KEY:{
+            case FSMItem::State::MOVE_TO_GOAL_KEY:
+            {
                 if(user_position_dict_.find(interface_buf_.mission) == user_position_dict_.end()){
                     ROS_INFO("Robot_Interface: cannot move to goal by key. cannot find position name:%s", interface_buf_.mission.c_str());
                     event = FSMItem::Events::E_FINISH_MOVE;
@@ -144,6 +160,7 @@ void Interface::timerCB(const ros::TimerEvent &)
     fsm->printState();
     updateState();
     execute();
+    std::cout << "debug" <<std::endl;
 }
 
 void Interface::timerVelocityCB(const ros::TimerEvent &)
@@ -152,6 +169,7 @@ void Interface::timerVelocityCB(const ros::TimerEvent &)
     bool if_publish_vel = false;
     switch(fsm->getState()){
         case FSMItem::State::AUTO_MAPPING:
+        case FSMItem::State::MOVE_TO_GOAL:
         {
             geometry_msgs::Twist data;
             data = navi_vel_buf_;

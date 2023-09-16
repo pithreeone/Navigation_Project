@@ -3,6 +3,7 @@ private:
     double pos_x_;
     double pos_y_;
     double pos_theta_;
+    std::string map_name_;
 
 public:
     Pose(){

@@ -10,6 +10,7 @@ public:
         // waiting
         STOP = 0,
         // mission
+        NAVIGATION_MODE,
         CONTROL_MOVING,
         MOVE_TO_GOAL,
         MOVE_TO_GOAL_KEY, // move to goal by position name
@@ -32,10 +33,10 @@ public:
         E_FINISH_CONTROL_MAPPING,
         E_FINISH_CHECK_MAP,
 
+        E_CHOOSE_MAP,
         E_MOVE_TO_GOAL,
         E_MOVE_TO_GOAL_KEY,
         E_FINISH_MOVE,
-
         E_RECORD_COORDINATE,
 
     };

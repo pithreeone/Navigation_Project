@@ -38,6 +38,8 @@ public:
     geometry_msgs::Twist control_vel_buf_;
     Pose pose_buf_;
 
+    std::string cur_map_;
+
 
     // parameter
     double process_frequency_;

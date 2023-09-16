@@ -28,6 +28,9 @@ void FSM::printState()
     case FSMItem::State::CONTROL_MOVING:
         ROS_INFO("Robot_Interface: current status is 'CONTROL_MOVING'");
         break;
+    case FSMItem::State::NAVIGATION_MODE:
+        ROS_INFO("Robot_Interface: current status is 'NAVIGATION_MODE'");
+        break;        
     case FSMItem::State::MOVE_TO_GOAL:
         ROS_INFO("Robot_Interface: current status is 'MOVE_TO_GOAL'");
         break;
@@ -97,6 +100,7 @@ FSMItem::State FSM::getPreviousState()
 
 void FSM::initFSMTable()
 {
+    // SLAM-mode
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_START_MAPPING, FSMItem::State::START_MAPPING));
     fsm_table_.push_back(new FSMItem(FSMItem::State::START_MAPPING, FSMItem::Events::E_NAN, FSMItem::State::AUTO_MAPPING));
     fsm_table_.push_back(new FSMItem(FSMItem::State::AUTO_MAPPING, FSMItem::Events::E_FAST_V, FSMItem::State::CONTROL_MAPPING));
@@ -106,13 +110,15 @@ void FSM::initFSMTable()
     fsm_table_.push_back(new FSMItem(FSMItem::State::CONFIRM_MAP, FSMItem::Events::E_FAST_V, FSMItem::State::CONTROL_MAPPING));
     fsm_table_.push_back(new FSMItem(FSMItem::State::CONFIRM_MAP, FSMItem::Events::E_FINISH_CHECK_MAP, FSMItem::State::SAVE_MAP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::SAVE_MAP, FSMItem::Events::E_NAN, FSMItem::State::STOP));
+
+    // Navigation-mode
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_FAST_V, FSMItem::State::CONTROL_MOVING));
     fsm_table_.push_back(new FSMItem(FSMItem::State::CONTROL_MOVING, FSMItem::Events::E_SLOW_V, FSMItem::State::STOP));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_MOVE_TO_GOAL, FSMItem::State::MOVE_TO_GOAL));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::STOP));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_CHOOSE_MAP, FSMItem::State::NAVIGATION_MODE));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::NAVIGATION_MODE, FSMItem::Events::E_MOVE_TO_GOAL, FSMItem::State::MOVE_TO_GOAL));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::NAVIGATION_MODE));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::NAVIGATION_MODE, FSMItem::Events::E_RECORD_COORDINATE, FSMItem::State::RECORD_COORDINATE));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::RECORD_COORDINATE, FSMItem::Events::E_NAN, FSMItem::State::NAVIGATION_MODE));
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_MOVE_TO_GOAL_KEY, FSMItem::State::MOVE_TO_GOAL_KEY));
     fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_KEY, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::STOP));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_RECORD_COORDINATE, FSMItem::State::RECORD_COORDINATE));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::RECORD_COORDINATE, FSMItem::Events::E_NAN, FSMItem::State::STOP));
-
 }
