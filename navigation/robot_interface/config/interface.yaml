@@ -1,2 +1,5 @@
 process_frequency: 1.0
-velocity_epsilon: 0.01
+publish_velocity_frequency: 30.0
+
+linear_velocity_epsilon: 0.01
+angular_velocity_episolon: 0.01

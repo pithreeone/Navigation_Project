@@ -12,7 +12,8 @@
 
 Interface::Interface(ros::NodeHandle &nh, ros::NodeHandle &nh_local):
     nh_(nh),
-    nh_local_(nh_local)
+    nh_local_(nh_local),
+    event(FSMItem::Events::E_NAN)
 {
     fsm = new FSM();
     initialize();
@@ -31,10 +32,13 @@ void Interface::initialize()
 
 
     // parameter initialize
-    nh_local_.param<double>("process_frequency", process_frequency_, 1);
-    nh_local_.param<double>("velocity_epsilon", velocity_epsilon_, 0.1);
+    nh_local_.param<double>("process_frequency", process_frequency_, 1.0);
+    nh_local_.param<double>("publish_velocity_frequency", publish_velocity_frequency_, 10.0);
+    nh_local_.param<double>("linear_velocity_epsilon", linear_velocity_epsilon_, 0.1);
+    nh_local_.param<double>("angular_velocity_epsilon", angular_velocity_epsilon_, 0.1);
 
     timer_ = nh_.createTimer(ros::Duration(double(1/process_frequency_)), &Interface::timerCB, this);
+    timer_velocity_ = nh_.createTimer(ros::Duration(double(1/publish_velocity_frequency_)), &Interface::timerVelocityCB, this);
 }   
 
 void Interface::updateState()
@@ -52,15 +56,21 @@ void Interface::updateState()
         fsm->handleEvent(FSMItem::Events::E_MOVE_TO_GOAL_KEY);
     }else if(interface_buf_.mission.compare("record_position") == 0){
         fsm->handleEvent(FSMItem::Events::E_RECORD_COORDINATE);
+    }else if(event == FSMItem::Events::E_FAST_V){
+        fsm->handleEvent(FSMItem::Events::E_FAST_V);
+    }else if(event == FSMItem::Events::E_SLOW_V){
+        fsm->handleEvent(FSMItem::Events::E_SLOW_V);
+    }else if(event == FSMItem::Events::E_FINISH_MOVE){
+        fsm->handleEvent(FSMItem::Events::E_FINISH_MOVE);
     }else{
         fsm->handleEvent(FSMItem::Events::E_NAN);
     }
+    event = FSMItem::Events::E_NAN;
     interface_buf_.mission = "";
 }
 
 void Interface::execute()
 {
-    bool if_publish_vel = false;
     // if have not finished mission, just do it!
     if(!fsm->ifFinishMission()){
         switch(fsm->getState()){
@@ -82,8 +92,8 @@ void Interface::execute()
             }
             case FSMItem::State::MOVE_TO_GOAL_KEY:{
                 if(user_position_dict_.find(interface_buf_.mission) == user_position_dict_.end()){
-                    ROS_INFO("robot_interface: cannot move to goal by key. cannot find position name:%s", interface_buf_.mission.c_str());
-                    fsm->handleEvent(FSMItem::Events::E_FINISH_MOVE);
+                    ROS_INFO("Robot_Interface: cannot move to goal by key. cannot find position name:%s", interface_buf_.mission.c_str());
+                    event = FSMItem::Events::E_FINISH_MOVE;
                     break;
                 }
                 geometry_msgs::PoseStamped goal;
@@ -103,16 +113,33 @@ void Interface::execute()
         }
         fsm->setFinishMission(true);
     }
+
+
+}
+
+void Interface::timerCB(const ros::TimerEvent &)
+{
+    fsm->printState();
+    updateState();
+    execute();
+}
+
+void Interface::timerVelocityCB(const ros::TimerEvent &)
+{
     // continue publish velocity
+    bool if_publish_vel = false;
     switch(fsm->getState()){
-        case FSMItem::State::AUTO_MAPPING:{
+        case FSMItem::State::AUTO_MAPPING:
+        {
             geometry_msgs::Twist data;
             data = navi_vel_buf_;
             pub_vel_.publish(data);
             if_publish_vel = true;
             break;
         }
-        case FSMItem::State::CONTROL_MAPPING:{
+        case FSMItem::State::CONTROL_MAPPING:
+        case FSMItem::State::CONTROL_MOVING:
+        {
             geometry_msgs::Twist data;
             data = control_vel_buf_;
             pub_vel_.publish(data);
@@ -124,18 +151,9 @@ void Interface::execute()
     if(!if_publish_vel){
         geometry_msgs::Twist data;
         data.linear.x = data.linear.y = data.angular.z = 0.0;
+        pub_vel_.publish(data);
         if_publish_vel = true;
     }
-
-}
-
-void Interface::timerCB(const ros::TimerEvent &)
-{
-    fsm->printState();
-    updateState();
-    execute();
-
-
 }
 
 void Interface::interfaceCB(const robot_interface::Interface::ConstPtr & msg)
@@ -143,14 +161,15 @@ void Interface::interfaceCB(const robot_interface::Interface::ConstPtr & msg)
     interface_buf_ = *msg;
 }
 
-void Interface::controlVelCB(const geometry_msgs::Twist& msg)
+void Interface::controlVelCB(const geometry_msgs::Twist::ConstPtr& msg)
 {
-    control_vel_buf_ = msg;
-    double velocity = sqrt(pow(msg.linear.x, 2) + pow(msg.linear.y, 2));
-    if(velocity > velocity_epsilon_){
-        fsm->handleEvent(FSMItem::Events::E_FAST_V);
-    }else if(velocity <= velocity_epsilon_){
-        fsm->handleEvent(FSMItem::Events::E_SLOW_V);
+    control_vel_buf_ = *msg;
+    double linear_v = sqrt(pow(msg->linear.x, 2) + pow(msg->linear.y, 2));
+    double angular_v = fabs(msg->angular.z);
+    if(linear_v > linear_velocity_epsilon_ || angular_v > angular_velocity_epsilon_){
+        event = FSMItem::Events::E_FAST_V;
+    }else{
+        event = FSMItem::Events::E_SLOW_V;
     }
 }
 
@@ -175,7 +194,7 @@ void Interface::poseCB(const geometry_msgs::PoseWithCovarianceStampedConstPtr &m
 void Interface::finishCB(const std_msgs::CharConstPtr &msg)
 {
     if(msg->data == 1){
-        fsm->handleEvent(FSMItem::Events::E_FINISH_MOVE);
+        event = FSMItem::Events::E_FINISH_MOVE;
     }
 }
 

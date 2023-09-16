@@ -3,10 +3,12 @@
     <include file="$(find localization_run)/launch/sim_all.launch"/>
     
     <!-- Navigation -->
+    <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" />
+
 
     <!-- Map Server -->
-    <include file="$(find map_server)/launch/map_server.launch">
-    </include>
+    <!-- <include file="$(find map_server)/launch/map_server.launch">
+    </include> -->
 
     <!-- Subscribe: /move_base_simple/goal -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
@@ -22,10 +24,11 @@
     </node>
 
     <!-- PathTracker -->
-    <!-- <include file="$(find path_tracker)/launch/pathTracker.launch"/> -->
+    <include file="$(find path_tracker)/launch/pathTracker.launch" />
 
     <!-- Interface -->
-    <!-- <include ="$(find robot_interface)/launch/interface.launch" /> -->
+    <include file="$(find robot_interface)/launch/interface.launch" />
+
 
     <!-- RVIZ -->
     <!-- <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/> -->

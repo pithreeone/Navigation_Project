@@ -31,6 +31,9 @@ void FSM::printState()
     case FSMItem::State::MOVE_TO_GOAL:
         ROS_INFO("Robot_Interface: current status is 'MOVE_TO_GOAL'");
         break;
+    case FSMItem::State::MOVE_TO_GOAL_KEY:
+        ROS_INFO("Robot_Interface: current status is 'MOVE_TO_GOAL_KEY'");
+        break;
     case FSMItem::State::RECORD_COORDINATE:
         ROS_INFO("Robot_Interface: current status is 'RECORD_COORDINATE'");
         break;
@@ -60,7 +63,7 @@ void FSM::handleEvent(FSMItem::Events event)
         if(event == fsm_table_[i]->event_ && cur_state == fsm_table_[i]->cur_state_){
             flag = true;
             next_state = fsm_table_[i]->next_state_;
-            ROS_INFO("cur_state: %d, event: %d", cur_state, event);
+            // ROS_INFO("cur_state: %d, event: %d", cur_state, event);
             break;
         }
     }

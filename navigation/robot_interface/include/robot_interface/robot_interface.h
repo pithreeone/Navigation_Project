@@ -39,14 +39,18 @@ public:
 
     // parameter
     double process_frequency_;
-    double velocity_epsilon_;
+    double publish_velocity_frequency_;
+    double linear_velocity_epsilon_;
+    double angular_velocity_epsilon_;
 
     ros::Timer timer_;
+    ros::Timer timer_velocity_;
 
     // record position
     std::map<std::string, Pose> user_position_dict_;
 
     FSM *fsm;
+    FSMItem::Events event;
 
     Interface(ros::NodeHandle &nh, ros::NodeHandle &nh_local);
 
@@ -58,9 +62,11 @@ public:
     
     void timerCB(const ros::TimerEvent &);
 
+    void timerVelocityCB(const ros::TimerEvent &);
+
     void interfaceCB(const robot_interface::Interface::ConstPtr& msg);
 
-    void controlVelCB(const geometry_msgs::Twist& msg);
+    void controlVelCB(const geometry_msgs::Twist::ConstPtr& msg);
 
     void naviVelCB(const geometry_msgs::Twist& msg);
 
