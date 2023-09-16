@@ -26,9 +26,12 @@ void Interface::initialize()
     sub_navi_vel_ = nh_.subscribe("navi_cmd_vel", 10, &Interface::naviVelCB, this);
     sub_pose_ = nh_.subscribe("ekf_pose", 10, &Interface::poseCB, this);
     sub_arrived_ = nh_.subscribe("finishornot", 10, &Interface::finishCB, this);
+    sub_finish_exploration_ = nh_.subscribe("finish_exploration", 10, &Interface::finishExplorationCB, this);
+
     pub_start_gmapping_ = nh_.advertise<std_msgs::Bool>("slam_gmapping/reset", 1);
     pub_vel_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 10);
     pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("nav_goal", 10);
+    pub_start_exploration_ = nh_.advertise<std_msgs::Int8>("fron_exp_mission", 1);
 
 
     // parameter initialize
@@ -57,11 +60,13 @@ void Interface::updateState()
     }else if(interface_buf_.mission.compare("record_position") == 0){
         fsm->handleEvent(FSMItem::Events::E_RECORD_COORDINATE);
     }else if(event == FSMItem::Events::E_FAST_V){
-        fsm->handleEvent(FSMItem::Events::E_FAST_V);
+        fsm->handleEvent(event);
     }else if(event == FSMItem::Events::E_SLOW_V){
-        fsm->handleEvent(FSMItem::Events::E_SLOW_V);
+        fsm->handleEvent(event);
     }else if(event == FSMItem::Events::E_FINISH_MOVE){
-        fsm->handleEvent(FSMItem::Events::E_FINISH_MOVE);
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_FINISH_AUTO_MAPPING){
+        fsm->handleEvent(event);
     }else{
         fsm->handleEvent(FSMItem::Events::E_NAN);
     }
@@ -75,9 +80,14 @@ void Interface::execute()
     if(!fsm->ifFinishMission()){
         switch(fsm->getState()){
             case FSMItem::State::AUTO_MAPPING:{
+                // start gmapping
                 std_msgs::Int8 msg;
                 msg.data = 2;
                 pub_start_gmapping_.publish(msg);
+                std_msgs::Int8 msg_exp;
+                // start frontier_exploration
+                msg_exp.data = 1;
+                pub_start_exploration_.publish(msg_exp);
                 break;
             }
             case FSMItem::State::RECORD_COORDINATE:{
@@ -195,6 +205,14 @@ void Interface::finishCB(const std_msgs::CharConstPtr &msg)
 {
     if(msg->data == 1){
         event = FSMItem::Events::E_FINISH_MOVE;
+    }
+}
+
+void Interface::finishExplorationCB(const std_msgs::Bool::ConstPtr &msg)
+{
+    if(msg->data == true){
+        ROS_INFO("debug!!!!!!!!!!!!!!"); 
+        event = FSMItem::Events::E_FINISH_AUTO_MAPPING;
     }
 }
 

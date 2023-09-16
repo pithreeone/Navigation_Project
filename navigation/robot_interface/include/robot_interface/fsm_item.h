@@ -9,8 +9,8 @@ public:
     {
         // waiting
         STOP = 0,
-        CONTROL_MOVING,
         // mission
+        CONTROL_MOVING,
         MOVE_TO_GOAL,
         MOVE_TO_GOAL_KEY, // move to goal by position name
         RECORD_COORDINATE,

@@ -57,13 +57,14 @@ void FSM::handleEvent(FSMItem::Events event)
 {
     FSMItem::State cur_state = cur_state_;
     FSMItem::State next_state;
-    finish_ = false;
     bool flag = false;
     for (int i=0; i<fsm_table_.size(); i++){
         if(event == fsm_table_[i]->event_ && cur_state == fsm_table_[i]->cur_state_){
             flag = true;
             next_state = fsm_table_[i]->next_state_;
             // ROS_INFO("cur_state: %d, event: %d", cur_state, event);
+            // only change the finish_ to false when changing current state.
+            finish_ = false;
             break;
         }
     }

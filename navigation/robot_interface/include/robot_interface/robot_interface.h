@@ -26,7 +26,9 @@ public:
     ros::Subscriber sub_action_;
     ros::Subscriber sub_arrived_;
     ros::Subscriber sub_pose_;
+    ros::Subscriber sub_finish_exploration_;
     ros::Publisher pub_start_gmapping_;
+    ros::Publisher pub_start_exploration_;
     ros::Publisher pub_vel_;
     ros::Publisher pub_goal_;
 
@@ -73,6 +75,8 @@ public:
     void poseCB(const geometry_msgs::PoseWithCovarianceStampedConstPtr& msg);
 
     void finishCB(const std_msgs::CharConstPtr& msg);
+
+    void finishExplorationCB(const std_msgs::Bool::ConstPtr& msg);
 
 private:
 };

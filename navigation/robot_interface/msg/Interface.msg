@@ -6,3 +6,7 @@ geometry_msgs/PoseStamped goal
 
 # if mission is "record_position", set name of position
 string position_key
+
+# if mission is "check_map", set map name
+bool map_ok
+string map_name

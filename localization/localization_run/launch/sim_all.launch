@@ -14,7 +14,7 @@
     </include>
 
     <!-- GMAPPING -->
-    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen"  if="$(eval (arg('mode')=='slam'))">
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log"  if="$(eval (arg('mode')=='slam'))">
         <param name="base_frame" value="$(arg base_frame)"/>
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="map_frame"  value="$(arg map_frame)"/>
