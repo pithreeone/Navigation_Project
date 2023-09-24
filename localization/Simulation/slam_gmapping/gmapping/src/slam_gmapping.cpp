@@ -185,6 +185,8 @@ void SlamGMapping::stop()
 }
 
 void SlamGMapping::reset(){
+  map_.map.info.width = 0;
+  map_.map.info.height = 0;
   stop();
   init();
   ROS_INFO("SlamGMapping: reset successfully");
@@ -757,7 +759,7 @@ SlamGMapping::updateMap(const sensor_msgs::LaserScan& scan)
     matcher.computeActiveArea(smap, n->pose, &((*n->reading)[0]));
     matcher.registerScan(smap, n->pose, &((*n->reading)[0]));
   }
-
+  ROS_INFO("%d, %d", smap.getMapSizeX(), smap.getMapSizeY());
   // the map may have expanded, so resize ros message as well
   if(map_.map.info.width != (unsigned int) smap.getMapSizeX() || map_.map.info.height != (unsigned int) smap.getMapSizeY()) {
 
