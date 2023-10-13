@@ -3,12 +3,12 @@
     <include file="$(find localization_run)/launch/sim_all.launch"/>
     
     <!-- Navigation -->
-    <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" />
+    <!-- <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" /> -->
 
 
     <!-- Map Server -->
-    <!-- <include file="$(find map_server)/launch/map_server.launch">
-    </include> -->
+    <include file="$(find map_server)/launch/map_server.launch">
+    </include>
 
     <!-- Subscribe: /move_base_simple/goal -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
