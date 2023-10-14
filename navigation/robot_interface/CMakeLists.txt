@@ -153,7 +153,7 @@ include
 # )
 
 add_executable(robot_interface src/robot_interface.cpp src/fsm.cpp)
-add_dependencies(robot_interface ${catkin_EXPORTED_TARGETS})
+add_dependencies(robot_interface robot_interface_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
 target_link_libraries(robot_interface ${catkin_LIBRARIES})
 
 #############
