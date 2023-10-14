@@ -1,13 +1,19 @@
 <launch>
+
+    <arg name="mode" default="slam" doc="robot mode [slam, localization]"/>
+    <arg name="sim_or_run" default="sim" doc="program mode [simulation, run robot]"/>
+
     <!-- SLAM-Gmapping -->
-    <include file="$(find localization_run)/launch/sim_all.launch"/>
+    <include file="$(find localization_run)/launch/sim_all.launch">
+        <arg name="mode" value="$(arg mode)"/>
+    </include>
     
     <!-- Navigation -->
-    <!-- <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" /> -->
+    <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" />
 
 
     <!-- Map Server -->
-    <include file="$(find map_server)/launch/map_server.launch">
+    <include file="$(find map_server)/launch/map_server.launch" if="$(eval (arg('mode')=='localization'))">
     </include>
 
     <!-- Subscribe: /move_base_simple/goal -->
@@ -29,10 +35,7 @@
     <!-- Interface -->
     <include file="$(find robot_interface)/launch/interface.launch" />
 
-
     <!-- RVIZ -->
     <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/>
-
-
 
 </launch>
