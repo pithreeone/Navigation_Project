@@ -20,3 +20,16 @@ This is the whole robot program which including navigation, localization and mai
 - the main program of robot is achieved by finite state machine, which have multiple states. To change state, we need events which can be created by publishing topic: /action  
 - The message is user-defined in "robot_interface" package.
 - There are several missions:["start_mapping", "finish_control_mapping", "check_map", "choose_map", "move_goal", "move_goal_key", "record_position"]. Each will trigger corresponding events.
+- There are several state: [STOP, NAVIGATION_MODE, CONTROL_MOVING, MOVE_TO_GOAL, MOVE_TO_GOAL_KEY, RECORD_COORDINATE, START_MAPPING, AUTO_MAPPING, CONTROL_MAPPING, CONFIRM_MAP, SAVE_MAP,]
+- Initial state is STOP
+
+### SLAM-mode
+1. Publish an topic which mission is __***start_mapping***__ (state: __***STOP***__$\rightarrow$__***START_MAPPING***__$\rightarrow$__***AUTO_MAPPING***__)
+Let the topic name be **action**, or you can remap.
+2. Now robot will move automatically. 
+3. You can also use telop_twist_keyboard to publish velocity topic. Topic name is **control_cmd_vel**. We can use the following command to change the topic name that teleop_twist_keyboard publish.
+`rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=control_cmd_vel`
+4. Once finish mapping, publich an topic which mission is __***check_map***__. Then it will save map. The map will be saved in `/home/user-name/.ros` 
+Set the following message for your topic :  
+action.map_ok(bool) = true
+action.set_map_name(string) = floor_XX
