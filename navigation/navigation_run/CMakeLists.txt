@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  robot_interface
 )
 
 ## System dependencies are found with CMake's conventions
@@ -149,6 +150,11 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+add_executable(publish_mission src/publish_mission.cpp)
+add_dependencies(publish_mission ${catkin_EXPORTED_TARGETS})
+target_link_libraries(publish_mission ${catkin_LIBRARIES})
+
 
 #############
 ## Install ##
