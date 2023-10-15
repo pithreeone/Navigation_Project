@@ -160,7 +160,6 @@ void Interface::timerCB(const ros::TimerEvent &)
     fsm->printState();
     updateState();
     execute();
-    std::cout << "debug" <<std::endl;
 }
 
 void Interface::timerVelocityCB(const ros::TimerEvent &)

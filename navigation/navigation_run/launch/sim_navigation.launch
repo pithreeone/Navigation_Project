@@ -1,7 +1,7 @@
 <launch>
 
     <arg name="mode" default="slam" doc="robot mode [slam, localization]"/>
-    <arg name="sim_or_run" default="sim" doc="program mode [simulation, run robot]"/>
+    <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
     <!-- SLAM-Gmapping -->
     <include file="$(find localization_run)/launch/sim_all.launch">
@@ -9,7 +9,7 @@
     </include>
     
     <!-- Navigation -->
-    <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" />
+    <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" if="$(eval (arg('mode')=='slam'))"/>
 
 
     <!-- Map Server -->
