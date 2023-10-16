@@ -4,13 +4,13 @@
     <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
     <!-- SLAM-Gmapping -->
-    <include file="$(find localization_run)/launch/sim_all.launch">
+    <include file="$(find localization_run)/launch/localization.launch">
         <arg name="mode" value="$(arg mode)"/>
+        <arg name="sim_or_run" value="$(arg sim_or_run)"/>
     </include>
     
     <!-- Navigation -->
     <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" if="$(eval (arg('mode')=='slam'))"/>
-
 
     <!-- Map Server -->
     <include file="$(find map_server)/launch/map_server.launch" if="$(eval (arg('mode')=='localization'))">
@@ -36,6 +36,6 @@
     <include file="$(find robot_interface)/launch/interface.launch" />
 
     <!-- RVIZ -->
-    <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/>
+    <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz" if="$(eval (arg('sim_or_run')=='sim'))"/>
 
 </launch>

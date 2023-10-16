@@ -1,0 +1,67 @@
+<launch>
+    <!-- Set Frame Name -->
+    <arg name="map_frame" default="map"/>
+    <arg name="odom_frame" default="odom"/>
+    <arg name="base_frame" default="base_link"/>
+    <arg name="laser_frame" default="base_scan"/>
+
+    <!-- Set Mode -->
+    <arg name="mode" default="localization" doc="robot mode [slam, localization]"/>
+    <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
+    <arg name="odom_type" default="omni" doc="omni type [diff, omni]"/>
+
+    <!-- Set port name -->
+    <arg name="lidar_port" default="/dev/ydlidar"/>
+    <arg name="odometry_port" default="/dev/USB0-2"/>
+
+    <!-- GAZEBO -->
+    <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
+        <arg name="odom_type" value="$(arg odom_type)"/>
+    </include>
+
+    <!-- Odometry -->
+    <node pkg="localization_run" type="odometry" name="odometry" output="screen" if="$(eval (arg('sim_or_run')=='run'))">
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="base_frame" value="$(arg base_frame)"/>
+        <param name="rate"  value="50.0"/>
+    </node>
+
+    <!-- YDLidar firmware-->
+    <include file="$(find ydlidar_ros_driver)/launch/G6_G7.launch" if="$(eval (arg('sim_or_run')=='run'))">
+        <arg name="base_frame" value="$(arg base_frame)"/>
+        <arg name="laser_frame" value="$(arg laser_frame)"/>
+        <arg name="port" value="$(arg lidar_port)"/>
+    </include>
+
+    <!-- Odometry firmware -->
+    <node pkg="rosserial_server" type="serial_node" name="rosserial_server_dp" output="screen">
+        <param name="port" value="$(arg odometry_port)"/>
+        <param name="baud" value="115200" />
+        <rosparam>
+            require:
+                publishers: [ Toposition ]
+                subscribers: [ cmd_vel ]
+        </rosparam>
+    </node>    
+
+    <!-- GMAPPING -->
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam'))">
+        <param name="base_frame" value="$(arg base_frame)"/>
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="map_frame"  value="$(arg map_frame)"/>
+        <rosparam command="load" file="$(find localization_run)/config/gmapping_params.yaml"/>
+    </node>
+
+    <!-- AMCL -->
+    <node pkg="amcl" type="amcl" name="amcl" output="log" if="$(eval (arg('mode')=='localization'))">
+        <remap from="scan" to="scan" />
+        <!-- <remap from="map" to="loc_map" /> -->
+        <remap from="/diagnostics" to="diagnostics" />
+
+        <rosparam command="load" file="$(find localization_run)/config/amcl.yaml" />
+    </node>
+
+    <!-- <node pkg="rviz" type="rviz" name="rviz_slam" args="-d $(find localization_run)/rviz/sim_mapping.rviz"/> -->
+
+
+</launch>

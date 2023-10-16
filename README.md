@@ -15,12 +15,13 @@ This is the whole robot program which including navigation, localization and mai
 2. `sudo apt-get install ros-noetic-ros-controllers`
 3. `sudo apt install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control`
 
+# Setting Before Started
+1. check tf between **base_frame** & **laser_frame**
+2. Set the USB-port name in localization_run/launch/localization.launch
 
 # How to Use
-- the main program of robot is achieved by finite state machine, which have multiple states. To change state, we need events which can be created by publishing topic: /action  
+- the main program of robot is achieved by finite state machine. To change state, we need events which can be created by publishing topic: /action  
 - The message is user-defined in "robot_interface" package.
-- There are several missions:["start_mapping", "finish_control_mapping", "check_map", "choose_map", "move_goal", "move_goal_key", "record_position"]. Each will trigger corresponding events.
-- There are several state: [STOP, NAVIGATION_MODE, CONTROL_MOVING, MOVE_TO_GOAL, MOVE_TO_GOAL_KEY, RECORD_COORDINATE, START_MAPPING, AUTO_MAPPING, CONTROL_MAPPING, CONFIRM_MAP, SAVE_MAP,]
 - Initial state is STOP
 
 ### SLAM-mode
