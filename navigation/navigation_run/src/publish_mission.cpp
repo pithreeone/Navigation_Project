@@ -1,11 +1,15 @@
 #include <ros/ros.h>
 #include <robot_interface/Interface.h>
+#include <tf/transform_broadcaster.h>
+
+#define PI 3.1415926
 
 void printHint(){
     std::cout << "Choose a mission to publish: " << std::endl;
     std::cout << "[1]: start_mapping" << std::endl;
     std::cout << "[2]: finish_control_mapping" << std::endl;
     std::cout << "[3]: check_map" << std::endl;
+    std::cout << "[4]: move_to_goal" << std::endl;
 }
 
 
@@ -14,7 +18,7 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "test_program");
     ros::NodeHandle nh;
     int mission;
-    ros::Publisher pub_action = nh.advertise<robot_interface::Interface>("action", 10);
+    ros::Publisher pub_action = nh.advertise<robot_interface::Interface>("action", 1);
 
     int n_action = 0;
     while(ros::ok()){
@@ -34,6 +38,23 @@ int main(int argc, char** argv){
             }
             case 3:{
                 action.mission = "check_map";
+                break;
+            }
+            case 4:{
+                action.mission = "move_goal";
+                std::cout << "please type the coordinate [x (m), y (m), theta (degree)]: ";
+                double x, y, theta;
+                std::cin >> x >> y >> theta;
+                action.goal.header.stamp = ros::Time::now();
+                action.goal.header.frame_id = "map";
+                action.goal.pose.position.x = x;
+                action.goal.pose.position.y = y;
+                tf::Quaternion q;
+                q.setRPY(0, 0, theta/180.0*PI);
+                geometry_msgs::Quaternion odom_quat;
+                tf::quaternionTFToMsg(q, odom_quat);
+                action.goal.pose.orientation = odom_quat;
+ 
                 break;
             }
         }

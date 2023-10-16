@@ -2,7 +2,6 @@
 string mission
 
 # if mission is "move_goal", set goal
-
 geometry_msgs/PoseStamped goal
 
 # if mission is "choose_map", choose a map
