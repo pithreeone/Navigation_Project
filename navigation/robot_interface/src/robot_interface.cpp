@@ -32,6 +32,7 @@ void Interface::initialize()
     pub_vel_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 10);
     pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("nav_goal", 10);
     pub_start_exploration_ = nh_.advertise<std_msgs::Int8>("fron_exp_mission", 1);
+    pub_robot_state_ = nh_.advertise<robot_interface::RobotState>("robot_state", 1);
 
 
     // parameter initialize
@@ -155,10 +156,63 @@ void Interface::execute()
 
 }
 
+void Interface::publishState()
+{
+    robot_interface::RobotState msg;
+    switch(fsm->getState()){
+        case FSMItem::State::STOP:{
+            msg.state = "STOP";
+            break;
+        }
+        case FSMItem::State::NAVIGATION_MODE:{
+            msg.state = "NAVIGATION_MODE";
+            break;
+        }
+        case FSMItem::State::CONTROL_MOVING:{
+            msg.state = "CONTROL_MOVING";
+            break;
+        }
+        case FSMItem::State::MOVE_TO_GOAL:{
+            msg.state = "MOVE_TO_GOAL";
+            break;
+        }
+        case FSMItem::State::MOVE_TO_GOAL_KEY:{
+            msg.state = "MOVE_TO_GOAL_KEY";
+            break;
+        }
+        case FSMItem::State::RECORD_COORDINATE:{
+            msg.state = "RECORD_COORDINATE";
+            break;
+        }
+        case FSMItem::State::START_MAPPING:{
+            msg.state = "START_MAPPING";
+            break;
+        }
+        case FSMItem::State::AUTO_MAPPING:{
+            msg.state = "AUTO_MAPPING";
+            break;
+        }
+        case FSMItem::State::CONTROL_MAPPING:{
+            msg.state = "CONTROL_MAPPING";
+            break;
+        }
+        case FSMItem::State::CONFIRM_MAP:{
+            msg.state = "CONFIRM_MAP";
+            break;
+        }
+        case FSMItem::State::SAVE_MAP:{
+            msg.state = "SAVE_MAP";
+            break;
+        }
+    };
+    pub_robot_state_.publish(msg);
+}
+
 void Interface::timerCB(const ros::TimerEvent &)
 {
     fsm->printState();
     updateState();
+    publishState();
     execute();
 }
 

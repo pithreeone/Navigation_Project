@@ -2,6 +2,7 @@
 #include "robot_interface/fsm_item.h"
 #include "robot_interface/fsm.h"
 #include "robot_interface/Interface.h"
+#include "robot_interface/RobotState.h"
 #include "robot_interface/record_pose.h"
 
 #include "geometry_msgs/Twist.h"
@@ -31,6 +32,7 @@ public:
     ros::Publisher pub_start_exploration_;
     ros::Publisher pub_vel_;
     ros::Publisher pub_goal_;
+    ros::Publisher pub_robot_state_;
 
     // topic buffer
     robot_interface::Interface interface_buf_;
@@ -63,6 +65,8 @@ public:
     void updateState();
 
     void execute();
+
+    void publishState();
     
     void timerCB(const ros::TimerEvent &);
 
