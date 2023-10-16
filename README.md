@@ -17,7 +17,7 @@ This is the whole robot program which including navigation, localization and mai
 
 # Setting Before Started
 1. check tf between **base_frame** & **laser_frame**
-2. Set the USB-port name in localization_run/launch/localization.launch
+2. Set the USB-port name in ___**localization_run/launch/localization.launch**___
 
 # How to Use
 - the main program of robot is achieved by finite state machine. To change state, we need events which can be created by publishing topic: /action  
