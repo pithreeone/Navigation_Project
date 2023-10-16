@@ -34,7 +34,7 @@
     </include>
 
     <!-- Odometry firmware -->
-    <node pkg="rosserial_server" type="serial_node" name="rosserial_server_dp" output="screen">
+    <node pkg="rosserial_server" type="serial_node" name="rosserial_server_dp" output="screen" if="$(eval (arg('sim_or_run')=='run'))">
         <param name="port" value="$(arg odometry_port)"/>
         <param name="baud" value="115200" />
         <rosparam>
