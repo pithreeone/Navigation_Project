@@ -1,7 +1,7 @@
 <launch>
   <arg name="base_frame" default="base_footprint"/>
   <arg name="laser_frame" default="laser_link"/>
-  <arg name="port" default="/dev/ydlidar"/>
+  <arg name="port" default="/dev/USB1"/>
 
   <node name="ydlidar_lidar_publisher"  pkg="ydlidar_ros_driver"  type="ydlidar_ros_driver_node" output="screen" respawn="false" >
     <!-- string property -->

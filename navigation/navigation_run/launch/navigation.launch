@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="mode" default="slam" doc="robot mode [slam, localization]"/>
+    <arg name="mode" default="localization" doc="robot mode [slam, localization]"/>
     <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
     <!-- SLAM-Gmapping -->
