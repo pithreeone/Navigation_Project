@@ -11,7 +11,7 @@
     <arg name="odom_type" default="omni" doc="omni type [diff, omni]"/>
 
     <!-- Set port name -->
-    <arg name="lidar_port" default="/dev/ydlidar"/>
+    <arg name="lidar_port" default="/dev/USB1"/>
     <arg name="odometry_port" default="/dev/USB0-2"/>
 
     <!-- GAZEBO -->
