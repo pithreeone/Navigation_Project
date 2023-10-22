@@ -1,0 +1,15 @@
+<launch>
+    <arg name="odometry_port" default="/dev/ttyUSB0"/>
+
+    <!-- Odometry communication (rosserial server) -->
+    <node pkg="rosserial_server" type="serial_node" name="rosserial_server_dp">
+        <param name="port" value="$(arg odometry_port)"/>
+        <param name="baud" value="115200" />
+        <rosparam>
+            require:
+                publishers: [ Toposition ]
+                subscribers: [ cmd_vel ]
+        </rosparam>
+    </node>
+
+</launch>
