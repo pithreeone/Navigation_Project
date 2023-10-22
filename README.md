@@ -22,10 +22,12 @@ This is the whole robot program which including navigation, localization and mai
 2. `sudo apt-get install ros-noetic-ros-controllers`
 3. `sudo apt install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control`
 
-## 2. Setting Before Started
+## 2. Setting Before Start
 
 1. check tf between `base_frame` & `laser_frame`
-2. Set the USB-port name in `localization_run/launch/localization.launch`
+2. Set the USB-port name in `localization_run/launch/localization.launch`. Check the following argument:
+    - lidar_port
+    - odometry_port 
 
 ## 3. How to Use
 
