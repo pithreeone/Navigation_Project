@@ -69,10 +69,18 @@ For start up real robot, you can launch the file below.
 - `roslaunch navigation_run navigation.launch 2>/dev/null`
 
 ### 5.2 Testing tool
+
+#### 5.3.1 Publish command to robot 
+
 publish_mission node can help you publish the Interface topic. It's hard to publish it using `rostopic pub ...`
 - `rosrun navigation_run publish_mission`
 
-publish the command velocity to odometry with topic name `control_cmd_vel` instead of `cmd_vel`
+*Be careful to publish the command velocity to odometry with topic name `control_cmd_vel` instead of `cmd_vel`
 - `rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=control_cmd_vel`
 
-Author: Yan-Ting Chen
+#### 5.3.2 Check connection with firmware
+
+ - `roslaunch localization_run odometry.launch`  
+
+You can add specific port name after the above command.  
+ - `roslaunch localization_run odometry.launch odometry_port:=/dev/USB1`
