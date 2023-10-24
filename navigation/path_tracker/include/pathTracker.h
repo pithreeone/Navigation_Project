@@ -144,6 +144,7 @@ class PathTracker {
     // controller parameter
     std::string map_frame_;
     std::string odom_frame_;
+    std::string base_frame_;
     bool p_active_;
     double control_frequency_;
     double lookahead_d_;

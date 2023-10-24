@@ -74,6 +74,7 @@ bool PathTracker::initializeParams(std_srvs::Empty::Request& req, std_srvs::Empt
     nh_local_.param<bool>("active", p_active_, true);
     nh_local_.param<std::string>("map_frame", map_frame_, "map");
     nh_local_.param<std::string>("odom_frame", odom_frame_, "odom");
+    nh_local_.param<std::string>("base_frame", base_frame_, "base_footprint");
     nh_local_.param<double>("control_frequency", control_frequency_, 50);
     nh_local_.param<double>("lookahead_distance", lookahead_d_, 0.2);
     nh_local_.param<double>("waiting_timeout", waiting_timeout_, 3);
@@ -358,9 +359,9 @@ void PathTracker::Pose_type0_Callback(const nav_msgs::Odometry::ConstPtr& pose_m
         //     ROS_INFO("transform successfully");
         // }
         // std::cout << "time1 " << ros::Time::now() << std::endl;
-        if(listener.waitForTransform(map_frame_, "base_footprint", ros::Time(0), ros::Duration(1.0))){
+        if(listener.waitForTransform(map_frame_, base_frame_, ros::Time(0), ros::Duration(1.0))){
             // std::cout << "time2 " << ros::Time::now() << std::endl;
-            listener.lookupTransform(map_frame_, "base_footprint", ros::Time(0), transform);
+            listener.lookupTransform(map_frame_, base_frame_, ros::Time(0), transform);
             // ROS_INFO("transform successfully");
         }
         

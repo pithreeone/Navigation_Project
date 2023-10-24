@@ -1,6 +1,12 @@
 <launch>
 
-    <arg name="mode" default="localization" doc="robot mode [slam, localization]"/>
+    <!-- Set Frame Name -->
+    <arg name="map_frame" default="map"/>
+    <arg name="odom_frame" default="odom"/>
+    <arg name="base_frame" default="base_link"/>
+    <arg name="laser_frame" default="base_scan"/>
+
+    <arg name="mode" default="slam" doc="robot mode [slam, localization]"/>
     <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
     <!-- SLAM-Gmapping -->
@@ -30,7 +36,12 @@
     </node>
 
     <!-- PathTracker -->
-    <include file="$(find path_tracker)/launch/pathTracker.launch" />
+    <include file="$(find path_tracker)/launch/pathTracker.launch">
+        <param name="map_frame"  value="$(arg map_frame)"/>
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="base_frame" value="$(arg base_frame)"/>
+
+    </include>
 
     <!-- Interface -->
     <include file="$(find robot_interface)/launch/interface.launch" />
