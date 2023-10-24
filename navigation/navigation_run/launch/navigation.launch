@@ -6,13 +6,20 @@
     <arg name="base_frame" default="base_link"/>
     <arg name="laser_frame" default="base_scan"/>
 
+    <!-- Set Mode -->
     <arg name="mode" default="slam" doc="robot mode [slam, localization]"/>
     <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
     <!-- SLAM-Gmapping -->
     <include file="$(find localization_run)/launch/localization.launch">
+        
         <arg name="mode" value="$(arg mode)"/>
         <arg name="sim_or_run" value="$(arg sim_or_run)"/>
+
+        <arg name="map_frame" default="map"/>
+        <arg name="odom_frame" default="odom"/>
+        <arg name="base_frame" default="base_link"/>
+        <arg name="laser_frame" default="base_scan"/>
     </include>
     
     <!-- Navigation -->
