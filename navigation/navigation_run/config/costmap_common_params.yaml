@@ -4,13 +4,13 @@ raytrace_range: 3 # clear the overlapped obstacles on the path, only for the obs
 
 # hexagonal footprint
 # footprint: [[0,0.15],[0.1299,0.075],[0.1299,-0.075],[0,-0.15],[-0.1299,-0.075],[-0.1299,0.075]]
-robot_radius: 0.14
+robot_radius: 0.3
 
 # map info
 map_topic: map
 subscribe_to_updates: true
-update_frequency: 20.0  # frequency to update costmap
-publish_frequency: 20.0 # frequency to publish the new costmap to Rviz
+update_frequency: 30.0  # frequency to update costmap
+publish_frequency: 10.0 # frequency to publish the new costmap to Rviz
 
 # Choose which layer to use. ( The order of layers matters !!! )
 plugins:
@@ -33,8 +33,8 @@ static_layer:
 
 inflation_layer:
   enabled: true
-  inflation_radius: 0.5
-  cost_scaling_factor: 10.0
+  inflation_radius: 1.0
+  cost_scaling_factor: 3.0
 
 path_layer:
   enabled: true
