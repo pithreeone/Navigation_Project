@@ -362,7 +362,7 @@ void PathTracker::Pose_type0_Callback(const nav_msgs::Odometry::ConstPtr& pose_m
         if(listener.waitForTransform(map_frame_, base_frame_, ros::Time(0), ros::Duration(1.0))){
             // std::cout << "time2 " << ros::Time::now() << std::endl;
             listener.lookupTransform(map_frame_, base_frame_, ros::Time(0), transform);
-            ROS_INFO("transform successfully");
+            // ROS_INFO("transform successfully");
         }
         
     }
