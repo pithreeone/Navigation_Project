@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Odometry1/Shape1
+        - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 426
   - Class: rviz/Selection
@@ -205,6 +206,33 @@ Visualization Manager:
       Topic: /amcl_pose
       Unreliable: false
       Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        base_link:
+          Value: true
+        base_scan:
+          Value: false
+        map:
+          Value: true
+        odom:
+          Value: false
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        map:
+          odom:
+            base_link:
+              base_scan:
+                {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -232,7 +260,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 0.3350006639957428
+      Angle: -0.6749991178512573
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -242,10 +270,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 180.0933380126953
+      Scale: 245.11886596679688
       Target Frame: <Fixed Frame>
-      X: 1.9573105573654175
-      Y: -0.005877462215721607
+      X: 0.3789965808391571
+      Y: 0.10381589829921722
     Saved: ~
 Window Geometry:
   Displays:
@@ -263,5 +291,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1386
-  X: 426
-  Y: 495
+  X: 448
+  Y: 131

@@ -1,10 +1,10 @@
 <launch>
+    <arg name="sim_or_run" default="sim"/>
 
     <node name="path_tracker" pkg="path_tracker" type="pathTracker" output="screen">
 
         <rosparam file="$(find path_tracker)/params/pathTracker.yaml" command="load"/>
-        <param name="frame" type="string" value="map" />
-        <remap from="/odom" to="open_base/odom"/>
+        <remap from="/odom" to="open_base/odom" if="$(eval (arg('sim_or_run')=='sim'))"/>
         <remap from="cmd_vel" to="navi_cmd_vel" />
     </node>
 

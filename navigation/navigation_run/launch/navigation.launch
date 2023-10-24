@@ -40,6 +40,7 @@
         <param name="map_frame"  value="$(arg map_frame)"/>
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="base_frame" value="$(arg base_frame)"/>
+        <arg name="sim_or_run" value="$(arg sim_or_run)"/>
 
     </include>
 
