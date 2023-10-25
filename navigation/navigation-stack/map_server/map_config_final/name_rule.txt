@@ -1,0 +1,2 @@
+This folder save the final map. Please use the rule to name the map you save.
+EB1.yaml & EB1.pgm (stands for engineering building1)
