@@ -52,13 +52,19 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
 1. Publish an topic which mission is `start_mapping`
 (state: `STOP`$\rightarrow$`START_MAPPING`$\rightarrow$`AUTO_MAPPING`)
 Let the topic name be `action`, or you can remap.
+
 2. Now robot will move automatically. 
+
 3. You can also use telop_twist_keyboard to publish velocity topic. Topic name is `control_cmd_vel`. We can use the following command to change the topic name that teleop_twist_keyboard publish.
 `rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=control_cmd_vel`
+
 4. Once finish mapping, publich an topic which mission is `check_map`. Then it will save map. The map will be saved in `/home/user-name/.ros` 
 Set the following message for your topic :  
     - `action.map_ok(bool) = true`
     - `action.set_map_name(string) = floor_XX`
+
+5. If the computer on robot do not have enough computility, you can launch the gmapping on your own PC.
+`roslaunch localization_run gmapping.launch`
 
 ## 4. The messages
 The package provides three custom message types. All of their numerical values are provided in SI units.
