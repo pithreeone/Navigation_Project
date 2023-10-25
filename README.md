@@ -7,7 +7,11 @@ This is the whole robot program which including navigation, localization and mai
 ### 1.1. clone the meta package
 
 1. `git clone https://github.com/pithreeone/Navigation_Project.git`  
-   or clone by ssh `git clone git@github.com:pithreeone/Navigation_Project.git`  
+or clone by ssh `git clone git@github.com:pithreeone/Navigation_Project.git`
+
+2. If you are developer, you can also clone the Simulation package use in this repo.
+`https://github.com/pithreeone/Simulation.git`
+or clone by ssh `git@github.com:pithreeone/Simulation.git`
 
 ### 1.2. compile YDLidar-SDK  
 
@@ -24,10 +28,18 @@ This is the whole robot program which including navigation, localization and mai
 
 ## 2. Setting Before Start
 
+### 2.1 Set on Robot
 1. check tf between `base_frame` & `laser_frame`
 2. Set the USB-port name in `localization_run/launch/localization.launch`. Check the following argument:
     - lidar_port
-    - odometry_port 
+    - odometry_port
+3. Add environment variable in `~/.bashrc`. When save the map, it will save at this path.
+`export MAP_PATH=$MAP_PATH/home/pithreeone/amr_robot/src/navigation/navigation/navigation-stack/map_server/map_config`
+`
+
+### 2.2 Set on PC
+1. Add environment variable in `~/.bashrc`
+  `export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:~/amr_robot/src/Simulation/gazebo_simulation/models`
 
 ## 3. How to Use
 
