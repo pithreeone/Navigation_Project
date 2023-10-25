@@ -42,15 +42,15 @@
                 publishers: [ Toposition ]
                 subscribers: [ cmd_vel ]
         </rosparam>
-    </node>    
+    </node>
 
     <!-- GMAPPING -->
-    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam'))">
+    <!-- <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam'))">
         <param name="base_frame" value="$(arg base_frame)"/>
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="map_frame"  value="$(arg map_frame)"/>
         <rosparam command="load" file="$(find localization_run)/config/gmapping_params.yaml"/>
-    </node>
+    </node> -->
 
     <!-- AMCL -->
     <node pkg="amcl" type="amcl" name="amcl" output="log" if="$(eval (arg('mode')=='localization'))">
