@@ -6,10 +6,13 @@
 
 void printHint(){
     std::cout << "Choose a mission to publish: " << std::endl;
+    std::cout << "---------- slam-mode ----------" << std::endl;
     std::cout << "[1]: start_mapping" << std::endl;
     std::cout << "[2]: finish_control_mapping" << std::endl;
     std::cout << "[3]: check_map" << std::endl;
+    std::cout << "---------- navigation-mode ----------" << std::endl;
     std::cout << "[4]: move_to_goal" << std::endl;
+    std::cout << "[5]: choose_map" << std::endl;
 }
 
 
@@ -54,7 +57,15 @@ int main(int argc, char** argv){
                 geometry_msgs::Quaternion odom_quat;
                 tf::quaternionTFToMsg(q, odom_quat);
                 action.goal.pose.orientation = odom_quat;
- 
+                break;
+            }
+            case 5:{
+                action.mission="choose_map";
+                std::cout << "please type the floor, just type the number: ";
+                std::string floor;
+                std::cin >> floor;
+                std::string map_name = "EngBuild" + floor;
+                action.choose_map_name = map_name;
                 break;
             }
         }

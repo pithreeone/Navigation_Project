@@ -7,7 +7,7 @@
     <arg name="laser_frame" default="base_scan"/>
 
     <!-- Set Mode -->
-    <arg name="mode" default="slam" doc="robot mode [slam, localization]"/>
+    <arg name="mode" default="localization" doc="robot mode [slam, localization]"/>
     <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
     <!-- SLAM-Gmapping -->
@@ -26,8 +26,8 @@
     <include file="$(find frontier_exploration)/launch/frontier_exploration.launch" if="$(eval (arg('mode')=='slam'))"/>
 
     <!-- Map Server -->
-    <include file="$(find map_server)/launch/map_server.launch" if="$(eval (arg('mode')=='localization'))">
-    </include>
+    <!-- <include file="$(find map_server)/launch/map_server.launch" if="$(eval (arg('mode')=='localization'))">
+    </include> -->
 
     <!-- Subscribe: /move_base_simple/goal -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">

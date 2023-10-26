@@ -286,7 +286,7 @@ void Interface::poseCB(const geometry_msgs::PoseWithCovarianceStampedConstPtr &m
 
 void Interface::finishCB(const std_msgs::CharConstPtr &msg)
 {
-    if(msg->data == 1){
+    if(msg->data == 1 || msg->data == 2){
         event = FSMItem::Events::E_FINISH_MOVE;
     }
 }
