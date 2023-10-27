@@ -37,6 +37,6 @@
     <param name="frequency"    type="double" value="10.0"/>
   </node>
 
-  <arg name="yaw" value="$(eval -3.1415926*1/6)"/>
+  <arg name="yaw" value="$(eval -3.1415926*1.07/6)"/>
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.0 0.0 0.2 $(arg yaw) 0.0 0.0 /$(arg base_frame) /$(arg laser_frame) 40" />
 </launch>
