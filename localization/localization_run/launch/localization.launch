@@ -58,6 +58,9 @@
         <!-- <remap from="map" to="loc_map" /> -->
         <remap from="/diagnostics" to="diagnostics" />
 
+        <param name="map_frame" value="$(arg map_frame)"/>
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="base_frame" value="$(arg base_frame)"/>
         <rosparam command="load" file="$(find localization_run)/config/amcl.yaml" />
     </node>
 
