@@ -161,47 +161,47 @@ void Interface::publishState()
     robot_interface::RobotState msg;
     switch(fsm->getState()){
         case FSMItem::State::STOP:{
-            msg.state = "STOP";
+            msg.state.data = "STOP";
             break;
         }
         case FSMItem::State::NAVIGATION_MODE:{
-            msg.state = "NAVIGATION_MODE";
+            msg.state.data = "NAVIGATION_MODE";
             break;
         }
         case FSMItem::State::CONTROL_MOVING:{
-            msg.state = "CONTROL_MOVING";
+            msg.state.data = "CONTROL_MOVING";
             break;
         }
         case FSMItem::State::MOVE_TO_GOAL:{
-            msg.state = "MOVE_TO_GOAL";
+            msg.state.data = "MOVE_TO_GOAL";
             break;
         }
         case FSMItem::State::MOVE_TO_GOAL_KEY:{
-            msg.state = "MOVE_TO_GOAL_KEY";
+            msg.state.data = "MOVE_TO_GOAL_KEY";
             break;
         }
         case FSMItem::State::RECORD_COORDINATE:{
-            msg.state = "RECORD_COORDINATE";
+            msg.state.data = "RECORD_COORDINATE";
             break;
         }
         case FSMItem::State::START_MAPPING:{
-            msg.state = "START_MAPPING";
+            msg.state.data = "START_MAPPING";
             break;
         }
         case FSMItem::State::AUTO_MAPPING:{
-            msg.state = "AUTO_MAPPING";
+            msg.state.data = "AUTO_MAPPING";
             break;
         }
         case FSMItem::State::CONTROL_MAPPING:{
-            msg.state = "CONTROL_MAPPING";
+            msg.state.data = "CONTROL_MAPPING";
             break;
         }
         case FSMItem::State::CONFIRM_MAP:{
-            msg.state = "CONFIRM_MAP";
+            msg.state.data = "CONFIRM_MAP";
             break;
         }
         case FSMItem::State::SAVE_MAP:{
-            msg.state = "SAVE_MAP";
+            msg.state.data = "SAVE_MAP";
             break;
         }
     };
