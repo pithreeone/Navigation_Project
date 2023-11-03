@@ -40,6 +40,9 @@ void Interface::initialize()
     nh_local_.param<double>("publish_velocity_frequency", publish_velocity_frequency_, 10.0);
     nh_local_.param<double>("linear_velocity_epsilon", linear_velocity_epsilon_, 0.1);
     nh_local_.param<double>("angular_velocity_epsilon", angular_velocity_epsilon_, 0.1);
+    nh_local_.param<double>("time_out_t", time_out_t_, 10);
+    nh_local_.param<double>("resend_frequency", resend_frequency_, 1);
+
 
     timer_ = nh_.createTimer(ros::Duration(double(1/process_frequency_)), &Interface::timerCB, this);
     timer_velocity_ = nh_.createTimer(ros::Duration(double(1/publish_velocity_frequency_)), &Interface::timerVelocityCB, this);
@@ -114,7 +117,7 @@ void Interface::execute()
                 str = "rosrun map_server map_server ${MAP_PATH}/" + cur_map_ + ".yaml";
                 const char *command = str.c_str();
                 ROS_INFO("Robot_Interface: open map file using '%s'", command);
-                popen(command, "r");
+                auto _ = popen(command, "r");
             }
             case FSMItem::State::RECORD_COORDINATE:
             {
@@ -286,8 +289,20 @@ void Interface::poseCB(const geometry_msgs::PoseWithCovarianceStampedConstPtr &m
 
 void Interface::finishCB(const std_msgs::CharConstPtr &msg)
 {
-    if(msg->data == 1 || msg->data == 2){
+    if(msg->data == 1){
         event = FSMItem::Events::E_FINISH_MOVE;
+    }
+    // when pathTracker return not ok(2), resend goal.
+    else if(msg->data == 2){
+        static int resend_n = 1;
+        int resend_n_max = time_out_t_ * process_frequency_;
+        if(++resend_n <= resend_n_max){
+            fsm->setFinishMission(false);
+            ROS_INFO("Robot_Interface: resend goal! times:%d", resend_n);
+        }else{
+            event = FSMItem::Events::E_FINISH_MOVE;
+            resend_n = 1;
+        }
     }
 }
 

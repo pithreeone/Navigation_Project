@@ -48,6 +48,9 @@ public:
     double publish_velocity_frequency_;
     double linear_velocity_epsilon_;
     double angular_velocity_epsilon_;
+    double time_out_t_;
+    double resend_frequency_;
+
 
     ros::Timer timer_;
     ros::Timer timer_velocity_;
