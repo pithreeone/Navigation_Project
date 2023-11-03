@@ -17,6 +17,11 @@ enum Mission{
     record_position,
 };
 
+enum Publish_State{
+    REACH,
+    STUCK,
+};
+
 class Interface{
 public:
     ros::NodeHandle nh_, nh_local_;
@@ -69,7 +74,7 @@ public:
 
     void execute();
 
-    void publishState();
+    void publishState(Publish_State state);
     
     void timerCB(const ros::TimerEvent &);
 

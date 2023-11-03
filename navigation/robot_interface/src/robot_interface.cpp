@@ -159,55 +159,20 @@ void Interface::execute()
 
 }
 
-void Interface::publishState()
+void Interface::publishState(Publish_State state)
 {
     robot_interface::RobotState msg;
-    switch(fsm->getState()){
-        case FSMItem::State::STOP:{
-            msg.state.data = "STOP";
+    switch(state){
+        case Publish_State::REACH:{
+            msg.state.data = "REACH";
             break;
         }
-        case FSMItem::State::NAVIGATION_MODE:{
-            msg.state.data = "NAVIGATION_MODE";
+        case Publish_State::STUCK:{
+            msg.state.data = "STUCK";
             break;
         }
-        case FSMItem::State::CONTROL_MOVING:{
-            msg.state.data = "CONTROL_MOVING";
-            break;
-        }
-        case FSMItem::State::MOVE_TO_GOAL:{
-            msg.state.data = "MOVE_TO_GOAL";
-            break;
-        }
-        case FSMItem::State::MOVE_TO_GOAL_KEY:{
-            msg.state.data = "MOVE_TO_GOAL_KEY";
-            break;
-        }
-        case FSMItem::State::RECORD_COORDINATE:{
-            msg.state.data = "RECORD_COORDINATE";
-            break;
-        }
-        case FSMItem::State::START_MAPPING:{
-            msg.state.data = "START_MAPPING";
-            break;
-        }
-        case FSMItem::State::AUTO_MAPPING:{
-            msg.state.data = "AUTO_MAPPING";
-            break;
-        }
-        case FSMItem::State::CONTROL_MAPPING:{
-            msg.state.data = "CONTROL_MAPPING";
-            break;
-        }
-        case FSMItem::State::CONFIRM_MAP:{
-            msg.state.data = "CONFIRM_MAP";
-            break;
-        }
-        case FSMItem::State::SAVE_MAP:{
-            msg.state.data = "SAVE_MAP";
-            break;
-        }
-    };
+    }
+    msg.robot_id.data = 1;
     pub_robot_state_.publish(msg);
 }
 
@@ -215,7 +180,6 @@ void Interface::timerCB(const ros::TimerEvent &)
 {
     fsm->printState();
     updateState();
-    publishState();
     execute();
 }
 
@@ -289,10 +253,15 @@ void Interface::poseCB(const geometry_msgs::PoseWithCovarianceStampedConstPtr &m
 
 void Interface::finishCB(const std_msgs::CharConstPtr &msg)
 {
+    // if the current state is not MOVE_TO_GOAL, just skip !!
+    if(fsm->getState() != FSMItem::State::MOVE_TO_GOAL)
+        return;
+
     if(msg->data == 1){
         event = FSMItem::Events::E_FINISH_MOVE;
+        publishState(Publish_State::REACH);
     }
-    // when pathTracker return not ok(2), resend goal.
+    // when pathTracker return (2, not OK), resend goal.
     else if(msg->data == 2){
         static int resend_n = 1;
         int resend_n_max = time_out_t_ * process_frequency_;
@@ -302,6 +271,7 @@ void Interface::finishCB(const std_msgs::CharConstPtr &msg)
         }else{
             event = FSMItem::Events::E_FINISH_MOVE;
             resend_n = 1;
+            publishState(Publish_State::STUCK);
         }
     }
 }
