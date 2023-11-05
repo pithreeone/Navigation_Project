@@ -44,6 +44,12 @@
         </rosparam>
     </node>
 
+    <!-- bmp280 firmware -->
+    <node pkg="sensor_firmware" type="bmp280_publisher.py" name="bmp280_publisher" output="screen" if="$(eval (arg('sim_or_run')=='run'))"/>
+
+    <!-- Altitude to Floor -->
+    <node pkg="chores" type="altitude2floor" name="altitude2floor" output="screen" if="$(eval (arg('sim_or_run')=='run'))"/>
+
     <!-- GMAPPING -->
     <!-- <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam'))">
         <param name="base_frame" value="$(arg base_frame)"/>

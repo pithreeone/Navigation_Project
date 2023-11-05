@@ -150,6 +150,11 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
+add_executable(altitude2floor src/altitude2floor.cpp )
+add_dependencies(altitude2floor ${catkin_EXPORTED_TARGETS})
+target_link_libraries(altitude2floor ${catkin_LIBRARIES})
+
+
 #############
 ## Install ##
 #############
