@@ -6,8 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /LaserScan1
         - /Odometry1/Shape1
-        - /GlobalCostMap2
       Splitter Ratio: 0.5
     Tree Height: 690
   - Class: rviz/Selection
@@ -87,7 +87,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.029999999329447746
       Style: Flat Squares
-      Topic: /scan
+      Topic: /scan_filtered
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -437,10 +437,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 123.68714904785156
+      Scale: 187.74533081054688
       Target Frame: <Fixed Frame>
-      X: -6.651881217956543
-      Y: -2.342165946960449
+      X: -12.014101028442383
+      Y: -0.45993199944496155
     Saved: ~
 Window Geometry:
   Displays:

@@ -7,6 +7,7 @@
 
     <!-- GMAPPING -->
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+        <remap from="scan" to="scan_filtered" />
         <param name="base_frame" value="$(arg base_frame)"/>
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="map_frame"  value="$(arg map_frame)"/>
