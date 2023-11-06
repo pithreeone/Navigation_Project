@@ -13,6 +13,7 @@ void printHint(){
     std::cout << "---------- navigation-mode ----------" << std::endl;
     std::cout << "[4]: move_to_goal" << std::endl;
     std::cout << "[5]: choose_map" << std::endl;
+    std::cout << "[6]: move_to_goal_floor" << std::endl;
 }
 
 
@@ -66,6 +67,25 @@ int main(int argc, char** argv){
                 std::cin >> floor;
                 std::string map_name = "EngBuild" + floor;
                 action.choose_map_name = map_name;
+                break;
+            }
+            case 6:{
+                action.mission="move_to_goal_floor";
+                std::cout << "please type the floor, just type the number: ";
+                std::string floor;
+                std::cin >> floor;
+                std::cout << "please type the coordinate [x (m), y (m), theta (degree)]: ";
+                double x, y, theta;
+                std::cin >> x >> y >> theta;
+                action.goal.header.stamp = ros::Time::now();
+                action.goal.header.frame_id = "map";
+                action.goal.pose.position.x = x;
+                action.goal.pose.position.y = y;
+                tf::Quaternion q;
+                q.setRPY(0, 0, theta/180.0*PI);
+                geometry_msgs::Quaternion odom_quat;
+                tf::quaternionTFToMsg(q, odom_quat);
+                action.goal.pose.orientation = odom_quat;
                 break;
             }
         }

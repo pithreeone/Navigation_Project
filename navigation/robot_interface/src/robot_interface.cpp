@@ -65,7 +65,10 @@ void Interface::updateState()
         fsm->handleEvent(FSMItem::Events::E_MOVE_TO_GOAL_KEY);
     }else if(interface_buf_.mission.compare("record_position") == 0){
         fsm->handleEvent(FSMItem::Events::E_RECORD_COORDINATE);
-    }else if(event == FSMItem::Events::E_FAST_V){
+    }else if(interface_buf_.mission.compare("move_to_goal_floor") == 0){
+        fsm->handleEvent(FSMItem::Events::E_MOVE_TO_GOAL_FLOOR);
+    }
+    else if(event == FSMItem::Events::E_FAST_V){
         fsm->handleEvent(event);
     }else if(event == FSMItem::Events::E_SLOW_V){
         fsm->handleEvent(event);
@@ -73,7 +76,24 @@ void Interface::updateState()
         fsm->handleEvent(event);
     }else if(event == FSMItem::Events::E_FINISH_AUTO_MAPPING){
         fsm->handleEvent(event);
-    }else{
+    }else if(event == FSMItem::Events::E_DIFFERENT_FLOOR_MOVE){
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_SAME_FLOOR_MOVE){
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_FINISH_RAISE_HAND){
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_GET_DOOR){
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_FINISH_SAY){
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_SUCCESS_UPDOWN){
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_FINISH_SAY){
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_SUCCESS_UPDOWN){
+        fsm->handleEvent(event);
+    }
+    else{
         fsm->handleEvent(FSMItem::Events::E_NAN);
     }
     event = FSMItem::Events::E_NAN;
