@@ -1,0 +1,12 @@
+<launch>
+    <include file="$(find gazebo_simulation)/launch/simul_elevator.launch"/>
+    <node pkg="rviz" type="rviz" name="simulation" args="-d $(find elevator_classifier)/rviz/simulation.rviz"/>
+
+    <!-- Laser filters -->
+    <node pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="laser_filter">
+        <rosparam command="load" file="$(find elevator_classifier)/config/range_filter.yaml" />
+    </node>
+    <node pkg="elevator_classifier" type="data_collect" name="data_collect">
+        <rosparam command="load" file="$(find elevator_classifier)/config/data_collect.yaml" />
+    </node>
+</launch>

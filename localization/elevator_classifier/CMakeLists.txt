@@ -150,6 +150,10 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
+add_executable(data_collect src/data_collect.cpp )
+add_dependencies(data_collect ${catkin_EXPORTED_TARGETS})
+target_link_libraries(data_collect ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############
