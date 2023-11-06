@@ -66,6 +66,13 @@ Set the following message for your topic :
 5. If the computer on robot do not have enough computility, you can launch the gmapping on your own PC.
 `roslaunch localization_run gmapping.launch`
 
+### 3.2. Parameters
+The following list some parameters that may need to tune.
+#### 3.2.1 laser_filters
+  - Set the minimum and maximum range that you don't want.
+  - In `laser_filters/launch/rane_filter.yaml`
+
+
 ## 4. The messages
 The package provides three custom message types. All of their numerical values are provided in SI units.
 
