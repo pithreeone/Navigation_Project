@@ -39,6 +39,7 @@ public:
     ros::Publisher pub_vel_;
     ros::Publisher pub_goal_;
     ros::Publisher pub_robot_state_;
+    ros::Publisher pub_mechanism_mission_;
 
     // topic buffer
     robot_interface::Interface interface_buf_;

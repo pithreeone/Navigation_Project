@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
+#include "std_msgs/UInt8MultiArray.h"
 #include "std_msgs/Int8.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "robot_interface/fsm_item.h"
@@ -35,6 +36,7 @@ void Interface::initialize()
     pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("nav_goal", 10);
     pub_start_exploration_ = nh_.advertise<std_msgs::Int8>("fron_exp_mission", 1);
     pub_robot_state_ = nh_.advertise<robot_interface::RobotState>("robot_state", 1);
+    pub_mechanism_mission_ = nh_.advertise<std_msgs::UInt8MultiArray>("mechanism_mission", 1);
 
 
     // parameter initialize
@@ -212,7 +214,10 @@ void Interface::execute()
             }
             case FSMItem::State::RAISE_HAND:
             {
-                ROS_ERROR("NOT IMPLEMENT ERROR");
+                std_msgs::UInt8MultiArray msg;
+                msg.data.push_back(1);
+                msg.data.push_back(90);
+                pub_mechanism_mission_.publish(msg);
                 break;
             }
             case FSMItem::State::MOVE_TO_GOAL_2:
