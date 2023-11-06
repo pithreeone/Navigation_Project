@@ -33,6 +33,7 @@ public:
     ros::Subscriber sub_arrived_;
     ros::Subscriber sub_pose_;
     ros::Subscriber sub_finish_exploration_;
+    ros::Subscriber sub_floor_;
     ros::Publisher pub_start_gmapping_;
     ros::Publisher pub_start_exploration_;
     ros::Publisher pub_vel_;
@@ -44,17 +45,22 @@ public:
     geometry_msgs::Twist navi_vel_buf_;
     geometry_msgs::Twist control_vel_buf_;
     Pose pose_buf_;
+    int floor_;
+    ros::Time t_recent_floor_;
 
     std::string cur_map_;
 
 
     // parameter
+    std::string map_frame_;
     double process_frequency_;
     double publish_velocity_frequency_;
     double linear_velocity_epsilon_;
     double angular_velocity_epsilon_;
     double time_out_t_;
     double resend_frequency_;
+    XmlRpc::XmlRpcValue goal_xml_;
+    std::vector<std::vector<std::vector<double>>> goal_list_;
 
 
     ros::Timer timer_;
@@ -75,6 +81,11 @@ public:
     void execute();
 
     void publishState(Publish_State state);
+
+    void checkSubFloor();
+
+    // argument: f->floor, n->number of goal
+    void publishGoalFromList(int f, int n);
     
     void timerCB(const ros::TimerEvent &);
 
@@ -91,6 +102,8 @@ public:
     void finishCB(const std_msgs::CharConstPtr& msg);
 
     void finishExplorationCB(const std_msgs::Bool::ConstPtr& msg);
+
+    void floorCB(const std_msgs::Int8::ConstPtr& msg);
 
 private:
 };

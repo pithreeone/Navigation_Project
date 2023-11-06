@@ -52,7 +52,9 @@
     </include>
 
     <!-- Interface -->
-    <include file="$(find robot_interface)/launch/interface.launch" />
+    <include file="$(find robot_interface)/launch/interface.launch">
+        <arg name="map_frame" default="map"/>
+    </include>
 
     <!-- RVIZ -->
     <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz" if="$(eval (arg('sim_or_run')=='sim'))"/>

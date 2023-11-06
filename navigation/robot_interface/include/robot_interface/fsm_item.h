@@ -50,7 +50,8 @@ public:
         E_CHOOSE_MAP,
         E_MOVE_TO_GOAL,
         E_MOVE_TO_GOAL_KEY,
-        E_FINISH_MOVE,
+        E_FINISH_MOVE_FAIL,
+        E_FINISH_MOVE_SUCCESS,
         E_RECORD_COORDINATE,
 
         // mission for move different floor

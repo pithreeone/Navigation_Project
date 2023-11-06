@@ -9,6 +9,7 @@
 #include <tf/LinearMath/Quaternion.h>
 #include <tf/LinearMath/Transform.h>
 
+#define PI 3.14159265358 
 
 Interface::Interface(ros::NodeHandle &nh, ros::NodeHandle &nh_local):
     nh_(nh),
@@ -27,6 +28,7 @@ void Interface::initialize()
     sub_pose_ = nh_.subscribe("ekf_pose", 10, &Interface::poseCB, this);
     sub_arrived_ = nh_.subscribe("finishornot", 10, &Interface::finishCB, this);
     sub_finish_exploration_ = nh_.subscribe("finish_exploration", 10, &Interface::finishExplorationCB, this);
+    sub_floor_ = nh_.subscribe("floor", 10, &Interface::floorCB, this);
 
     pub_start_gmapping_ = nh_.advertise<std_msgs::Int8>("slam_gmapping/reset", 1);
     pub_vel_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 10);
@@ -36,13 +38,27 @@ void Interface::initialize()
 
 
     // parameter initialize
+    nh_local_.param<std::string>("map_frame", map_frame_, "map");
     nh_local_.param<double>("process_frequency", process_frequency_, 1.0);
     nh_local_.param<double>("publish_velocity_frequency", publish_velocity_frequency_, 10.0);
     nh_local_.param<double>("linear_velocity_epsilon", linear_velocity_epsilon_, 0.1);
     nh_local_.param<double>("angular_velocity_epsilon", angular_velocity_epsilon_, 0.1);
     nh_local_.param<double>("time_out_t", time_out_t_, 10);
     nh_local_.param<double>("resend_frequency", resend_frequency_, 1);
+    nh_local_.getParam("goal", goal_xml_);
 
+    // parse (x, y, yaw) to goal_
+    for(int i=0; i<goal_xml_.size(); i++){
+        std::vector<std::vector<double>> goal_temp_1;
+        for(int j=0; j<goal_xml_[i].size();j++){
+            std::vector<double> goal_temp_2;
+            for(int k=0; k<goal_xml_[i][j].size(); k++){
+                goal_temp_2.push_back(static_cast<double>(goal_xml_[i][j][k]));
+            }
+            goal_temp_1.push_back(goal_temp_2);
+        }
+        goal_list_.push_back(goal_temp_1);
+    }
 
     timer_ = nh_.createTimer(ros::Duration(double(1/process_frequency_)), &Interface::timerCB, this);
     timer_velocity_ = nh_.createTimer(ros::Duration(double(1/publish_velocity_frequency_)), &Interface::timerVelocityCB, this);
@@ -72,7 +88,9 @@ void Interface::updateState()
         fsm->handleEvent(event);
     }else if(event == FSMItem::Events::E_SLOW_V){
         fsm->handleEvent(event);
-    }else if(event == FSMItem::Events::E_FINISH_MOVE){
+    }else if(event == FSMItem::Events::E_FINISH_MOVE_SUCCESS){
+        fsm->handleEvent(event);
+    }else if(event == FSMItem::Events::E_FINISH_MOVE_FAIL){
         fsm->handleEvent(event);
     }else if(event == FSMItem::Events::E_FINISH_AUTO_MAPPING){
         fsm->handleEvent(event);
@@ -146,16 +164,14 @@ void Interface::execute()
             }
             case FSMItem::State::MOVE_TO_GOAL:
             {
-                geometry_msgs::PoseStamped goal;
-                goal = interface_buf_.goal;
-                pub_goal_.publish(goal);
+                pub_goal_.publish(interface_buf_.goal);
                 break;
             }
             case FSMItem::State::MOVE_TO_GOAL_KEY:
             {
                 if(user_position_dict_.find(interface_buf_.mission) == user_position_dict_.end()){
                     ROS_INFO("Robot_Interface: cannot move to goal by key. cannot find position name:%s", interface_buf_.mission.c_str());
-                    event = FSMItem::Events::E_FINISH_MOVE;
+                    event = FSMItem::Events::E_FINISH_MOVE_FAIL;
                     break;
                 }
                 geometry_msgs::PoseStamped goal;
@@ -170,6 +186,73 @@ void Interface::execute()
                 goal.pose.orientation.z = q.z();
                 goal.pose.orientation.w = q.w();
                 pub_goal_.publish(goal);           
+                break;
+            }
+            case FSMItem::State::TEMP_STOP:
+            {
+                // convert int -> string
+                std::stringstream ss;
+                ss << floor_;
+                std::string str = "rosrun map_server map_server ${MAP_PATH}/EngBuild" + ss.str() + ".yaml";
+                const char *command = str.c_str();
+                ROS_INFO("Robot_Interface: open map file using '%s'", command);
+                auto _ = popen(command, "r");
+
+                // check whether the floor of goal is same as now
+                if(static_cast<int>(interface_buf_.floor.data) != floor_){
+                    event = FSMItem::Events::E_DIFFERENT_FLOOR_MOVE;
+                }else{
+                    event = FSMItem::Events::E_SAME_FLOOR_MOVE;
+                }
+            }
+            case FSMItem::State::MOVE_TO_GOAL_1:
+            {
+                publishGoalFromList(floor_, 1);
+                break;
+            }
+            case FSMItem::State::RAISE_HAND:
+            {
+                ROS_ERROR("NOT IMPLEMENT ERROR");
+                break;
+            }
+            case FSMItem::State::MOVE_TO_GOAL_2:
+            {
+                publishGoalFromList(floor_, 2);
+                break;
+            }
+            case FSMItem::State::GET_DOOR:
+            {
+                ROS_ERROR("NOT IMPLEMENT ERROR");
+                break;
+            }
+            case FSMItem::State::MOVE_TO_GOAL_3:
+            {
+                publishGoalFromList(floor_, 3);
+                break;
+            }
+            case FSMItem::State::MOVE_INTO_ELEVATOR:
+            {
+                ROS_ERROR("NOT IMPLEMENT ERROR");
+                break;
+            }
+            case FSMItem::State::SAY_FLOOR:
+            {
+                ROS_ERROR("NOT IMPLEMENT ERROR");
+                break;
+            }
+            case FSMItem::State::WAIT_FOR_ELEVATOR:
+            {
+                ROS_ERROR("NOT IMPLEMENT ERROR");
+                break;
+            }
+            case FSMItem::State::GET_OUT_OF_ELEVATOR:
+            {
+                ROS_ERROR("NOT IMPLEMENT ERROR");
+                break;
+            }
+            case FSMItem::State::MOVE_TO_GOAL_4:
+            {
+                pub_goal_.publish(interface_buf_.goal);
                 break;
             }
         }
@@ -196,9 +279,33 @@ void Interface::publishState(Publish_State state)
     pub_robot_state_.publish(msg);
 }
 
+void Interface::checkSubFloor()
+{
+    if((ros::Time::now() - t_recent_floor_).toSec() > 0.1){
+        ROS_WARN_THROTTLE(0.5, "Robot_Interface: Cannot subscribe current floor ... ");
+    }
+}
+
+void Interface::publishGoalFromList(int f, int n)
+{
+    // publish the n'th goal in goal_list
+    geometry_msgs::PoseStamped goal;
+    goal.header.stamp = ros::Time::now();
+    goal.header.frame_id = map_frame_;
+    goal.pose.position.x = goal_list_[f-1][n-1][0];
+    goal.pose.position.y = goal_list_[f-1][n-1][1];
+    tf::Quaternion q;
+    q.setRPY(0, 0, goal_list_[f-1][n-1][2]/180.0*PI);
+    geometry_msgs::Quaternion odom_quat;
+    tf::quaternionTFToMsg(q, odom_quat);
+    goal.pose.orientation = odom_quat;
+    pub_goal_.publish(goal);
+}
+
 void Interface::timerCB(const ros::TimerEvent &)
 {
     fsm->printState();
+    checkSubFloor();
     updateState();
     execute();
 }
@@ -210,6 +317,10 @@ void Interface::timerVelocityCB(const ros::TimerEvent &)
     switch(fsm->getState()){
         case FSMItem::State::AUTO_MAPPING:
         case FSMItem::State::MOVE_TO_GOAL:
+        case FSMItem::State::MOVE_TO_GOAL_1:
+        case FSMItem::State::MOVE_TO_GOAL_2:
+        case FSMItem::State::MOVE_TO_GOAL_3:
+        case FSMItem::State::MOVE_TO_GOAL_4:
         {
             geometry_msgs::Twist data;
             data = navi_vel_buf_;
@@ -274,22 +385,26 @@ void Interface::poseCB(const geometry_msgs::PoseWithCovarianceStampedConstPtr &m
 void Interface::finishCB(const std_msgs::CharConstPtr &msg)
 {
     // if the current state is not MOVE_TO_GOAL, just skip !!
-    if(fsm->getState() != FSMItem::State::MOVE_TO_GOAL)
+    if(fsm->getState() != FSMItem::State::MOVE_TO_GOAL &&
+       fsm->getState() != FSMItem::State::MOVE_TO_GOAL_1 &&
+       fsm->getState() != FSMItem::State::MOVE_TO_GOAL_2 &&
+       fsm->getState() != FSMItem::State::MOVE_TO_GOAL_3 &&
+       fsm->getState() != FSMItem::State::MOVE_TO_GOAL_4)
         return;
 
     if(msg->data == 1){
-        event = FSMItem::Events::E_FINISH_MOVE;
+        event = FSMItem::Events::E_FINISH_MOVE_SUCCESS;
         publishState(Publish_State::REACH);
     }
     // when pathTracker return (2, not OK), resend goal.
-    else if(msg->data == 2){
+    else if(msg->data == 2 || msg->data == 0){
         static int resend_n = 1;
         int resend_n_max = time_out_t_ * process_frequency_;
         if(++resend_n <= resend_n_max){
             fsm->setFinishMission(false);
             ROS_INFO("Robot_Interface: resend goal! times:%d", resend_n);
         }else{
-            event = FSMItem::Events::E_FINISH_MOVE;
+            event = FSMItem::Events::E_FINISH_MOVE_FAIL;
             resend_n = 1;
             publishState(Publish_State::STUCK);
         }
@@ -302,6 +417,12 @@ void Interface::finishExplorationCB(const std_msgs::Bool::ConstPtr &msg)
         ROS_INFO("debug!!!!!!!!!!!!!!"); 
         event = FSMItem::Events::E_FINISH_AUTO_MAPPING;
     }
+}
+
+void Interface::floorCB(const std_msgs::Int8::ConstPtr &msg)
+{
+    floor_ = msg->data;
+    t_recent_floor_ = ros::Time::now();
 }
 
 int main(int argc, char** argv)

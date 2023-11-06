@@ -148,26 +148,28 @@ void FSM::initFSMTable()
     fsm_table_.push_back(new FSMItem(FSMItem::State::CONTROL_MOVING, FSMItem::Events::E_SLOW_V, FSMItem::State::STOP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_CHOOSE_MAP, FSMItem::State::NAVIGATION_MODE));
     fsm_table_.push_back(new FSMItem(FSMItem::State::NAVIGATION_MODE, FSMItem::Events::E_MOVE_TO_GOAL, FSMItem::State::MOVE_TO_GOAL));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::STOP));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::STOP));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL, FSMItem::Events::E_FINISH_MOVE_FAIL, FSMItem::State::STOP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::NAVIGATION_MODE, FSMItem::Events::E_RECORD_COORDINATE, FSMItem::State::RECORD_COORDINATE));
     fsm_table_.push_back(new FSMItem(FSMItem::State::RECORD_COORDINATE, FSMItem::Events::E_NAN, FSMItem::State::NAVIGATION_MODE));
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_MOVE_TO_GOAL_KEY, FSMItem::State::MOVE_TO_GOAL_KEY));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_KEY, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::STOP));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_KEY, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::STOP));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_KEY, FSMItem::Events::E_FINISH_MOVE_FAIL, FSMItem::State::STOP));
 
     // Navigation-mode (More general. Accept different floor)
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_MOVE_TO_GOAL_FLOOR, FSMItem::State::TEMP_STOP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::TEMP_STOP, FSMItem::Events::E_DIFFERENT_FLOOR_MOVE, FSMItem::State::MOVE_TO_GOAL_1));
     fsm_table_.push_back(new FSMItem(FSMItem::State::TEMP_STOP, FSMItem::Events::E_SAME_FLOOR_MOVE, FSMItem::State::MOVE_TO_GOAL_4));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_1, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::RAISE_HAND));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_1, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::RAISE_HAND));
     fsm_table_.push_back(new FSMItem(FSMItem::State::RAISE_HAND, FSMItem::Events::E_FINISH_RAISE_HAND, FSMItem::State::MOVE_TO_GOAL_2));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_2, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::GET_DOOR));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_2, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::GET_DOOR));
     fsm_table_.push_back(new FSMItem(FSMItem::State::GET_DOOR, FSMItem::Events::E_GET_DOOR, FSMItem::State::MOVE_TO_GOAL_3));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_3, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::MOVE_INTO_ELEVATOR));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_INTO_ELEVATOR, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::SAY_FLOOR));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_3, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::MOVE_INTO_ELEVATOR));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_INTO_ELEVATOR, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::SAY_FLOOR));
     fsm_table_.push_back(new FSMItem(FSMItem::State::SAY_FLOOR, FSMItem::Events::E_FINISH_SAY, FSMItem::State::WAIT_FOR_ELEVATOR));
     fsm_table_.push_back(new FSMItem(FSMItem::State::WAIT_FOR_ELEVATOR, FSMItem::Events::E_SUCCESS_UPDOWN, FSMItem::State::GET_OUT_OF_ELEVATOR));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::GET_OUT_OF_ELEVATOR, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::MOVE_TO_GOAL_4));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_4, FSMItem::Events::E_FINISH_MOVE, FSMItem::State::STOP));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::GET_OUT_OF_ELEVATOR, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::MOVE_TO_GOAL_4));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL_4, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::STOP));
 
 
 }

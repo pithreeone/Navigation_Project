@@ -74,6 +74,8 @@ int main(int argc, char** argv){
                 std::cout << "please type the floor, just type the number: ";
                 std::string floor;
                 std::cin >> floor;
+                int8_t floor_int8 = static_cast<int8_t>(stoi(floor));
+                action.floor.data = floor_int8;
                 std::cout << "please type the coordinate [x (m), y (m), theta (degree)]: ";
                 double x, y, theta;
                 std::cin >> x >> y >> theta;
