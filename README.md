@@ -25,6 +25,7 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
 1. `sudo apt-get install ros-noetic-gazebo-ros`
 2. `sudo apt-get install ros-noetic-ros-controllers`
 3. `sudo apt install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control`
+4. `sudo apt-get install ros-noetic-filters`
 
 ## 2. Setting Before Start
 
