@@ -147,6 +147,7 @@ class PathTracker {
     std::string base_frame_;
     bool p_active_;
     double control_frequency_;
+    double planner_frequency_;
     double lookahead_d_;
     double blocked_lookahead_d_;
     double waiting_timeout_;
@@ -201,4 +202,7 @@ class PathTracker {
     // tf for getting base_footprint to map
     tf::TransformListener listener;
     tf::StampedTransform transform;
+
+    // calculate the last time call plannerClient
+    ros::Time time_bef;
 };
