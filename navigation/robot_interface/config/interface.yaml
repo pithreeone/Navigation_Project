@@ -3,3 +3,7 @@ publish_velocity_frequency: 30.0
 
 linear_velocity_epsilon: 0.01
 angular_velocity_episolon: 0.01
+
+# navigation timeout
+time_out_t: 5             # unit: second
+resend_frequency: 5       # unit: Hz

@@ -7,7 +7,11 @@ This is the whole robot program which including navigation, localization and mai
 ### 1.1. clone the meta package
 
 1. `git clone https://github.com/pithreeone/Navigation_Project.git`  
-   or clone by ssh `git clone git@github.com:pithreeone/Navigation_Project.git`  
+or clone by ssh `git clone git@github.com:pithreeone/Navigation_Project.git`
+
+2. If you are developer, you can also clone the Simulation package use in this repo.
+`https://github.com/pithreeone/Simulation.git`
+or clone by ssh `git@github.com:pithreeone/Simulation.git`
 
 ### 1.2. compile YDLidar-SDK  
 
@@ -22,10 +26,20 @@ This is the whole robot program which including navigation, localization and mai
 2. `sudo apt-get install ros-noetic-ros-controllers`
 3. `sudo apt install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control`
 
-## 2. Setting Before Started
+## 2. Setting Before Start
 
+### 2.1 Set on Robot
 1. check tf between `base_frame` & `laser_frame`
-2. Set the USB-port name in `localization_run/launch/localization.launch`
+2. Set the USB-port name in `localization_run/launch/localization.launch`. Check the following argument:
+    - lidar_port
+    - odometry_port
+3. Add environment variable in `~/.bashrc`. When save the map, it will save at this path.
+`export MAP_PATH=/home/pithreeone/amr_robot/src/navigation/navigation/navigation-stack/map_server/map_config`
+`
+
+### 2.2 Set on PC
+1. Add environment variable in `~/.bashrc`
+  `export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:~/amr_robot/src/Simulation/gazebo_simulation/models`
 
 ## 3. How to Use
 
@@ -38,13 +52,19 @@ This is the whole robot program which including navigation, localization and mai
 1. Publish an topic which mission is `start_mapping`
 (state: `STOP`$\rightarrow$`START_MAPPING`$\rightarrow$`AUTO_MAPPING`)
 Let the topic name be `action`, or you can remap.
+
 2. Now robot will move automatically. 
+
 3. You can also use telop_twist_keyboard to publish velocity topic. Topic name is `control_cmd_vel`. We can use the following command to change the topic name that teleop_twist_keyboard publish.
 `rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=control_cmd_vel`
+
 4. Once finish mapping, publich an topic which mission is `check_map`. Then it will save map. The map will be saved in `/home/user-name/.ros` 
 Set the following message for your topic :  
     - `action.map_ok(bool) = true`
     - `action.set_map_name(string) = floor_XX`
+
+5. If the computer on robot do not have enough computility, you can launch the gmapping on your own PC.
+`roslaunch localization_run gmapping.launch`
 
 ## 4. The messages
 The package provides three custom message types. All of their numerical values are provided in SI units.
@@ -67,10 +87,18 @@ For start up real robot, you can launch the file below.
 - `roslaunch navigation_run navigation.launch 2>/dev/null`
 
 ### 5.2 Testing tool
+
+#### 5.3.1 Publish command to robot 
+
 publish_mission node can help you publish the Interface topic. It's hard to publish it using `rostopic pub ...`
 - `rosrun navigation_run publish_mission`
 
-publish the command velocity to odometry with topic name `control_cmd_vel` instead of `cmd_vel`
+*Be careful to publish the command velocity to odometry with topic name `control_cmd_vel` instead of `cmd_vel`
 - `rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=control_cmd_vel`
 
-Author: Yan-Ting Chen
+#### 5.3.2 Check connection with firmware
+
+ - `roslaunch localization_run odometry.launch`  
+
+You can add specific port name after the above command.  
+ - `roslaunch localization_run odometry.launch odometry_port:=/dev/USB1`

@@ -444,7 +444,8 @@ void Frontier_Exploration::processCallback(const ros::TimerEvent &)
             goal.pose.position.y = nearest_p.y_;
             goal.pose.position.z = 0;
             tf::Quaternion q;
-            q.setRPY(0, 0, cur_pose_.theta_);
+            // q.setRPY(0, 0, cur_pose_.theta_);
+            q.setRPY(0, 0, 0);
             goal.pose.orientation.x = q.x();
             goal.pose.orientation.y = q.y();
             goal.pose.orientation.z = q.z();

@@ -11,8 +11,8 @@
     <arg name="odom_type" default="omni" doc="omni type [diff, omni]"/>
 
     <!-- Set port name -->
-    <arg name="lidar_port" default="/dev/ydlidar"/>
-    <arg name="odometry_port" default="/dev/USB0-2"/>
+    <arg name="lidar_port" default="/dev/USB1"/>
+    <arg name="odometry_port" default="/dev/USB0-1"/>
 
     <!-- GAZEBO -->
     <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
@@ -33,6 +33,10 @@
         <arg name="port" value="$(arg lidar_port)"/>
     </include>
 
+    <!-- Laser filters -->
+    <include file="$(find laser_filters)/launch/range_filter.launch">
+    </include>
+
     <!-- Odometry firmware -->
     <node pkg="rosserial_server" type="serial_node" name="rosserial_server_dp" output="screen" if="$(eval (arg('sim_or_run')=='run'))">
         <param name="port" value="$(arg odometry_port)"/>
@@ -42,22 +46,32 @@
                 publishers: [ Toposition ]
                 subscribers: [ cmd_vel ]
         </rosparam>
-    </node>    
+    </node>
+
+    <!-- bmp280 firmware -->
+    <node pkg="sensor_firmware" type="bmp280_publisher.py" name="bmp280_publisher" output="screen" if="$(eval (arg('sim_or_run')=='run'))"/>
+
+    <!-- Altitude to Floor -->
+    <node pkg="chores" type="altitude2floor" name="altitude2floor" output="screen" if="$(eval (arg('sim_or_run')=='run'))"/>
 
     <!-- GMAPPING -->
-    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam'))">
+    <!-- <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam'))">
+        <remap from="scan" to="scan_filtered" />
         <param name="base_frame" value="$(arg base_frame)"/>
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="map_frame"  value="$(arg map_frame)"/>
         <rosparam command="load" file="$(find localization_run)/config/gmapping_params.yaml"/>
-    </node>
+    </node> -->
 
     <!-- AMCL -->
     <node pkg="amcl" type="amcl" name="amcl" output="log" if="$(eval (arg('mode')=='localization'))">
-        <remap from="scan" to="scan" />
+        <remap from="scan" to="scan_filtered" />
         <!-- <remap from="map" to="loc_map" /> -->
         <remap from="/diagnostics" to="diagnostics" />
 
+        <param name="map_frame" value="$(arg map_frame)"/>
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="base_frame" value="$(arg base_frame)"/>
         <rosparam command="load" file="$(find localization_run)/config/amcl.yaml" />
     </node>
 

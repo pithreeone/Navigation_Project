@@ -13,3 +13,9 @@ string position_key
 # if mission is "check_map", set map name
 bool map_ok
 string set_map_name
+
+# send to which robot
+std_msgs/Int8 robot_id
+
+# which floor
+std_msgs/Int8 floor

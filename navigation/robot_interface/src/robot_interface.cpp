@@ -40,6 +40,9 @@ void Interface::initialize()
     nh_local_.param<double>("publish_velocity_frequency", publish_velocity_frequency_, 10.0);
     nh_local_.param<double>("linear_velocity_epsilon", linear_velocity_epsilon_, 0.1);
     nh_local_.param<double>("angular_velocity_epsilon", angular_velocity_epsilon_, 0.1);
+    nh_local_.param<double>("time_out_t", time_out_t_, 10);
+    nh_local_.param<double>("resend_frequency", resend_frequency_, 1);
+
 
     timer_ = nh_.createTimer(ros::Duration(double(1/process_frequency_)), &Interface::timerCB, this);
     timer_velocity_ = nh_.createTimer(ros::Duration(double(1/publish_velocity_frequency_)), &Interface::timerVelocityCB, this);
@@ -114,7 +117,7 @@ void Interface::execute()
                 str = "rosrun map_server map_server ${MAP_PATH}/" + cur_map_ + ".yaml";
                 const char *command = str.c_str();
                 ROS_INFO("Robot_Interface: open map file using '%s'", command);
-                popen(command, "r");
+                auto _ = popen(command, "r");
             }
             case FSMItem::State::RECORD_COORDINATE:
             {
@@ -156,55 +159,20 @@ void Interface::execute()
 
 }
 
-void Interface::publishState()
+void Interface::publishState(Publish_State state)
 {
     robot_interface::RobotState msg;
-    switch(fsm->getState()){
-        case FSMItem::State::STOP:{
-            msg.state = "STOP";
+    switch(state){
+        case Publish_State::REACH:{
+            msg.state.data = "REACH";
             break;
         }
-        case FSMItem::State::NAVIGATION_MODE:{
-            msg.state = "NAVIGATION_MODE";
+        case Publish_State::STUCK:{
+            msg.state.data = "STUCK";
             break;
         }
-        case FSMItem::State::CONTROL_MOVING:{
-            msg.state = "CONTROL_MOVING";
-            break;
-        }
-        case FSMItem::State::MOVE_TO_GOAL:{
-            msg.state = "MOVE_TO_GOAL";
-            break;
-        }
-        case FSMItem::State::MOVE_TO_GOAL_KEY:{
-            msg.state = "MOVE_TO_GOAL_KEY";
-            break;
-        }
-        case FSMItem::State::RECORD_COORDINATE:{
-            msg.state = "RECORD_COORDINATE";
-            break;
-        }
-        case FSMItem::State::START_MAPPING:{
-            msg.state = "START_MAPPING";
-            break;
-        }
-        case FSMItem::State::AUTO_MAPPING:{
-            msg.state = "AUTO_MAPPING";
-            break;
-        }
-        case FSMItem::State::CONTROL_MAPPING:{
-            msg.state = "CONTROL_MAPPING";
-            break;
-        }
-        case FSMItem::State::CONFIRM_MAP:{
-            msg.state = "CONFIRM_MAP";
-            break;
-        }
-        case FSMItem::State::SAVE_MAP:{
-            msg.state = "SAVE_MAP";
-            break;
-        }
-    };
+    }
+    msg.robot_id.data = 1;
     pub_robot_state_.publish(msg);
 }
 
@@ -212,7 +180,6 @@ void Interface::timerCB(const ros::TimerEvent &)
 {
     fsm->printState();
     updateState();
-    publishState();
     execute();
 }
 
@@ -286,8 +253,26 @@ void Interface::poseCB(const geometry_msgs::PoseWithCovarianceStampedConstPtr &m
 
 void Interface::finishCB(const std_msgs::CharConstPtr &msg)
 {
+    // if the current state is not MOVE_TO_GOAL, just skip !!
+    if(fsm->getState() != FSMItem::State::MOVE_TO_GOAL)
+        return;
+
     if(msg->data == 1){
         event = FSMItem::Events::E_FINISH_MOVE;
+        publishState(Publish_State::REACH);
+    }
+    // when pathTracker return (2, not OK), resend goal.
+    else if(msg->data == 2){
+        static int resend_n = 1;
+        int resend_n_max = time_out_t_ * process_frequency_;
+        if(++resend_n <= resend_n_max){
+            fsm->setFinishMission(false);
+            ROS_INFO("Robot_Interface: resend goal! times:%d", resend_n);
+        }else{
+            event = FSMItem::Events::E_FINISH_MOVE;
+            resend_n = 1;
+            publishState(Publish_State::STUCK);
+        }
     }
 }
 

@@ -1,0 +1,4 @@
+<launch>
+    <!-- RVIZ -->
+    <node pkg="rviz" type="rviz" name="navi_all" args="-d $(find navigation_run)/rviz/navi_all.rviz"/>
+</launch>

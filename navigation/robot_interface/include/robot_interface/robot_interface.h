@@ -17,6 +17,11 @@ enum Mission{
     record_position,
 };
 
+enum Publish_State{
+    REACH,
+    STUCK,
+};
+
 class Interface{
 public:
     ros::NodeHandle nh_, nh_local_;
@@ -48,6 +53,9 @@ public:
     double publish_velocity_frequency_;
     double linear_velocity_epsilon_;
     double angular_velocity_epsilon_;
+    double time_out_t_;
+    double resend_frequency_;
+
 
     ros::Timer timer_;
     ros::Timer timer_velocity_;
@@ -66,7 +74,7 @@ public:
 
     void execute();
 
-    void publishState();
+    void publishState(Publish_State state);
     
     void timerCB(const ros::TimerEvent &);
 

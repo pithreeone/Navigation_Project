@@ -2,6 +2,7 @@ active: true
 robot_type: omni
 map_frame: map
 odom_frame: odom
+base_frame: base_link
 control_frequency: 40
 lookahead_distance: 0.1
 waiting_timeout: 5
@@ -16,8 +17,8 @@ blocked_lookahead_distance: 0.2
 # acceleration
 # linear_max_velocity: 0.7 #0.4
 # linear_acceleration: 0.5 #0.2
-linear_max_velocity: 0.25 #0.4
-linear_acceleration: 0.4 #0.2
+linear_max_velocity: 0.2 #0.4
+linear_acceleration: 0.05 #0.2
 linear_acceleration_profile: linear
 
 # transition
@@ -35,8 +36,8 @@ linear_deceleration_profile: p_control
 
 ### angular parameter 
 
-angular_max_velocity: 1.0 # 1.5
-angular_acceleration: 0.4 # 0.7
+angular_max_velocity: 0.5 # 1.5
+angular_acceleration: 0.1 # 0.7
 
 # angular_acceleration_profile: linear
 
