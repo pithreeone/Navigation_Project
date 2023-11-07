@@ -402,7 +402,7 @@ void Interface::finishCB(const std_msgs::CharConstPtr &msg)
         publishState(Publish_State::REACH);
     }
     // when pathTracker return (2, not OK), resend goal.
-    else if(msg->data == 2 || msg->data == 0){
+    else if(msg->data == 2){
         static int resend_n = 1;
         int resend_n_max = time_out_t_ * process_frequency_;
         if(++resend_n <= resend_n_max){
