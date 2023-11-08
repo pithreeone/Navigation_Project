@@ -36,6 +36,7 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
     - odometry_port
 3. Add environment variable in `~/.bashrc`. When save the map, it will save at this path.
 `export MAP_PATH=/home/pithreeone/amr_robot/src/navigation/navigation/navigation-stack/map_server/map_config`
+`export MUSIC_PATH=/home/pithreeone/amr_robot/src/navigation/localization/chores/elevator-audio`
 `
 4. Authorization of I2C ports:  
   `ls -l /dev | grep i2c` : Can see all available I2C ports.  
