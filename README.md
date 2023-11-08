@@ -42,6 +42,7 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
   `sudo chmod 777 /dev/i2c-*` : * is the number of the port you want to authorize.  
   `sudo usermod -aG i2c ubuntu` : The most important step to keep the configuration effective even after rebooting.
 
+
 ### 2.2 Set on PC
 1. Add environment variable in `~/.bashrc`
   `export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:~/amr_robot/src/Simulation/gazebo_simulation/models`
