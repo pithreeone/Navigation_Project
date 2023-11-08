@@ -54,6 +54,13 @@
     <!-- Altitude to Floor -->
     <node pkg="chores" type="altitude2floor" name="altitude2floor" output="screen" if="$(eval (arg('sim_or_run')=='run'))"/>
 
+    <!-- elevator status classifier -->
+    <include file="$(find elevator_classifier)/launch/elevator.launch">
+        <arg name="base_frame" value="$(arg base_frame)"/>
+        <arg name="laser_frame" value="$(arg laser_frame)"/>
+    </include>
+
+
     <!-- GMAPPING -->
     <!-- <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam'))">
         <remap from="scan" to="scan_filtered" />

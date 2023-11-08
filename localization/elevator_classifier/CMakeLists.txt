@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -153,6 +154,10 @@ include_directories(
 add_executable(data_collect src/data_collect.cpp )
 add_dependencies(data_collect ${catkin_EXPORTED_TARGETS})
 target_link_libraries(data_collect ${catkin_LIBRARIES})
+
+add_executable(classifier_tradition src/classifier_tradition.cpp )
+add_dependencies(classifier_tradition ${catkin_EXPORTED_TARGETS})
+target_link_libraries(classifier_tradition ${catkin_LIBRARIES})
 
 #############
 ## Install ##
