@@ -79,7 +79,8 @@
         <param name="map_frame" value="$(arg map_frame)"/>
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="base_frame" value="$(arg base_frame)"/>
-        <rosparam command="load" file="$(find localization_run)/config/amcl.yaml" />
+        <rosparam command="load" file="$(find localization_run)/config/amcl_simul.yaml"  if="$(eval (arg('sim_or_run')=='sim'))"/>
+        <rosparam command="load" file="$(find localization_run)/config/amcl_real.yaml"  if="$(eval (arg('sim_or_run')=='run'))"/>
     </node>
 
     <!-- <node pkg="rviz" type="rviz" name="rviz_slam" args="-d $(find localization_run)/rviz/sim_mapping.rviz"/> -->
