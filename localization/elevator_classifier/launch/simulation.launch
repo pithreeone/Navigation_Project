@@ -9,4 +9,9 @@
     <node pkg="elevator_classifier" type="data_collect" name="data_collect" output="screen">
         <rosparam command="load" file="$(find elevator_classifier)/config/data_collect.yaml" />
     </node>
+    
+    <node pkg="elevator_classifier" type="data_collect" name="data_collect" output="screen">
+        <rosparam command="load" file="$(find elevator_classifier)/config/data_collect.yaml" />
+    </node>
+
 </launch>
