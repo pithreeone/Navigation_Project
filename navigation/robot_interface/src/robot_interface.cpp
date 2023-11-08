@@ -242,7 +242,9 @@ void Interface::execute()
             }
             case FSMItem::State::SAY_FLOOR:
             {
-                ROS_ERROR("NOT IMPLEMENT ERROR");
+                std::string str = "mpg123 ${MUSIC_PATH}/f1/2f.mp3";
+                const char *command = str.c_str();
+                auto _ = popen(command, "r");
                 break;
             }
             case FSMItem::State::WAIT_FOR_ELEVATOR:
