@@ -76,6 +76,7 @@ bool PathTracker::initializeParams(std_srvs::Empty::Request& req, std_srvs::Empt
     nh_local_.param<std::string>("odom_frame", odom_frame_, "odom");
     nh_local_.param<std::string>("base_frame", base_frame_, "base_footprint");
     nh_local_.param<double>("control_frequency", control_frequency_, 50);
+    nh_local_.param<double>("planner_frequency", planner_frequency_, 50);
     nh_local_.param<double>("lookahead_distance", lookahead_d_, 0.2);
     nh_local_.param<double>("waiting_timeout", waiting_timeout_, 3);
     nh_local_.param<double>("blocked_lookahead_distance", blocked_lookahead_d_, 0.2);
@@ -272,6 +273,11 @@ void PathTracker::Switch_Mode(MODE next_mode) {
 }
 
 bool PathTracker::Planner_Client(RobotState cur_pos, RobotState goal_pos) {
+    if((ros::Time::now() - time_bef).toSec() < (1.0 / planner_frequency_)){
+        return true;
+    }
+        
+    time_bef = ros::Time::now();
     geometry_msgs::PoseStamped cur;
     cur.header.frame_id = map_frame_;
     cur.pose.position.x = cur_pos.x_;

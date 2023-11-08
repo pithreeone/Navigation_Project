@@ -3,12 +3,13 @@ robot_type: omni
 map_frame: map
 odom_frame: odom
 base_frame: base_link
-control_frequency: 40
+control_frequency: 70
+planner_frequency: 2
 lookahead_distance: 0.1
 waiting_timeout: 5
 
 xy_tolerance: 0.02
-theta_tolerance: 0.1
+theta_tolerance: 0.05
 blocked_lookahead_distance: 0.2
 
 

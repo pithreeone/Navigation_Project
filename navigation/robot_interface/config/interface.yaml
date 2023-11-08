@@ -7,3 +7,38 @@ angular_velocity_episolon: 0.01
 # navigation timeout
 time_out_t: 5             # unit: second
 resend_frequency: 5       # unit: Hz
+
+# Each Goal in navigation when move to different floor
+# ***REMEMBER ADD DECIMAL. CANNOT LIKE [1,0,0]*** 
+goal: [
+  # Floor1
+  [[1.0,0.0,0.0], # GOAL1
+  [1.0,1.0,1.0],  # GOAL2
+  [2.0,3.0,1.0],  # GOAL3
+  [3.0,3.0,2.0],], # GOAL4
+  # Floor2
+  [[1.0,0.0,0.0], 
+  [1.0,1.0,1.0],  
+  [2.0,3.0,1.0],  
+  [3.0,3.0,2.0],],
+  # Floor3
+  [[-8.0,-3.0,0.0], 
+  [-7.0,-4.5,0.0],  
+  [2.0,3.0,1.0],  
+  [3.0,3.0,2.0],],
+  # Floor4
+  [[1.0,0.0,0.0], 
+  [1.0,1.0,1.0],  
+  [2.0,3.0,1.0],  
+  [3.0,3.0,2.0],],
+  # Floor5
+  [[1.0,0.0,0.0], 
+  [1.0,1.0,1.0],  
+  [2.0,3.0,1.0],  
+  [3.0,3.0,2.0],],
+  # Floor6
+  [[1.0,0.0,0.0], 
+  [1.0,1.0,1.0],  
+  [2.0,3.0,1.0],  
+  [3.0,3.0,2.0],],
+]
