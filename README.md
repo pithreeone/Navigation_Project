@@ -40,7 +40,8 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
 4. Authorization of I2C ports:  
   `ls -l /dev | grep i2c` : Can see all available I2C ports.  
   `sudo chmod 777 /dev/i2c-*` : * is the number of the port you want to authorize.  
-  `sudo usemod -aG dialout ubuntu` : The most important step to keep the configuration effective even after rebooting. (`ubuntu` is the username of the computer, `dialout` is a group name that has the permission as `root`. See this [article](https://blog.csdn.net/qq_39779233/article/details/111400187?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-111400187-blog-121261743.235^v27^pc_relevant_3mothn_strategy_and_data_recovery&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-111400187-blog-121261743.235^v27^pc_relevant_3mothn_strategy_and_data_recovery&utm_relevant_index=5))
+  `sudo usermod -aG i2c ubuntu` : The most important step to keep the configuration effective even after rebooting.
+
 
 ### 2.2 Set on PC
 1. Add environment variable in `~/.bashrc`
