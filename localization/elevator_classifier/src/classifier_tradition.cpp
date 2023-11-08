@@ -90,6 +90,7 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
     for(int i=0; i<n_calculate; i++){
         double temp_angle = angle_min + ang_middle + i * ang_res;
         int id = int(temp_angle / ang_res);
+        // ROS_INFO("id", id);
         if(id >= n_ranges){
             id -= n_ranges;
         }else if(id < 0){
@@ -101,8 +102,9 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
         }
         left_mean += ranges[id];
     }
-    left_mean /= n_calculate;
+    left_mean /= (n_calculate-skip);
     // calculate the right mean
+    skip = 0;
     for(int i=0; i<n_calculate; i++){
         double temp_angle = angle_min + ang_middle - i * ang_res;
         int id = int(temp_angle / ang_res);
@@ -117,11 +119,9 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
         }
         right_mean += ranges[id];
     }
-    right_mean /= n_calculate;
+    right_mean /= (n_calculate-skip);
 
     ROS_INFO_THROTTLE(2, "left_mean: %f, right_mean: %f", left_mean, right_mean);
-
-
 }
 
 
