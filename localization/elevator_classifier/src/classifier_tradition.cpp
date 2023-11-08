@@ -6,6 +6,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf/transform_listener.h>
+#define PI 3.14159265358
 
 double ang_ele2car = 0;    // angle between robot x-axis and elevator
 
@@ -68,24 +69,26 @@ int classifier(double left_mean, double right_mean){
 }
 
 void laserScanCB(const sensor_msgs::LaserScan& data){
-    double ang_car2laser = getTransform();
-    ROS_INFO("ang2laser:%f", ang_car2laser);
+    double ang_car2laser = getTransform() * 180 / PI;
+    // ROS_INFO("ang2laser:%f", ang_car2laser);
     double total_ang_delta = ang_ele2car + ang_car2laser;
 
     double ang_check = 45;
     double ranges_max = 4;
     double ranges_min = 0.5;
+    double angle_min = data.angle_min * 180 / PI;
     std::vector<float> ranges = data.ranges;
     int n_ranges = ranges.size();
     double ang_middle = 360 - total_ang_delta;
     int n_calculate = ang_check * (n_ranges / 360.0);
     double ang_res = 360.0 / n_ranges;
+    // ROS_INFO("ang_res:%f", ang_res);
 
     left_mean = right_mean = 0;
     // calculate the left mean
     int skip = 0;
     for(int i=0; i<n_calculate; i++){
-        double temp_angle = ang_middle + i * ang_res;
+        double temp_angle = angle_min + ang_middle + i * ang_res;
         int id = int(temp_angle / ang_res);
         if(id >= n_ranges){
             id -= n_ranges;
@@ -101,7 +104,7 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
     left_mean /= n_calculate;
     // calculate the right mean
     for(int i=0; i<n_calculate; i++){
-        double temp_angle = ang_middle - i * ang_res;
+        double temp_angle = angle_min + ang_middle - i * ang_res;
         int id = int(temp_angle / ang_res);
         if(id >= n_ranges){
             id -= n_ranges;
@@ -116,7 +119,7 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
     }
     right_mean /= n_calculate;
 
-    ROS_INFO("left_mean: %f, right_mean: %f", left_mean, right_mean);
+    ROS_INFO_THROTTLE(2, "left_mean: %f, right_mean: %f", left_mean, right_mean);
 
 
 }

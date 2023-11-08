@@ -2,7 +2,7 @@
     <arg name="base_frame" default="base_link"/>
     <arg name="laser_frame" default="base_scan"/>
 
-    <node pkg="elevator_classifier" type="classifier_tradition" name="classifier_tradition" output="log">
+    <node pkg="elevator_classifier" type="classifier_tradition" name="classifier_tradition" output="screen">
         <param name="base_frame" value="$(arg base_frame)"/>
         <param name="laser_frame" value="$(arg laser_frame)"/>
         <rosparam command="load" file="$(find elevator_classifier)/config/classifier_tradition.yaml" />
