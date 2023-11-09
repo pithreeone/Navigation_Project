@@ -1,0 +1,60 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/wei/amr_ws/devel/include/**",
+        "/home/wei/navi_ws/devel/include/**",
+        "/home/wei/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/amcl/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/base_local_planner/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/carrot_planner/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/clear_costmap_recovery/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/costmap_2d/include/**",
+        "/home/wei/catkin_ws/src/cpp_tutorial/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/dwa_local_planner/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/eband_local_planner/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/frontier_exploration/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/global_planner/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/localization/laser_filters/include/**",
+        "/home/wei/navi_ws/src/navigation/custom_layers/lidar_obstacle_layer/include/**",
+        "/home/wei/navi_ws/src/navigation/lpf/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/map_server/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/move_base/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/move_slow_and_clear/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/nav_core/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/navfn/include/**",
+        "/home/wei/navi_ws/src/navigation/navigation_main/include/**",
+        "/home/wei/navi_ws/src/navigation/obstacle_detector/include/**",
+        "/home/wei/navi_ws/src/navigation/obstacle_simulation/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/localization/openslam_gmapping/include/**",
+        "/home/wei/navi_ws/src/navigation/custom_layers/path_layer/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/path_tracker/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/robot_interface/include/**",
+        "/home/wei/catkin_ws/src/robot_navigation/include/**",
+        "/home/wei/catkin_ws/src/rosserial/rosserial_server/include/**",
+        "/home/wei/catkin_ws/src/rosserial/rosserial_test/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/rotate_recovery/include/**",
+        "/home/wei/navi_ws/src/rviz_camera_stream/include/**",
+        "/home/wei/navi_ws/src/rviz_textured_quads/include/**",
+        "/home/wei/navi_ws/src/navigation/custom_layers/simple_layers/include/**",
+        "/home/wei/catkin_ws/src/navigation/teb_local_planner/include/**",
+        "/home/wei/catkin_ws/src/test/include/**",
+        "/home/wei/catkin_ws/src/turtle_prac/include/**",
+        "/home/wei/navi_ws/src/twist_test/include/**",
+        "/home/wei/amr_ws/src/Navigation_Project/navigation/navigation-stack/voxel_grid/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
