@@ -249,15 +249,16 @@ void Interface::execute()
             case FSMItem::State::MOVE_TO_GOAL_3:
             {
                 if(elevator_status_ == 1){
-                    publishGoalFromList(floor_, 4);
+                    publishGoalFromList(floor_, 6);
                 }else if(elevator_status_ == 2){
-                    publishGoalFromList(floor_, 3);
+                    publishGoalFromList(floor_, 5);
                 }
                 
                 break;
             }
             case FSMItem::State::MOVE_INTO_ELEVATOR:
             {
+                publishGoalFromList(floor_, 5);
                 ROS_ERROR("NOT IMPLEMENT ERROR");
                 break;
             }
