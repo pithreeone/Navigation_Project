@@ -62,6 +62,9 @@ public:
         E_GET_DOOR,
         E_FINISH_SAY,
         E_SUCCESS_UPDOWN,
+
+        // debug
+        E_DEBUG,
     };
 
     FSMItem(State cur_state, Events event, State next_state)

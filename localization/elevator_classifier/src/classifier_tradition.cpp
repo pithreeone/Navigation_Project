@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
-#include "std_msgs/Int32.h"
+#include "std_msgs/Int8.h"
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Transform.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -136,12 +136,12 @@ int main(int argc, char** argv){
 
     
     ros::Subscriber scan_sub = nh.subscribe("scan_filtered", 10, laserScanCB);
-    ros::Publisher elevator_pub = nh.advertise<std_msgs::Int32>("elevator_status", 10);
+    ros::Publisher elevator_pub = nh.advertise<std_msgs::Int8>("elevator_status", 10);
 
     ros::Rate r(50);
 
     while(nh.ok()){
-        std_msgs::Int32 msg;
+        std_msgs::Int8 msg;
         msg.data = classifier(left_mean, right_mean);
         elevator_pub.publish(msg);
         r.sleep();

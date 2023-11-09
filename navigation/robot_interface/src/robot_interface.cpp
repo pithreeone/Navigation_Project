@@ -30,6 +30,7 @@ void Interface::initialize()
     sub_arrived_ = nh_.subscribe("finishornot", 10, &Interface::finishCB, this);
     sub_finish_exploration_ = nh_.subscribe("finish_exploration", 10, &Interface::finishExplorationCB, this);
     sub_floor_ = nh_.subscribe("floor", 10, &Interface::floorCB, this);
+    sub_elevator_status_ = nh_.subscribe("elevator_status", 10, &Interface::elevatorCB, this);
 
     pub_start_gmapping_ = nh_.advertise<std_msgs::Int8>("slam_gmapping/reset", 1);
     pub_vel_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 10);
@@ -85,6 +86,8 @@ void Interface::updateState()
         fsm->handleEvent(FSMItem::Events::E_RECORD_COORDINATE);
     }else if(interface_buf_.mission.compare("move_to_goal_floor") == 0){
         fsm->handleEvent(FSMItem::Events::E_MOVE_TO_GOAL_FLOOR);
+    }else if(interface_buf_.mission.compare("debug") == 0){
+        fsm->handleEvent(FSMItem::Events::E_DEBUG);
     }
     else if(event == FSMItem::Events::E_FAST_V){
         fsm->handleEvent(event);
@@ -206,6 +209,7 @@ void Interface::execute()
                 }else{
                     event = FSMItem::Events::E_SAME_FLOOR_MOVE;
                 }
+                break;
             }
             case FSMItem::State::MOVE_TO_GOAL_1:
             {
@@ -227,12 +231,20 @@ void Interface::execute()
             }
             case FSMItem::State::GET_DOOR:
             {
-                ROS_ERROR("NOT IMPLEMENT ERROR");
+                if(elevator_status_ != 0){
+                    event = FSMItem::Events::E_GET_DOOR;
+                }
+                return;
                 break;
             }
             case FSMItem::State::MOVE_TO_GOAL_3:
             {
-                publishGoalFromList(floor_, 3);
+                if(elevator_status_ == 1){
+                    publishGoalFromList(floor_, 4);
+                }else if(elevator_status_ == 2){
+                    publishGoalFromList(floor_, 3);
+                }
+                
                 break;
             }
             case FSMItem::State::MOVE_INTO_ELEVATOR:
@@ -272,9 +284,10 @@ void Interface::execute()
 void Interface::publishState(Publish_State state)
 {
     robot_interface::RobotState msg;
+    msg.robot_id.data = 0;
     switch(state){
         case Publish_State::REACH:{
-            msg.state.data = "REACH";
+            msg.state.data = "GOAL";
             break;
         }
         case Publish_State::STUCK:{
@@ -282,7 +295,6 @@ void Interface::publishState(Publish_State state)
             break;
         }
     }
-    msg.robot_id.data = 1;
     pub_robot_state_.publish(msg);
 }
 
@@ -302,7 +314,7 @@ void Interface::publishGoalFromList(int f, int n)
     goal.pose.position.x = goal_list_[f-1][n-1][0];
     goal.pose.position.y = goal_list_[f-1][n-1][1];
     tf::Quaternion q;
-    q.setRPY(0, 0, goal_list_[f-1][n-1][2]/180.0*PI);
+    q.setRPY(0, 0, goal_list_[f-1][n-1][2]);
     geometry_msgs::Quaternion odom_quat;
     tf::quaternionTFToMsg(q, odom_quat);
     goal.pose.orientation = odom_quat;
@@ -430,6 +442,11 @@ void Interface::floorCB(const std_msgs::Int8::ConstPtr &msg)
 {
     floor_ = msg->data;
     t_recent_floor_ = ros::Time::now();
+}
+
+void Interface::elevatorCB(const std_msgs::Int8::ConstPtr & msg)
+{
+    elevator_status_ = static_cast<int>(msg->data);
 }
 
 int main(int argc, char** argv)

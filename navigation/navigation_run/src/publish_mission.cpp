@@ -14,6 +14,7 @@ void printHint(){
     std::cout << "[4]: move_to_goal" << std::endl;
     std::cout << "[5]: choose_map" << std::endl;
     std::cout << "[6]: move_to_goal_floor" << std::endl;
+    std::cout << "[7]: DEBUG" << std::endl;
 }
 
 
@@ -76,7 +77,7 @@ int main(int argc, char** argv){
                 std::cin >> floor;
                 int8_t floor_int8 = static_cast<int8_t>(stoi(floor));
                 action.floor.data = floor_int8;
-                std::cout << "please type the coordinate [x (m), y (m), theta (degree)]: ";
+                std::cout << "please type the coordinate [x (m), y (m), theta (rad)]: ";
                 double x, y, theta;
                 std::cin >> x >> y >> theta;
                 action.goal.header.stamp = ros::Time::now();
@@ -84,11 +85,14 @@ int main(int argc, char** argv){
                 action.goal.pose.position.x = x;
                 action.goal.pose.position.y = y;
                 tf::Quaternion q;
-                q.setRPY(0, 0, theta/180.0*PI);
+                q.setRPY(0, 0, theta);
                 geometry_msgs::Quaternion odom_quat;
                 tf::quaternionTFToMsg(q, odom_quat);
                 action.goal.pose.orientation = odom_quat;
                 break;
+            }
+            case 7:{
+                action.mission="debug";
             }
         }
         pub_action.publish(action);
