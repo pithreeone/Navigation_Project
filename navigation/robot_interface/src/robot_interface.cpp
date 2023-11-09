@@ -263,7 +263,7 @@ void Interface::execute()
             }
             case FSMItem::State::SAY_FLOOR:
             {
-                std::string str = "mpg123 ${MUSIC_PATH}/f1/2f.mp3";
+                std::string str = "mpg123 ${MUSIC_PATH}/f1/1f.mp3";
                 const char *command = str.c_str();
                 auto _ = popen(command, "r");
                 break;
