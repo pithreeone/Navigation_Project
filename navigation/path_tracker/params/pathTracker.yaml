@@ -8,8 +8,8 @@ planner_frequency: 2
 lookahead_distance: 0.1
 waiting_timeout: 5
 
-xy_tolerance: 0.02
-theta_tolerance: 0.05
+xy_tolerance: 1.0
+theta_tolerance: 0.2
 blocked_lookahead_distance: 0.2
 
 
