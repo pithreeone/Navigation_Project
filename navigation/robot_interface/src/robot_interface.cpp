@@ -222,6 +222,15 @@ void Interface::execute()
                 msg.data.push_back(1);
                 msg.data.push_back(90);
                 pub_mechanism_mission_.publish(msg);
+                static int time = 0;
+                if(time < 5 * process_frequency_){
+                    time++;
+                    return;
+                }else{
+                    event = FSMItem::Events::E_FINISH_RAISE_HAND;
+                    time = 0;
+                    return;
+                }
                 break;
             }
             case FSMItem::State::MOVE_TO_GOAL_2:
