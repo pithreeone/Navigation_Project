@@ -264,7 +264,8 @@ void Interface::execute()
             }
             case FSMItem::State::SAY_FLOOR:
             {
-                std::string str = "mpg123 ${MUSIC_PATH}/f1/1f.mp3";
+                std::string floor = std::to_string(interface_buf_.floor.data);
+                std::string str = "mpg123 ${MUSIC_PATH}/f1/" + floor + "f.mp3";
                 const char *command = str.c_str();
                 auto _ = popen(command, "r");
                 break;
