@@ -8,8 +8,8 @@ planner_frequency: 2
 lookahead_distance: 0.1
 waiting_timeout: 5
 
-xy_tolerance: 1.0
-theta_tolerance: 0.2
+xy_tolerance: 0.05
+theta_tolerance: 0.1
 blocked_lookahead_distance: 0.2
 
 
@@ -18,7 +18,7 @@ blocked_lookahead_distance: 0.2
 # acceleration
 # linear_max_velocity: 0.7 #0.4
 # linear_acceleration: 0.5 #0.2
-linear_max_velocity: 0.2 #0.4
+linear_max_velocity: 0.3 #0.4
 linear_acceleration: 0.05 #0.2
 linear_acceleration_profile: linear
 
