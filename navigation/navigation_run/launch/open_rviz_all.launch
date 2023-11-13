@@ -1,4 +1,4 @@
-<launch>
+<!-- <launch> -->
     <!-- RVIZ -->
-    <node pkg="rviz" type="rviz" name="navi_all" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/>
-</launch>
+    <!-- <node pkg="rviz" type="rviz" name="navi_all" args="-d $(find navigation_run)/rviz/sim_navi_slam.rviz"/> -->
+<!-- </launch> -->

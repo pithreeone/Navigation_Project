@@ -220,7 +220,7 @@ void Interface::execute()
             {
                 std_msgs::UInt8MultiArray msg;
                 msg.data.push_back(1);
-                msg.data.push_back(90);
+                msg.data.push_back(1);
                 pub_mechanism_mission_.publish(msg);
                 static int time = 0;
                 if(time < 5 * process_frequency_){
