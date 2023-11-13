@@ -73,13 +73,15 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
     // ROS_INFO("ang2laser:%f", ang_car2laser);
     double total_ang_delta = ang_ele2car + ang_car2laser;
 
-    double ang_check = 45;
-    double ranges_max = 4;
+    double ang_check_start = 10;
+    double ang_check = 35;
+    double ranges_max = 5;
     double ranges_min = 0.5;
     double angle_min = data.angle_min * 180 / PI;
     std::vector<float> ranges = data.ranges;
     int n_ranges = ranges.size();
     double ang_middle = 360 - total_ang_delta;
+    int n_start = ang_check_start * (n_ranges / 360.0);
     int n_calculate = ang_check * (n_ranges / 360.0);
     double ang_res = 360.0 / n_ranges;
     // ROS_INFO("ang_res:%f", ang_res);
@@ -87,7 +89,7 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
     left_mean = right_mean = 0;
     // calculate the left mean
     int skip = 0;
-    for(int i=0; i<n_calculate; i++){
+    for(int i=n_start; i<n_calculate; i++){
         double temp_angle = angle_min + ang_middle + i * ang_res;
         int id = int(temp_angle / ang_res);
         // ROS_INFO("id", id);
@@ -102,10 +104,10 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
         }
         left_mean += ranges[id];
     }
-    left_mean /= (n_calculate-skip);
+    left_mean /= (n_calculate-n_start-skip);
     // calculate the right mean
     skip = 0;
-    for(int i=0; i<n_calculate; i++){
+    for(int i=n_start; i<n_calculate; i++){
         double temp_angle = angle_min + ang_middle - i * ang_res;
         int id = int(temp_angle / ang_res);
         if(id >= n_ranges){
@@ -119,7 +121,7 @@ void laserScanCB(const sensor_msgs::LaserScan& data){
         }
         right_mean += ranges[id];
     }
-    right_mean /= (n_calculate-skip);
+    right_mean /= (n_calculate-n_start-skip);
 
     ROS_INFO_THROTTLE(2, "left_mean: %f, right_mean: %f", left_mean, right_mean);
 }

@@ -13,6 +13,7 @@
     <!-- Set port name -->
     <arg name="lidar_port" default="/dev/USB1"/>
     <arg name="odometry_port" default="/dev/USB0-1"/>
+    <arg name="mechanism_port" default="/dev/ttyACM0">
 
     <!-- GAZEBO -->
     <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
@@ -45,6 +46,18 @@
             require:
                 publishers: [ Toposition ]
                 subscribers: [ cmd_vel ]
+        </rosparam>
+    </node>
+
+    <!-- Mechanism firmware -->
+    <node pkg="rosserial_server" type="serial_node" name="rosserial_server_sb" output="screen" if="$(eval (arg('sim_or_run')=='run'))">
+        <param name="port" value="$(arg mechanism_port)"/>
+        <param name="baud" value="115200" />
+        <rosparam>
+            require:
+                publishers: [ amr_mission_return ]
+                subscribers: [ amr_mission ]
+
         </rosparam>
     </node>
 

@@ -37,7 +37,7 @@ void Interface::initialize()
     pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("nav_goal", 10);
     pub_start_exploration_ = nh_.advertise<std_msgs::Int8>("fron_exp_mission", 1);
     pub_robot_state_ = nh_.advertise<robot_interface::RobotState>("robot_state", 1);
-    pub_mechanism_mission_ = nh_.advertise<std_msgs::UInt8MultiArray>("mechanism_mission", 1);
+    pub_mechanism_mission_ = nh_.advertise<std_msgs::UInt8MultiArray>("amr_mission", 1);
 
 
     // parameter initialize
@@ -218,12 +218,15 @@ void Interface::execute()
             }
             case FSMItem::State::RAISE_HAND:
             {
-                std_msgs::UInt8MultiArray msg;
-                msg.data.push_back(1);
-                msg.data.push_back(1);
-                pub_mechanism_mission_.publish(msg);
                 static int time = 0;
-                if(time < 5 * process_frequency_){
+                if(time == 0){
+                    std_msgs::UInt8MultiArray msg;
+                    msg.data.push_back(1);
+                    msg.data.push_back(2);
+                    pub_mechanism_mission_.publish(msg);
+                    time++;
+                    return;
+                }else if(time < 2 * process_frequency_){
                     time++;
                     return;
                 }else{
@@ -248,6 +251,7 @@ void Interface::execute()
             }
             case FSMItem::State::MOVE_TO_GOAL_3:
             {
+                ROS_INFO("elevator_status: %d", elevator_status_);
                 if(elevator_status_ == 1){
                     publishGoalFromList(floor_, 6);
                 }else if(elevator_status_ == 2){
@@ -457,7 +461,10 @@ void Interface::floorCB(const std_msgs::Int8::ConstPtr &msg)
 
 void Interface::elevatorCB(const std_msgs::Int8::ConstPtr & msg)
 {
-    elevator_status_ = static_cast<int>(msg->data);
+    if(fsm->getState() == FSMItem::State::GET_DOOR){
+        elevator_status_ = static_cast<int>(msg->data);
+    }
+    
 }
 
 int main(int argc, char** argv)
