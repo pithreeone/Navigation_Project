@@ -13,7 +13,7 @@
     <!-- Set port name -->
     <arg name="lidar_port" default="/dev/USB1"/>
     <arg name="odometry_port" default="/dev/USB0-1"/>
-    <arg name="mechanism_port" default="/dev/ttyACM0">
+    <arg name="mechanism_port" default="/dev/ttyACM0"/>
 
     <!-- GAZEBO -->
     <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">

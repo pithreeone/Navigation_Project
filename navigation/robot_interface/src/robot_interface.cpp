@@ -263,7 +263,7 @@ void Interface::execute()
             case FSMItem::State::MOVE_INTO_ELEVATOR:
             {
                 publishGoalFromList(floor_, 5);
-                ROS_ERROR("NOT IMPLEMENT ERROR");
+                // ROS_ERROR("NOT IMPLEMENT ERROR");
                 break;
             }
             case FSMItem::State::SAY_FLOOR:
@@ -272,11 +272,16 @@ void Interface::execute()
                 std::string str = "mpg123 ${MUSIC_PATH}/f1/" + floor + "f.mp3";
                 const char *command = str.c_str();
                 auto _ = popen(command, "r");
+
+                event = FSMItem::Events::E_FINISH_SAY;
                 break;
             }
             case FSMItem::State::WAIT_FOR_ELEVATOR:
             {
-                ROS_ERROR("NOT IMPLEMENT ERROR");
+                if(floor_ == interface_buf_.floor.data){
+                    
+                }
+                
                 break;
             }
             case FSMItem::State::GET_OUT_OF_ELEVATOR:

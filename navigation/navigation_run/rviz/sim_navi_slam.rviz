@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /Odometry1/Shape1
-        - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 690
@@ -197,6 +196,155 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_scan:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        origin_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_e_rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_e_rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_e_rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_n_rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_n_rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_n_rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_ne_rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_ne_rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_ne_rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_nw_rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_nw_rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_nw_rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_s_rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_s_rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_s_rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_se_rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_se_rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_se_rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_sw_rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_sw_rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_sw_rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_w_rim_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_w_rim_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        roller_w_rim_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
       Name: RobotModel
       Robot Description: open_base/robot_description
       TF Prefix: ""
@@ -258,13 +406,71 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        base_footprint:
+          Value: false
         base_link:
           Value: true
         base_scan:
-          Value: true
+          Value: false
         map:
-          Value: true
+          Value: false
         odom:
+          Value: false
+        origin_link:
+          Value: false
+        rim_back_link:
+          Value: false
+        rim_left_link:
+          Value: false
+        rim_right_link:
+          Value: false
+        roller_e_rim_back_link:
+          Value: false
+        roller_e_rim_left_link:
+          Value: false
+        roller_e_rim_right_link:
+          Value: false
+        roller_n_rim_back_link:
+          Value: false
+        roller_n_rim_left_link:
+          Value: false
+        roller_n_rim_right_link:
+          Value: false
+        roller_ne_rim_back_link:
+          Value: false
+        roller_ne_rim_left_link:
+          Value: false
+        roller_ne_rim_right_link:
+          Value: false
+        roller_nw_rim_back_link:
+          Value: false
+        roller_nw_rim_left_link:
+          Value: false
+        roller_nw_rim_right_link:
+          Value: false
+        roller_s_rim_back_link:
+          Value: false
+        roller_s_rim_left_link:
+          Value: false
+        roller_s_rim_right_link:
+          Value: false
+        roller_se_rim_back_link:
+          Value: false
+        roller_se_rim_left_link:
+          Value: false
+        roller_se_rim_right_link:
+          Value: false
+        roller_sw_rim_back_link:
+          Value: false
+        roller_sw_rim_left_link:
+          Value: false
+        roller_sw_rim_right_link:
+          Value: false
+        roller_w_rim_back_link:
+          Value: false
+        roller_w_rim_left_link:
+          Value: false
+        roller_w_rim_right_link:
           Value: false
       Marker Alpha: 1
       Marker Scale: 3
@@ -275,9 +481,62 @@ Visualization Manager:
       Tree:
         map:
           odom:
-            base_link:
-              base_scan:
-                {}
+            base_footprint:
+              origin_link:
+                base_link:
+                  base_scan:
+                    {}
+                  rim_back_link:
+                    roller_e_rim_back_link:
+                      {}
+                    roller_n_rim_back_link:
+                      {}
+                    roller_ne_rim_back_link:
+                      {}
+                    roller_nw_rim_back_link:
+                      {}
+                    roller_s_rim_back_link:
+                      {}
+                    roller_se_rim_back_link:
+                      {}
+                    roller_sw_rim_back_link:
+                      {}
+                    roller_w_rim_back_link:
+                      {}
+                  rim_left_link:
+                    roller_e_rim_left_link:
+                      {}
+                    roller_n_rim_left_link:
+                      {}
+                    roller_ne_rim_left_link:
+                      {}
+                    roller_nw_rim_left_link:
+                      {}
+                    roller_s_rim_left_link:
+                      {}
+                    roller_se_rim_left_link:
+                      {}
+                    roller_sw_rim_left_link:
+                      {}
+                    roller_w_rim_left_link:
+                      {}
+                  rim_right_link:
+                    roller_e_rim_right_link:
+                      {}
+                    roller_n_rim_right_link:
+                      {}
+                    roller_ne_rim_right_link:
+                      {}
+                    roller_nw_rim_right_link:
+                      {}
+                    roller_s_rim_right_link:
+                      {}
+                    roller_se_rim_right_link:
+                      {}
+                    roller_sw_rim_right_link:
+                      {}
+                    roller_w_rim_right_link:
+                      {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -317,10 +576,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 72.9954605102539
+      Scale: 81.14591217041016
       Target Frame: <Fixed Frame>
-      X: -1.941542387008667
-      Y: 0.5720349550247192
+      X: -10.21273422241211
+      Y: -0.6382318139076233
     Saved: ~
 Window Geometry:
   Displays:
