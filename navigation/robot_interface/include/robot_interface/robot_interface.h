@@ -50,6 +50,7 @@ public:
     Pose pose_buf_;
     int floor_;
     int elevator_status_;
+    std::string go_left_or_right_;
     int elevator_open_status_;
     ros::Time t_recent_floor_;
 

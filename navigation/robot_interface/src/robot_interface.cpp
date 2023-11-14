@@ -245,6 +245,13 @@ void Interface::execute()
             case FSMItem::State::GET_DOOR:
             {
                 if(elevator_status_ != 0){
+                    if(elevator_status_ == 1){
+                        go_left_or_right_ = "right";
+                        ROS_INFO("Robot_Interface: Go right!!");
+                    }else if(elevator_status_ == 2){
+                        go_left_or_right_ = "left";
+                        ROS_INFO("Robot_Interface: Go left!!");
+                    }
                     event = FSMItem::Events::E_GET_DOOR;
                 }
                 return;
@@ -253,9 +260,9 @@ void Interface::execute()
             case FSMItem::State::MOVE_TO_GOAL_3:
             {
                 ROS_INFO("elevator_status: %d", elevator_status_);
-                if(elevator_status_ == 1){
+                if(go_left_or_right_.compare("right")){
                     publishGoalFromList(floor_, 6);
-                }else if(elevator_status_ == 2){
+                }else if(go_left_or_right_.compare("left")){
                     publishGoalFromList(floor_, 5);
                 }
                 
@@ -263,8 +270,8 @@ void Interface::execute()
             }
             case FSMItem::State::MOVE_INTO_ELEVATOR:
             {
-                publishGoalFromList(floor_, 5);
-                // ROS_ERROR("NOT IMPLEMENT ERROR");
+                // publishGoalFromList(floor_, 5);
+                ROS_ERROR("NOT IMPLEMENT ERROR");
                 break;
             }
             case FSMItem::State::SAY_FLOOR:
@@ -290,9 +297,9 @@ void Interface::execute()
             case FSMItem::State::GET_OUT_OF_ELEVATOR:
             {
                 int floor_now = interface_buf_.floor.data;
-                if(elevator_status_ == 1){
+                if(go_left_or_right_.compare("right")){
                     publishGoalFromList(floor_now, 4);
-                }else if(elevator_status_ == 2){
+                }else if(go_left_or_right_.compare("left")){
                     publishGoalFromList(floor_now, 3);
                 }
                 break;
