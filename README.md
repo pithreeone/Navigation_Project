@@ -131,3 +131,7 @@ You can add specific port name after the above command.
 ## 6. ERROR
 
 ### 6.1 Run real robot
+- `[ WARN] [1699963788.943319783]: Robot_Interface: Cannot subscribe current floor ... `  
+__Solution:__  Usually means the bmp280 pressure sensor doesn't open correctly. Check the code Line 10 in: `/localization/sensor_firmware/src/bmp280_publisher.py`  
+`bus = smbus2.SMBus(1)`
+You can change the SMBus to 0,1,2,... 
