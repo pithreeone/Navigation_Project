@@ -38,7 +38,7 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
 3. Add environment variable in `~/.bashrc`. When save the map, it will save at this path.
 `export MAP_PATH=/home/pithreeone/amr_robot/src/navigation/navigation/navigation-stack/map_server/map_config`
 `export MUSIC_PATH=/home/pithreeone/amr_robot/src/navigation/localization/chores/elevator-audio`
-`
+
 4. Authorization of I2C ports:  
   `ls -l /dev | grep i2c` : Can see all available I2C ports.  
   `sudo chmod 777 /dev/i2c-*` : * is the number of the port you want to authorize.  
@@ -127,3 +127,7 @@ publish_mission node can help you publish the Interface topic. It's hard to publ
 
 You can add specific port name after the above command.  
  - `roslaunch localization_run odometry.launch odometry_port:=/dev/USB1`
+
+## 6. ERROR
+
+### 6.1 Run real robot
