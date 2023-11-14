@@ -35,6 +35,7 @@ public:
     ros::Subscriber sub_finish_exploration_;
     ros::Subscriber sub_floor_;
     ros::Subscriber sub_elevator_status_;
+    ros::Subscriber sub_elevator_open_status_;
     ros::Publisher pub_start_gmapping_;
     ros::Publisher pub_start_exploration_;
     ros::Publisher pub_vel_;
@@ -49,6 +50,7 @@ public:
     Pose pose_buf_;
     int floor_;
     int elevator_status_;
+    int elevator_open_status_;
     ros::Time t_recent_floor_;
 
 
@@ -110,5 +112,7 @@ public:
     void floorCB(const std_msgs::Int8::ConstPtr& msg);
 
     void elevatorCB(const std_msgs::Int8::ConstPtr& msg);
+
+    void elevatorOpenCB(const std_msgs::Int8::ConstPtr& msg);
 private:
 };
