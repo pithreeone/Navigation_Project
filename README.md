@@ -34,6 +34,7 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
 2. Set the USB-port name in `localization_run/launch/localization.launch`. Check the following argument:
     - lidar_port
     - odometry_port
+    - mechanism_port
 3. Add environment variable in `~/.bashrc`. When save the map, it will save at this path.
 `export MAP_PATH=/home/pithreeone/amr_robot/src/navigation/navigation/navigation-stack/map_server/map_config`
 `export MUSIC_PATH=/home/pithreeone/amr_robot/src/navigation/localization/chores/elevator-audio`
@@ -50,7 +51,7 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
 
 ## 3. How to Use
 ![avator](https://github.com/pithreeone/Navigation_Project/blob/main/navigation/robot_interface/finite%20state%20mechine_2.png)
-- the main program of robot is achieved by finite state machine. To change state, we need events which can be created by publishing topic: `/action`  
+- The main program of robot is achieved by finite state machine. Machine Graph can be seen above. To change state, we need events which can be created by publishing topic: `/action`  
 - The message is user-defined in `robot_interface` package.
 - Initial state is `STOP`
 
@@ -73,12 +74,22 @@ Set the following message for your topic :
 5. If the computer on robot do not have enough computility, you can launch the gmapping on your own PC.
 `roslaunch localization_run gmapping.launch`
 
-### 3.2. Parameters
+### 3.2. Localization-mode
+Localization mode is also mission mode. Ex: robot moves crossing floor.
+
+### 3.3. Parameters
 The following list some parameters that may need to tune.
-#### 3.2.1 laser_filters
+
+#### 3.3.1 laser_filters
   - Set the minimum and maximum range that you don't want.
   - In `laser_filters/launch/rane_filter.yaml`
 
+#### 3.3.2 elevator_classifier
+  - In `localization/elevator_classifier/config/classifier_tradition.yaml`
+
+#### 3.3.3 robot_interface
+  - In `navigtion/robot_interface/config/interface.yaml`
+  - You can set each goal point in the YAML file.
 
 ## 4. The messages
 The package provides three custom message types. All of their numerical values are provided in SI units.
@@ -92,7 +103,7 @@ The package provides three custom message types. All of their numerical values a
   - `string set_map_name` if mission is `check_map`, set map name  
   
 - `Robot_State`
-  - `string robot_state` robot current state
+  - `string robot_state` robot current state. state : [`REACH`, `STUCK`]
 
 ## 5. The launch files
 
