@@ -49,7 +49,7 @@ or clone by ssh `git@github.com:pithreeone/Simulation.git`
   `export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:~/amr_robot/src/Simulation/gazebo_simulation/models`
 
 ## 3. How to Use
-
+![avator](https://github.com/pithreeone/Navigation_Project/blob/main/navigation/robot_interface/finite%20state%20mechine_2.png)
 - the main program of robot is achieved by finite state machine. To change state, we need events which can be created by publishing topic: `/action`  
 - The message is user-defined in `robot_interface` package.
 - Initial state is `STOP`
