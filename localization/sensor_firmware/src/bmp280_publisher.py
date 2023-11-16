@@ -7,7 +7,7 @@ from bmp280 import BMP280
 
 def read_bmp280_data():
     # Initialize the I2C bus
-    bus = smbus2.SMBus(1)  # Use 1 for LattePanda 3 Delta
+    bus = smbus2.SMBus(2)  # Use 1 for LattePanda 3 Delta
 
     # Initialize the BMP280 sensor
     bmp280 = BMP280(i2c_dev=bus)

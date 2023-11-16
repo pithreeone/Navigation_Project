@@ -26,7 +26,7 @@ int n = 0;
 double p0 = 0;
 int floor_init = 3;
 double delta_p = 0.4;
-double error = 0.1; 
+double error = 0.2; 
 
 /**
  * current pressure & floor 

@@ -395,6 +395,7 @@ void Interface::timerVelocityCB(const ros::TimerEvent &)
         case FSMItem::State::MOVE_TO_GOAL_2:
         case FSMItem::State::MOVE_TO_GOAL_3:
         case FSMItem::State::MOVE_TO_GOAL_4:
+        case FSMItem::State::GET_OUT_OF_ELEVATOR:
         {
             geometry_msgs::Twist data;
             data = navi_vel_buf_;
@@ -463,7 +464,8 @@ void Interface::finishCB(const std_msgs::CharConstPtr &msg)
        fsm->getState() != FSMItem::State::MOVE_TO_GOAL_1 &&
        fsm->getState() != FSMItem::State::MOVE_TO_GOAL_2 &&
        fsm->getState() != FSMItem::State::MOVE_TO_GOAL_3 &&
-       fsm->getState() != FSMItem::State::MOVE_TO_GOAL_4)
+       fsm->getState() != FSMItem::State::MOVE_TO_GOAL_4 &&
+       fsm->getState() != FSMItem::State::GET_OUT_OF_ELEVATOR)
         return;
 
     if(msg->data == 1){
