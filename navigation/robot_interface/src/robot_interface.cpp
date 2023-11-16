@@ -86,7 +86,11 @@ void Interface::updateState()
     }else if(interface_buf_.mission.compare("record_position") == 0){
         fsm->handleEvent(FSMItem::Events::E_RECORD_COORDINATE);
     }else if(interface_buf_.mission.compare("move_to_goal_floor") == 0){
-        fsm->handleEvent(FSMItem::Events::E_MOVE_TO_GOAL_FLOOR);
+        if(get_floor_ == true){
+            fsm->handleEvent(FSMItem::Events::E_MOVE_TO_GOAL_FLOOR);
+        }else{
+            ROS_ERROR("Robot_Interface: Cannot subscribe current floor.");
+        }
     }else if(interface_buf_.mission.compare("debug") == 0){
         fsm->handleEvent(FSMItem::Events::E_DEBUG);
     }
@@ -276,12 +280,26 @@ void Interface::execute()
             }
             case FSMItem::State::SAY_FLOOR:
             {
-                std::string floor = std::to_string(interface_buf_.floor.data);
-                std::string str = "mpg123 ${MUSIC_PATH}/f1/" + floor + "f.mp3";
-                const char *command = str.c_str();
-                auto _ = popen(command, "r");
-
-                event = FSMItem::Events::E_FINISH_SAY;
+                static int time = 0;
+                if(time == 0){
+                    std::string floor = std::to_string(interface_buf_.floor.data);
+                    floor = "4";
+                    std::string str = "mpg123 ${MUSIC_PATH}/f1/" + floor + "f.mp3";
+                    const char *command1 = str.c_str();
+                    auto _ = popen(command1, "r");
+                    time++;
+                    return;
+                }else if(time < 2 * process_frequency_){
+                    time++;
+                    return;
+                }else{
+                    std::string str = "mpg123 ${MUSIC_PATH}/f1/close-the-door.mp3";
+                    const char *command2 = str.c_str();
+                    auto _ = popen(command2, "r");
+                    event = FSMItem::Events::E_FINISH_SAY;
+                    return;
+                }
+                
                 break;
             }
             case FSMItem::State::WAIT_FOR_ELEVATOR:
@@ -335,8 +353,10 @@ void Interface::publishState(Publish_State state)
 
 void Interface::checkSubFloor()
 {
+    get_floor_ = true;
     if((ros::Time::now() - t_recent_floor_).toSec() > 0.1){
         ROS_WARN_THROTTLE(0.5, "Robot_Interface: Cannot subscribe current floor ... ");
+        get_floor_ = false;
     }
 }
 
