@@ -1,8 +1,8 @@
 #include "ros/ros.h"
 #include "robot_interface/fsm_item.h"
 #include "robot_interface/fsm.h"
-#include "robot_interface/Interface.h"
-#include "robot_interface/RobotState.h"
+#include "pme_amr_msg/Interface.h"
+#include "pme_amr_msg/RobotState.h"
 #include "robot_interface/record_pose.h"
 
 #include "geometry_msgs/Twist.h"
@@ -44,7 +44,7 @@ public:
     ros::Publisher pub_mechanism_mission_;
 
     // topic buffer
-    robot_interface::Interface interface_buf_;
+    pme_amr_msg::Interface interface_buf_;
     geometry_msgs::Twist navi_vel_buf_;
     geometry_msgs::Twist control_vel_buf_;
     Pose pose_buf_;
@@ -98,7 +98,7 @@ public:
 
     void timerVelocityCB(const ros::TimerEvent &);
 
-    void interfaceCB(const robot_interface::Interface::ConstPtr& msg);
+    void interfaceCB(const pme_amr_msg::Interface::ConstPtr& msg);
 
     void controlVelCB(const geometry_msgs::Twist::ConstPtr& msg);
 

@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include <robot_interface/Interface.h>
+#include <pme_amr_msg/Interface.h>
 #include <tf/transform_broadcaster.h>
 
 #define PI 3.1415926
@@ -23,7 +23,7 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "test_program");
     ros::NodeHandle nh;
     int mission;
-    ros::Publisher pub_action = nh.advertise<robot_interface::Interface>("action", 1);
+    ros::Publisher pub_action = nh.advertise<pme_amr_msg::Interface>("action", 1);
 
     int n_action = 0;
     while(ros::ok()){
@@ -31,7 +31,7 @@ int main(int argc, char** argv){
         printHint();
         std::cout << "your mission(please type the corresponding number): ";
         std::cin >> mission;
-        robot_interface::Interface action;
+        pme_amr_msg::Interface action;
         switch(mission){
             case 1:{
                 action.mission = "start_mapping";

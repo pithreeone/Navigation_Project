@@ -12,8 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
-  message_generation
   tf
+  pme_amr_msg
 )
 
 ## System dependencies are found with CMake's conventions
@@ -50,11 +50,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  Interface.msg
-  RobotState.msg
-)
+# add_message_files(
+#   FILES
+#   Interface.msg
+#   RobotState.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -70,11 +70,11 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  geometry_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs
+#   geometry_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -108,7 +108,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES robot_interface
- CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+ CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -154,7 +154,7 @@ include
 # )
 
 add_executable(robot_interface src/robot_interface.cpp src/fsm.cpp)
-add_dependencies(robot_interface robot_interface_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
+add_dependencies(robot_interface ${catkin_EXPORTED_TARGETS})
 target_link_libraries(robot_interface ${catkin_LIBRARIES})
 
 #############

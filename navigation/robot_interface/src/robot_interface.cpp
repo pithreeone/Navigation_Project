@@ -37,7 +37,7 @@ void Interface::initialize()
     pub_vel_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 10);
     pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("nav_goal", 10);
     pub_start_exploration_ = nh_.advertise<std_msgs::Int8>("fron_exp_mission", 1);
-    pub_robot_state_ = nh_.advertise<robot_interface::RobotState>("robot_state", 1);
+    pub_robot_state_ = nh_.advertise<pme_amr_msg::RobotState>("robot_state", 1);
     pub_mechanism_mission_ = nh_.advertise<std_msgs::UInt8MultiArray>("amr_mission", 1);
 
 
@@ -318,7 +318,7 @@ void Interface::execute()
 
 void Interface::publishState(Publish_State state)
 {
-    robot_interface::RobotState msg;
+    pme_amr_msg::RobotState msg;
     msg.robot_id.data = 0;
     switch(state){
         case Publish_State::REACH:{
@@ -401,7 +401,7 @@ void Interface::timerVelocityCB(const ros::TimerEvent &)
     }
 }
 
-void Interface::interfaceCB(const robot_interface::Interface::ConstPtr & msg)
+void Interface::interfaceCB(const pme_amr_msg::Interface::ConstPtr & msg)
 {
     interface_buf_ = *msg;
 }
