@@ -1,0 +1,3 @@
+[submodule "/home/pithreeone/amr_robot/src/navigation/localization/mrpt_slam"]
+	path = /home/pithreeone/amr_robot/src/navigation/localization/mrpt_slam
+	url = git@github.com:mrpt-ros-pkg/mrpt_slam.git
