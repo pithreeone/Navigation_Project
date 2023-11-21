@@ -576,7 +576,7 @@ void ICPslamWrapper::publishTF()
 	}
 	catch (const tf2::TransformException& ex)
 	{
-		ROS_WARN("%s", ex.what());
+		ROS_WARN("Debug: %s", ex.what());
 		ROS_INFO(
 			"Failed to subtract global_frame (%s) from odom_frame (%s)",
 			global_frame_id.c_str(), odom_frame_id.c_str());

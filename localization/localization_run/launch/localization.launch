@@ -9,6 +9,7 @@
     <arg name="mode" default="localization" doc="robot mode [slam, localization]"/>
     <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
     <arg name="odom_type" default="omni" doc="omni type [diff, omni]"/>
+    <arg name="slam_method" default="icp" doc="slam method [gmapping, icp]"/>
 
     <!-- Set port name -->
     <arg name="lidar_port" default="/dev/USB1"/>
@@ -16,9 +17,13 @@
     <arg name="mechanism_port" default="/dev/USB0-3"/>
 
     <!-- GAZEBO -->
-    <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
+    <!-- <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
+        <arg name="odom_type" value="$(arg odom_type)"/>
+    </include> -->
+    <include file="$(find gazebo_simulation)/launch/simul_robot_outdoor.launch" if="$(eval (arg('sim_or_run')=='sim'))">
         <arg name="odom_type" value="$(arg odom_type)"/>
     </include>
+
 
     <!-- Odometry -->
     <node pkg="localization_run" type="odometry" name="odometry" output="screen" if="$(eval (arg('sim_or_run')=='run'))">
@@ -75,13 +80,17 @@
 
 
     <!-- GMAPPING -->
-    <!-- <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam'))">
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="log" if="$(eval (arg('mode')=='slam') and (arg('sim_or_run')=='sim') and (arg('slam_method')=='gmapping'))">
         <remap from="scan" to="scan_filtered" />
         <param name="base_frame" value="$(arg base_frame)"/>
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="map_frame"  value="$(arg map_frame)"/>
         <rosparam command="load" file="$(find localization_run)/config/gmapping_params.yaml"/>
-    </node> -->
+    </node>
+
+    <!-- ICP -->
+    <include file="$(find localization_run)/launch/icp_slam.launch" if="$(eval (arg('mode')=='slam') and (arg('sim_or_run')=='sim') and (arg('slam_method')=='icp'))">
+    </include>
 
     <!-- AMCL -->
     <node pkg="amcl" type="amcl" name="amcl" output="log" if="$(eval (arg('mode')=='localization'))">
