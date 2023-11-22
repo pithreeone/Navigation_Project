@@ -107,5 +107,5 @@
 
     <!-- <node pkg="rviz" type="rviz" name="rviz_slam" args="-d $(find localization_run)/rviz/sim_mapping.rviz"/> -->
 
-
+    <include file="$(find localization_run)/launch/image_pipeline.launch"/>
 </launch>
