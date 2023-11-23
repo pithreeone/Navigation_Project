@@ -20,7 +20,7 @@
     <!-- <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
         <arg name="odom_type" value="$(arg odom_type)"/>
     </include> -->
-    <include file="$(find gazebo_simulation)/launch/simul_robot_outdoor.launch" if="$(eval (arg('sim_or_run')=='sim'))">
+    <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
         <arg name="odom_type" value="$(arg odom_type)"/>
     </include>
 
@@ -107,5 +107,5 @@
 
     <!-- <node pkg="rviz" type="rviz" name="rviz_slam" args="-d $(find localization_run)/rviz/sim_mapping.rviz"/> -->
 
-    <include file="$(find localization_run)/launch/image_pipeline.launch"/>
+    <!-- <include file="$(find localization_run)/launch/image_pipeline.launch"/> -->
 </launch>
