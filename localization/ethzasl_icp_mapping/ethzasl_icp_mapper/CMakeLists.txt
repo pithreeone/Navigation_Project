@@ -19,7 +19,9 @@ interactive_markers
 ethzasl_gridmap_2d 
 message_generation 
 libpointmatcher
+libnabo
 )
+
 
 # This was tested for a system install of libpointmatcher
 find_package(libpointmatcher CONFIG)

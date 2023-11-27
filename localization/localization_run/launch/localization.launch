@@ -89,8 +89,8 @@
     </node>
 
     <!-- ICP -->
-    <include file="$(find localization_run)/launch/icp_slam.launch" if="$(eval (arg('mode')=='slam') and (arg('sim_or_run')=='sim') and (arg('slam_method')=='icp'))">
-    </include>
+    <!-- <include file="$(find localization_run)/launch/icp_slam.launch" if="$(eval (arg('mode')=='slam') and (arg('sim_or_run')=='sim') and (arg('slam_method')=='icp'))">
+    </include> -->
 
     <!-- AMCL -->
     <node pkg="amcl" type="amcl" name="amcl" output="log" if="$(eval (arg('mode')=='localization'))">
