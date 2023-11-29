@@ -1,0 +1,15 @@
+<launch>
+    <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
+
+    <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
+        <arg name="odom_type" value="omni"/>
+    </include>
+
+    <node pkg="tracking_system" type="tracker" name="tracker" output="screen"/>
+
+
+    <node pkg="tracking_system" type="tracking_target_publisher.py" name="tracking_target_publisher" output="screen"/>
+    <!-- RVIZ -->
+    <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find tracking_system)/rviz/tracker.rviz" if="$(eval (arg('sim_or_run')=='sim'))"/>
+
+</launch>

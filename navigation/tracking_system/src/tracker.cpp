@@ -21,8 +21,17 @@ void targetCallback(const geometry_msgs::Pose::ConstPtr& msg)
     // ROS_INFO("I heard: [%s]", msg->data.c_str());
 }
 
-void trackingController(double x, double y, double theta, double& vx, double& vy, double& w){
-
+void trackingController(double& vx, double& vy, double& w){
+    double dist = std::sqrt(target_x * target_x + target_y * target_y);
+    ROS_INFO("target_x: %f, target_y: %f", target_x, target_y);
+    if(dist <= 0.5){
+        return;
+    }
+    double v = 0.2;
+    vx = 0.2 * target_x / sqrt(target_x * target_x + target_y * target_y);
+    vy = 0.2 * target_y / sqrt(target_x * target_x + target_y * target_y);
+    w = 0;
+    
 }
 
 void publishVelocity(ros::Publisher pub, double vx, double vy, double w){
@@ -45,12 +54,12 @@ int main(int argc, char** argv){
     ros::Rate r(100);
     while(ros::ok()){
         double vx, vy, w;
-        trackingController(target_x, target_y, target_yaw, vx, vy, w);
+        vx = vy = w = 0;
+        trackingController(vx, vy, w);
         publishVelocity(pub_vel, vx, vy, w);
-        ROS_INFO_THROTTLE(0.2, "vx: %f,vy: %f,w: %f", vx, vy, w);
+        // ROS_INFO_THROTTLE(0.2, "vx: %f,vy: %f,w: %f", vx, vy, w);
         r.sleep();
+        ros::spinOnce();
     }
-
-    ros::spin();
 
 }
