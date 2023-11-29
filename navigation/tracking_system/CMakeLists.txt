@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  obstacle_detector
 )
 
 ## System dependencies are found with CMake's conventions
@@ -116,7 +117,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -150,9 +151,14 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
-add_executable(tracker src/tracker.cpp)
+
+add_executable(tracker src/tracker.cpp src/obstacle.cpp)
 add_dependencies(tracker ${catkin_EXPORTED_TARGETS})
 target_link_libraries(tracker ${catkin_LIBRARIES})
+
+add_executable(ekf_tracker src/ekf_tracker.cpp)
+add_dependencies(ekf_tracker ${catkin_EXPORTED_TARGETS})
+target_link_libraries(ekf_tracker ${catkin_LIBRARIES})
 
 #############
 ## Install ##

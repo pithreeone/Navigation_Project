@@ -20,7 +20,7 @@
     <!-- <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
         <arg name="odom_type" value="$(arg odom_type)"/>
     </include> -->
-    <include file="$(find gazebo_simulation)/launch/simul_robot.launch" if="$(eval (arg('sim_or_run')=='sim'))">
+    <include file="$(find gazebo_simulation)/launch/simul_robot_dynamic_people.launch" if="$(eval (arg('sim_or_run')=='sim'))">
         <arg name="odom_type" value="$(arg odom_type)"/>
     </include>
 
