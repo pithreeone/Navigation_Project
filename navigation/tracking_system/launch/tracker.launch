@@ -1,7 +1,44 @@
 <launch>
-    <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
+    <!-- Set Frame Name -->
+    <arg name="map_frame" default="map"/>
+    <arg name="odom_frame" default="odom"/>
+    <arg name="base_frame" default="base_link"/>
+    <arg name="laser_frame" default="base_scan"/>
+
+    <!-- Set port name -->
+    <arg name="lidar_port" default="/dev/USB1"/>
+    <arg name="odometry_port" default="/dev/USB0-1"/>
+    <arg name="mechanism_port" default="/dev/USB0-3"/>
+
+    <arg name="sim_or_run" default="run" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
     <node pkg="tf" type="static_transform_publisher" name="base_link2laser_link" args="0 0 0.3 0 0 0 base_link laser_link 100"/>
+
+    <!-- Odometry -->
+    <node pkg="localization_run" type="odometry" name="odometry" output="screen" if="$(eval (arg('sim_or_run')=='run'))">
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="base_frame" value="$(arg base_frame)"/>
+        <param name="rate"  value="50.0"/>
+    </node>
+
+    <!-- YDLidar firmware-->
+    <include file="$(find ydlidar_ros_driver)/launch/G6_G7.launch" if="$(eval (arg('sim_or_run')=='run'))">
+        <arg name="base_frame" value="$(arg base_frame)"/>
+        <arg name="laser_frame" value="$(arg laser_frame)"/>
+        <arg name="port" value="$(arg lidar_port)"/>
+    </include>
+
+
+    <!-- Odometry firmware -->
+    <node pkg="rosserial_server" type="serial_node" name="rosserial_server_dp" output="screen" if="$(eval (arg('sim_or_run')=='run'))">
+        <param name="port" value="$(arg odometry_port)"/>
+        <param name="baud" value="115200" />
+        <rosparam>
+            require:
+                publishers: [ Toposition ]
+                subscribers: [ cmd_vel ]
+        </rosparam>
+    </node>
 
     <!-- Laser filters -->
     <include file="$(find laser_filters)/launch/range_filter.launch">
@@ -53,7 +90,8 @@
     </include> -->
 
     <param name="use_sim_time" value="true" />
-    <node name="play_bag" pkg="rosbag" type="play" output="screen" args="--clock --pause --loop -r 0.5 $(find tracking_system)/data/two_person.bag"/>
-    <node pkg="tf" type="static_transform_publisher" name="odom2base_link_publisher" args="0 0 0 0 0 0 odom base_link 100"/>
+    <node name="play_bag" pkg="rosbag" type="play" output="screen" args="--clock --pause --loop -r 0.5 $(find tracking_system)/data/two_person.bag" 
+     if="$(eval (arg('sim_or_run')=='sim'))"/>
+    <node pkg="tf" type="static_transform_publisher" name="odom2base_link_publisher" args="0 0 0 0 0 0 odom base_link 100"  if="$(eval (arg('sim_or_run')=='sim'))"/>
 
 </launch>
