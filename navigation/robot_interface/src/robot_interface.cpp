@@ -264,9 +264,9 @@ void Interface::execute()
             case FSMItem::State::MOVE_TO_GOAL_3:
             {
                 ROS_INFO("elevator_status: %d", elevator_status_);
-                if(go_left_or_right_.compare("right")){
+                if(go_left_or_right_.compare("right") == 0){
                     publishGoalFromList(floor_, 6);
-                }else if(go_left_or_right_.compare("left")){
+                }else if(go_left_or_right_.compare("left") == 0){
                     publishGoalFromList(floor_, 5);
                 }
                 
@@ -289,7 +289,7 @@ void Interface::execute()
                     auto _ = popen(command1, "r");
                     time++;
                     return;
-                }else if(time < 2 * process_frequency_){
+                }else if(time < 4 * process_frequency_){
                     time++;
                     return;
                 }else{
@@ -315,9 +315,9 @@ void Interface::execute()
             case FSMItem::State::GET_OUT_OF_ELEVATOR:
             {
                 int floor_now = interface_buf_.floor.data;
-                if(go_left_or_right_.compare("right")){
+                if(go_left_or_right_.compare("right") == 0){
                     publishGoalFromList(floor_now, 4);
-                }else if(go_left_or_right_.compare("left")){
+                }else if(go_left_or_right_.compare("left") == 0){
                     publishGoalFromList(floor_now, 3);
                 }
                 break;

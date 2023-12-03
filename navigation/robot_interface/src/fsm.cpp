@@ -175,8 +175,8 @@ void FSM::initFSMTable()
     // debug
     // fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_DEBUG, FSMItem::State::RAISE_HAND));
     // fsm_table_.push_back(new FSMItem(FSMItem::State::RAISE_HAND, FSMItem::Events::E_DEBUG, FSMItem::State::MOVE_TO_GOAL_2));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_DEBUG, FSMItem::State::SAY_FLOOR));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::GET_DOOR, FSMItem::Events::E_DEBUG, FSMItem::State::GET_OUT_OF_ELEVATOR));
+    // fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_DEBUG, FSMItem::State::SAY_FLOOR));
+    // fsm_table_.push_back(new FSMItem(FSMItem::State::GET_DOOR, FSMItem::Events::E_DEBUG, FSMItem::State::GET_OUT_OF_ELEVATOR));
     
 
 }
