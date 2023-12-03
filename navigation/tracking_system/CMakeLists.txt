@@ -152,11 +152,11 @@ include
 # )
 
 
-add_executable(tracker src/tracker.cpp src/obstacle.cpp)
+add_executable(tracker src/tracker.cpp)
 add_dependencies(tracker ${catkin_EXPORTED_TARGETS})
 target_link_libraries(tracker ${catkin_LIBRARIES})
 
-add_executable(ekf_tracker src/ekf_tracker.cpp)
+add_executable(ekf_tracker src/ekf_tracker.cpp src/obstacle.cpp)
 add_dependencies(ekf_tracker ${catkin_EXPORTED_TARGETS})
 target_link_libraries(ekf_tracker ${catkin_LIBRARIES})
 
