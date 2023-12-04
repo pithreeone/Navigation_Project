@@ -1,0 +1,5 @@
+<launch>
+    <!-- RVIZ -->
+    <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find tracking_system)/rviz/tracker.rviz"/>
+
+</launch>
