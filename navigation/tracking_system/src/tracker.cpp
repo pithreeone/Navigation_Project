@@ -23,8 +23,11 @@ void targetCallback(const geometry_msgs::Pose::ConstPtr& msg)
 
 void trackingController(double& vx, double& vy, double& w){
     double dist = std::sqrt(target_x * target_x + target_y * target_y);
-    ROS_INFO("target_x: %f, target_y: %f", target_x, target_y);
-    if(dist <= 0.5){
+    // ROS_INFO("target_x: %f, target_y: %f", target_x, target_y);
+    if(dist <= 1.0){
+        vx = 0;
+        vy = 0;
+        w = 0;
         return;
     }
     double v = 0.2;

@@ -236,17 +236,46 @@ void Obstacles_handler::findNearestObstacleAndPublish()
     }
     iter_min->getXY(x, y);
     target_obstacle_.setPose(x, y);
-    geometry_msgs::PoseStamped target;
-    geometry_msgs::Pose target_pose;
-    target.header.frame_id = "odom";
-    target.header.stamp = ros::Time::now();
-    target.pose.position.x = x;
-    target.pose.position.y = y;
-    pub_target_.publish(target);
 
-    target_pose.position.x = x;
-    target_pose.position.y = y;
-    pub_target_pose_.publish(target_pose);
+
+    // transform to base_link frame
+    geometry_msgs::PointStamped original_point;
+    original_point.header.frame_id = "odom";
+    ros::Duration delay(0.02);
+    original_point.header.stamp = ros::Time::now() - delay;
+    original_point.point.x = x;
+    original_point.point.y = y;
+    original_point.point.z = 0;
+    std::string target_frame = "base_link";
+    // Transform the coordinate to the target frame
+    try {
+        ROS_INFO("Original Point: (%f, %f, %f) in %s frame",
+                original_point.point.x, original_point.point.y, original_point.point.z,
+                original_point.header.frame_id.c_str());
+
+        tf_listener_.waitForTransform(target_frame, original_point.header.frame_id,
+                                ros::Time(0), ros::Duration(2.0));
+        tf_listener_.transformPoint(target_frame, original_point, original_point);
+
+        ROS_INFO("Transformed Point: (%f, %f, %f) in target_frame",
+                original_point.point.x, original_point.point.y, original_point.point.z);
+    } catch (tf::TransformException& ex) {
+        ROS_ERROR("Transform failed: %s", ex.what());
+    }
+
+    // publish Topic for visualization. <geometry_msgs::PoseStamped>
+    geometry_msgs::PoseStamped target_pose_poseStamped;
+    target_pose_poseStamped.header.frame_id = original_point.header.frame_id;
+    target_pose_poseStamped.header.stamp = ros::Time::now();
+    target_pose_poseStamped.pose.position.x = original_point.point.x;
+    target_pose_poseStamped.pose.position.y = original_point.point.y;
+    pub_target_.publish(target_pose_poseStamped);
+
+    // publish Topic for tracker.cpp <geometry_msgs::Pose>
+    geometry_msgs::Pose target_pose_pose;
+    target_pose_pose.position.x = original_point.point.x;
+    target_pose_pose.position.y = original_point.point.y;
+    pub_target_pose_.publish(target_pose_pose);
 }
 
 void Obstacles_handler::clearOldObstacle()
