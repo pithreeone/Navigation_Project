@@ -1,0 +1,18 @@
+<launch>
+
+    <!-- Navigation: tracking target -->
+    <node pkg="tracking_system" type="tracker" name="tracker" output="screen"/>
+
+    <!-- Simulation: publish target -->
+    <node pkg="tracking_system" type="tracking_target_publisher.py" name="tracking_target_publisher" output="screen"/>
+
+    <!-- RVIZ -->
+    <node pkg="rviz" type="rviz" name="rviz_navi_slam" args="-d $(find tracking_system)/rviz/tracker.rviz"/>
+
+
+    <!-- Gazebo Simulation -->
+    <include file="$(find gazebo_simulation)/launch/simul_robot_dynamic_people.launch">
+        <arg name="odom_type" value="omni"/>
+    </include>
+
+</launch>
