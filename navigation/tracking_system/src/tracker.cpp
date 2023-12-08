@@ -35,25 +35,35 @@ void targetCallback(const geometry_msgs::Pose::ConstPtr& msg)
 void trackingController(double& vx, double& vy, double& w){
     double dist = std::sqrt(target_x * target_x + target_y * target_y);
     // ROS_INFO("target_x: %f, target_y: %f", target_x, target_y);
-    double stop_distance = 0.5;
-    if(dist <= stop_distance){
-        vx = 0;
-        vy = 0;
-        w = 0;
-        return;
-    }
-    double maximum_velocity = 0.3;
-    double maximum_angular_velocity = 1;
+
+    double maximum_velocity = 0.15;
+    double maximum_angular_velocity = 0.7;
     vx = maximum_velocity * target_x / sqrt(target_x * target_x + target_y * target_y);
     vy = maximum_velocity * target_y / sqrt(target_x * target_x + target_y * target_y);
 
+    double stop_distance = 1.0;
+    if(dist <= stop_distance){
+        vx = 0;
+        vy = 0;
+    }
+
+
+    // angular_kp
+    double angular_kp = 6;
     if((0 < target_direction && target_direction <= 0.5) || (1 < target_direction && target_direction <= 1.5) || (-2 < target_direction && target_direction <= -1.5) || (-1 < target_direction && target_direction <= -0.5)){
-        w = maximum_velocity;
+        w = angular_kp * fmod((target_direction + 2), 1);
     }else if((0.5 < target_direction && target_direction <= 1) || (1.5 < target_direction && target_direction <= 2) || (-1.5 < target_direction && target_direction <= -1) || (-0.5 < target_direction && target_direction <= 0)){
-        w = -maximum_velocity;
+        w = angular_kp * fmod((target_direction - 2), 1);
     }
     
-    double angle_tolerance = 0.2;
+    // hard-constraint
+    if(w >= maximum_angular_velocity){
+        w = maximum_angular_velocity;
+    }else if(w <= -maximum_angular_velocity){
+        w = -maximum_angular_velocity;
+    }
+
+    double angle_tolerance = 0.1;     // 0.1 ~= 6 deg
     if((fabs(target_direction - (-2)) *PI/2  <= angle_tolerance) || (fabs(target_direction - (-1))*PI/2 <= angle_tolerance*PI/2)
     || (fabs(target_direction - (0)) *PI/2 <= angle_tolerance*PI/2) || (fabs(target_direction - (1))*PI/2 <= angle_tolerance*PI/2)
     || (fabs(target_direction - (2)) *PI/2 <= angle_tolerance*PI/2)
@@ -63,10 +73,14 @@ void trackingController(double& vx, double& vy, double& w){
 }
 
 void publishVelocity(ros::Publisher pub, double vx, double vy, double w){
+    double low_pass_filter_gain = 0.1;
+
+    static double pre_vx, pre_vy, pre_w;
     geometry_msgs::Twist vel;
-    vel.linear.x = vx;
-    vel.linear.y = vy;
-    vel.angular.z = w;
+    pre_vx = vel.linear.x = pre_vx + low_pass_filter_gain * (vx - pre_vx);
+    pre_vy = vel.linear.y = pre_vy + low_pass_filter_gain * (vy - pre_vy);
+    pre_w = vel.angular.z = pre_w + low_pass_filter_gain * (w - pre_w);
+
     pub.publish(vel);
 
 }
