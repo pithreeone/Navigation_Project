@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <geometry_msgs/Twist.h>
 
@@ -17,6 +18,28 @@ void targetCallback(const geometry_msgs::Pose::ConstPtr& msg)
 
     tf2::Quaternion q;
     tf2::fromMsg(msg->orientation, q);
+    tf2::Matrix3x3 qt(q);
+    double _, yaw;
+    qt.getRPY(_, _, yaw);
+    target_yaw = yaw;
+    // ROS_INFO("I heard: [%s]", msg->data.c_str());
+
+    // ROS_INFO("atan2: %f", atan2(target_y, target_x));
+
+    // target_direction has the value -2 ~ 2
+    target_direction = atan2(target_y, target_x) / (PI / 2);
+    // ROS_INFO("dir is: %f", dir);
+
+    ROS_INFO("Target Direction: %f", target_direction);
+}
+
+void targetStampedCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+    target_x = msg->pose.position.x;
+    target_y = msg->pose.position.y;
+
+    tf2::Quaternion q;
+    tf2::fromMsg(msg->pose.orientation, q);
     tf2::Matrix3x3 qt(q);
     double _, yaw;
     qt.getRPY(_, _, yaw);
@@ -91,6 +114,7 @@ int main(int argc, char** argv){
     ros::NodeHandle nh;
     ros::NodeHandle nh_local("~");
     ros::Subscriber sub_tracking_target = nh.subscribe("tracking_target", 1000, targetCallback);
+    ros::Subscriber sub_tracking_target_stamped = nh.subscribe("destination_pose", 1000, targetStampedCallback);
     ros::Publisher pub_vel = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
     
     ros::Rate r(100);

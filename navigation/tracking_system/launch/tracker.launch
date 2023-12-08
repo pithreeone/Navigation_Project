@@ -11,6 +11,7 @@
     <arg name="mechanism_port" default="/dev/USB0-3"/>
 
     <arg name="sim_or_run" default="run" doc="program mode [sim (Simulation), run (Run robot)]"/>
+    <arg name="mode" default="zebra" doc=""/>
 
     <node pkg="tf" type="static_transform_publisher" name="base_link2laser_link" args="0 0 0.3 0 0 0 base_link laser_link 100"  if="$(eval (arg('sim_or_run')=='sim'))"/>
 
@@ -22,7 +23,7 @@
     </node>
 
     <!-- YDLidar firmware-->
-    <include file="$(find ydlidar_ros_driver)/launch/G6_G7.launch" if="$(eval (arg('sim_or_run')=='run'))">
+    <include file="$(find ydlidar_ros_driver)/launch/G6_G7.launch" if="$(eval (arg('sim_or_run')=='run' and arg('mode')!='zebra'))">
         <arg name="base_frame" value="$(arg base_frame)"/>
         <arg name="laser_frame" value="$(arg laser_frame)"/>
         <arg name="port" value="$(arg lidar_port)"/>
@@ -41,10 +42,10 @@
     </node>
 
     <!-- Laser filters -->
-    <include file="$(find laser_filters)/launch/range_filter.launch">
+    <include file="$(find laser_filters)/launch/range_filter.launch" if="$(eval (arg('mode') != 'zebra'))">
     </include>
 
-    <node name="obstacle_extractor" pkg="obstacle_detector" type="obstacle_extractor_node">
+    <node name="obstacle_extractor" pkg="obstacle_detector" type="obstacle_extractor_node" if="$(eval (arg('mode') != 'zebra'))">
         <param name="active"               value="true"/>
         <param name="use_scan"             value="true"/>
         <param name="use_pcl"              value="false"/>
@@ -69,7 +70,7 @@
     </node>
 
     <!-- Pre-processing -->
-    <node pkg="tracking_system" type="ekf_tracker" name="ekf_tracker" output="screen">
+    <node pkg="tracking_system" type="ekf_tracker" name="ekf_tracker" output="screen" if="$(eval (arg('mode') != 'zebra'))">
         <rosparam file="$(find tracking_system)/config/ekf_tracker.yaml" command="load"/>
     </node>
 
