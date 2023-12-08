@@ -258,16 +258,16 @@ void Obstacles_handler::findNearestObstacleAndPublish()
     std::string target_frame = "base_link";
     // Transform the coordinate to the target frame
     try {
-        ROS_INFO("Original Point: (%f, %f, %f) in %s frame",
-                original_point.point.x, original_point.point.y, original_point.point.z,
-                original_point.header.frame_id.c_str());
+        // ROS_INFO("Original Point: (%f, %f, %f) in %s frame",
+        //         original_point.point.x, original_point.point.y, original_point.point.z,
+        //         original_point.header.frame_id.c_str());
 
         tf_listener_.waitForTransform(target_frame, original_point.header.frame_id,
                                 ros::Time(0), ros::Duration(2.0));
         tf_listener_.transformPoint(target_frame, original_point, original_point);
 
-        ROS_INFO("Transformed Point: (%f, %f, %f) in target_frame",
-                original_point.point.x, original_point.point.y, original_point.point.z);
+        // ROS_INFO("Transformed Point: (%f, %f, %f) in target_frame",
+        //         original_point.point.x, original_point.point.y, original_point.point.z);
     } catch (tf::TransformException& ex) {
         ROS_ERROR("Transform failed: %s", ex.what());
     }
