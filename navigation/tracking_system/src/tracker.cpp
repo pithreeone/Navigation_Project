@@ -24,6 +24,8 @@ void targetCallback(const geometry_msgs::Pose::ConstPtr& msg)
     // ROS_INFO("I heard: [%s]", msg->data.c_str());
 
     // ROS_INFO("atan2: %f", atan2(target_y, target_x));
+
+    // target_direction has the value -2 ~ 2
     target_direction = atan2(target_y, target_x) / (PI / 2);
     // ROS_INFO("dir is: %f", dir);
 
@@ -47,10 +49,17 @@ void trackingController(double& vx, double& vy, double& w){
 
     if((0 < target_direction && target_direction <= 0.5) || (1 < target_direction && target_direction <= 1.5) || (-2 < target_direction && target_direction <= -1.5) || (-1 < target_direction && target_direction <= -0.5)){
         w = maximum_velocity;
-    }else if((0.5 < target_direction && target_direction <= 1) || (1.5 < target_direction && target_direction <= 2) || (-2 < target_direction && target_direction <= -1.5) || (-1 < target_direction && target_direction <= -0.5)){
+    }else if((0.5 < target_direction && target_direction <= 1) || (1.5 < target_direction && target_direction <= 2) || (-1.5 < target_direction && target_direction <= -1) || (-0.5 < target_direction && target_direction <= 0)){
         w = -maximum_velocity;
     }
     
+    double angle_tolerance = 0.2;
+    if((fabs(target_direction - (-2)) *PI/2  <= angle_tolerance) || (fabs(target_direction - (-1))*PI/2 <= angle_tolerance*PI/2)
+    || (fabs(target_direction - (0)) *PI/2 <= angle_tolerance*PI/2) || (fabs(target_direction - (1))*PI/2 <= angle_tolerance*PI/2)
+    || (fabs(target_direction - (2)) *PI/2 <= angle_tolerance*PI/2)
+    ){
+        w = 0;
+    }
 }
 
 void publishVelocity(ros::Publisher pub, double vx, double vy, double w){

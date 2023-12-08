@@ -235,9 +235,18 @@ void Obstacles_handler::findNearestObstacleAndPublish()
         }
     }
     iter_min->getXY(x, y);
-    target_obstacle_.setPose(x, y);
+    double x_past, y_past;
+    target_obstacle_.getXY(x_past, y_past);
 
+    double max_distance_jump = 0.5;
+    ROS_INFO("x: %f, y: %f, x_past: %f, y_past: %f", x, y, x_past, y_past);
+    if(sqrt(pow((x - x_past), 2) + pow((y - y_past), 2)) < max_distance_jump){
+        target_obstacle_.setPose(x, y);
+    }
+    ROS_INFO("diff: %f", sqrt(pow((x - x_past), 2) + pow((y - y_past), 2)));
+    
 
+    target_obstacle_.getXY(x, y);
     // transform to base_link frame
     geometry_msgs::PointStamped original_point;
     original_point.header.frame_id = "odom";
