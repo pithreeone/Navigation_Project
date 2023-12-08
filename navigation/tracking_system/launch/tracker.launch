@@ -10,9 +10,10 @@
     <arg name="odometry_port" default="/dev/USB0-1"/>
     <arg name="mechanism_port" default="/dev/USB0-3"/>
 
-    <arg name="sim_or_run" default="run" doc="program mode [sim (Simulation), run (Run robot)]"/>
+    <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="base_link2laser_link" args="0 0 0.3 0 0 0 base_link base_scan 100"  if="$(eval (arg('sim_or_run')=='sim'))"/>
+    <arg name="yaw" value="$(eval -3.1415926*1.07/6)"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_link2laser_link" args="0 0 0.3 $(arg yaw) 0 0 base_link base_scan 100"  if="$(eval (arg('sim_or_run')=='sim'))"/>
 
     <!-- Odometry -->
     <node pkg="localization_run" type="odometry" name="odometry" output="screen">
@@ -68,6 +69,19 @@
         <remap from="scan" to="scan_filtered"/>
     </node>
 
+    <node name="obstacle_tracker" pkg="obstacle_detector" type="obstacle_tracker_node" >
+        <param name="active" value="true"/> 
+        <param name="copy_segments" value="true"/>
+        <param name="loop_rate" value="100"/>
+        <param name="tracking_duration" value="2.0"/>
+        <param name="min_correspondence_cost" value="0.3"/>
+        <param name="std_correspondence_dev" value="0.15"/>
+        <param name="process_variance" value="0.01"/>
+        <param name="process_rate_variance" value="0.1"/>
+        <param name="measurement_variance" value="1.0"/>
+        <param name="frame_id" value="base_link"/>
+    </node>
+
     <!-- Pre-processing -->
     <node pkg="tracking_system" type="ekf_tracker" name="ekf_tracker" output="screen">
         <rosparam file="$(find tracking_system)/config/ekf_tracker.yaml" command="load"/>
@@ -91,8 +105,12 @@
 
     <param name="use_sim_time" value="true" if="$(eval (arg('sim_or_run')=='sim'))"/>
 
-    <node name="play_bag" pkg="rosbag" type="play" output="screen" args="--clock --pause --loop -r 0.5 $(find tracking_system)/data/problem1.bag" 
-     if="$(eval (arg('sim_or_run')=='sim'))"/>
+    <node name="play_bag" pkg="rosbag" type="play" output="screen" args="
+    --clock 
+    --pause 
+    --loop 
+    -r 0.5 
+    $(find tracking_system)/data/problem1.bag" if="$(eval (arg('sim_or_run')=='sim'))"/>
      
     <!-- <node pkg="tf" type="static_transform_publisher" name="odom2base_link_publisher" args="0 0 0 0 0 0 odom base_link 100" if="$(eval (arg('sim_or_run')=='sim'))"/> -->
 
