@@ -3,6 +3,10 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <geometry_msgs/Twist.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Matrix3x3.h>
+
 
 #define PI 3.1415926
 
@@ -64,12 +68,6 @@ void trackingController(double& vx, double& vy, double& w){
     vx = maximum_velocity * target_x / sqrt(target_x * target_x + target_y * target_y);
     vy = maximum_velocity * target_y / sqrt(target_x * target_x + target_y * target_y);
 
-    double stop_distance = 1.0;
-    if(dist <= stop_distance){
-        vx = 0;
-        vy = 0;
-    }
-
 
     // angular_kp
     double angular_kp = 6;
@@ -86,12 +84,19 @@ void trackingController(double& vx, double& vy, double& w){
         w = -maximum_angular_velocity;
     }
 
+    // tolerance
     double angle_tolerance = 0.1;     // 0.1 ~= 6 deg
     if((fabs(target_direction - (-2)) *PI/2  <= angle_tolerance) || (fabs(target_direction - (-1))*PI/2 <= angle_tolerance*PI/2)
     || (fabs(target_direction - (0)) *PI/2 <= angle_tolerance*PI/2) || (fabs(target_direction - (1))*PI/2 <= angle_tolerance*PI/2)
     || (fabs(target_direction - (2)) *PI/2 <= angle_tolerance*PI/2))
     {
         w = 0;
+    }
+
+    double stop_distance = 1.0;
+    if(dist <= stop_distance){
+        vx = 0;
+        vy = 0;
     }
 }
 
@@ -108,6 +113,26 @@ void publishVelocity(ros::Publisher pub, double vx, double vy, double w){
 
 }
 
+void getTransform(tf2_ros::Buffer& tfBuffer){
+    // Transform the coordinate to the target frame
+    try {
+        tfBuffer.canTransform("base_scan", "base_link",
+                                ros::Time(0), ros::Duration(1.0));
+        geometry_msgs::TransformStamped transformStamped;
+        transformStamped = tfBuffer.lookupTransform("base_scan", "base_link", ros::Time(0));
+        
+        // Extract yaw from the quaternion
+        tf2::Quaternion quat;
+        tf2::fromMsg(transformStamped.transform.rotation, quat);
+        tf2::Matrix3x3 mat(quat);
+        double roll, pitch, yaw;
+        mat.getRPY(roll, pitch, yaw);
+        ROS_INFO("base_scan -> base_link: %f", yaw);
+    } catch (tf2::TransformException& ex) {
+        ROS_ERROR("Transform failed: %s", ex.what());
+    }
+}
+
 int main(int argc, char** argv){
     ros::init(argc, argv, "simple_cpp_node");
 
@@ -117,6 +142,10 @@ int main(int argc, char** argv){
     ros::Subscriber sub_tracking_target_stamped = nh.subscribe("destination_pose", 1000, targetStampedCallback);
     ros::Publisher pub_vel = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
     
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener(tfBuffer);
+    getTransform(tfBuffer);
+
     ros::Rate r(100);
     while(ros::ok()){
         double vx, vy, w;

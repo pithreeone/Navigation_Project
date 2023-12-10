@@ -10,8 +10,8 @@
     <arg name="odometry_port" default="/dev/USB0-1"/>
     <arg name="mechanism_port" default="/dev/USB0-3"/>
 
-    <arg name="sim_or_run" default="run" doc="program mode [sim (Simulation), run (Run robot)]"/>
-    <arg name="mode" default="zebra" doc=""/>
+    <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
+    <arg name="mode" default="other" doc=""/>
 
     <arg name="yaw" value="$(eval -3.1415926*1.07/6)"/>
     <node pkg="tf" type="static_transform_publisher" name="base_link2laser_link" args="0 0 0.3 $(arg yaw) 0 0 base_link base_scan 100"  if="$(eval (arg('sim_or_run')=='sim'))"/>
