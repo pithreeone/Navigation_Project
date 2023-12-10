@@ -156,6 +156,10 @@ add_executable(tracker src/tracker.cpp)
 add_dependencies(tracker ${catkin_EXPORTED_TARGETS})
 target_link_libraries(tracker ${catkin_LIBRARIES})
 
+add_executable(tracker_zebra src/tracker_zebra.cpp)
+add_dependencies(tracker_zebra ${catkin_EXPORTED_TARGETS})
+target_link_libraries(tracker_zebra ${catkin_LIBRARIES})
+
 add_executable(tracker_dynamic_obstacle src/tracker_dynamic_obstacle.cpp)
 add_dependencies(tracker_dynamic_obstacle ${catkin_EXPORTED_TARGETS})
 target_link_libraries(tracker_dynamic_obstacle ${catkin_LIBRARIES})

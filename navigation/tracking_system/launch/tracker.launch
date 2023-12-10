@@ -89,7 +89,9 @@
     </node>
 
     <!-- Navigation: tracking target -->
-    <node pkg="tracking_system" type="tracker" name="tracker" output="screen"/>
+    <node pkg="tracking_system" type="tracker" name="tracker" output="screen" if="$(eval (arg('mode')!='zebra'))"/>
+
+    <node pkg="tracking_system" type="tracker_zebra" name="tracker" output="screen" if="$(eval (arg('mode')=='zebra'))"/>
 
     <!-- Simulation: target -->
     <!-- <node pkg="tracking_system" type="tracking_target_publisher.py" name="tracking_target_publisher" output="screen"/> -->
