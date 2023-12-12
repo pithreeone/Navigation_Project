@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /Obstacles1
-        - /Obstacles1/Status1
         - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.5
@@ -29,7 +28,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: ""
   - Class: Obstacle Extractor
     Name: Obstacle Extractor
   - Class: Obstacle Tracker
@@ -191,7 +190,17 @@ Visualization Manager:
         All Enabled: false
         base_link:
           Value: true
-        base_scan:
+        camera_aligned_depth_to_color_frame:
+          Value: false
+        camera_color_frame:
+          Value: false
+        camera_color_optical_frame:
+          Value: false
+        camera_depth_frame:
+          Value: false
+        camera_depth_optical_frame:
+          Value: false
+        camera_link:
           Value: false
         odom:
           Value: true
@@ -204,8 +213,15 @@ Visualization Manager:
       Tree:
         odom:
           base_link:
-            base_scan:
-              {}
+            camera_link:
+              camera_aligned_depth_to_color_frame:
+                camera_color_optical_frame:
+                  {}
+              camera_color_frame:
+                {}
+              camera_depth_frame:
+                camera_depth_optical_frame:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -268,7 +284,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 7.098547458648682
+      Distance: 5.948417663574219
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -284,9 +300,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.5647963285446167
       Target Frame: <Fixed Frame>
-      Yaw: 4.718572616577148
+      Yaw: 4.133561134338379
     Saved: ~
 Window Geometry:
   Displays:
@@ -309,4 +325,4 @@ Window Geometry:
     collapsed: true
   Width: 1386
   X: 72
-  Y: 122
+  Y: 85

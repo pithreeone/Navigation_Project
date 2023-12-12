@@ -3,13 +3,18 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <geometry_msgs/Twist.h>
+#include "std_msgs/UInt8MultiArray.h"
 
 #define PI 3.1415926
+
+int mission = 0;
 
 double target_x;
 double target_y;
 double target_yaw;
 double target_direction;  // 0: 0deg, 1: 90deg, 2: 180deg, 3: 270deg
+
+
 
 void targetCallback(const geometry_msgs::Pose::ConstPtr& msg)
 {
@@ -84,7 +89,7 @@ void trackingController(double& vx, double& vy, double& w){
         w = maximum_angular_velocity;
     }else if(w <= -maximum_angular_velocity){
         w = -maximum_angular_velocity;
-    }
+    }    
 
     double angle_tolerance = 0.1;     // 0.1 ~= 6 deg
     if((fabs(target_direction - (-2)) *PI/2  <= angle_tolerance) || (fabs(target_direction - (-1))*PI/2 <= angle_tolerance*PI/2)
@@ -103,8 +108,20 @@ void publishVelocity(ros::Publisher pub, double vx, double vy, double w){
     pre_vx = vel.linear.x = pre_vx + low_pass_filter_gain * (vx - pre_vx);
     pre_vy = vel.linear.y = pre_vy + low_pass_filter_gain * (vy - pre_vy);
     pre_w = vel.angular.z = pre_w + low_pass_filter_gain * (w - pre_w);
-
     pub.publish(vel);
+
+    std_msgs::UInt8MultiArray msg;
+    if(vel.angular.z >= 0.1){
+        msg.data.push_back(7);
+        msg.data.push_back(3);
+    }else if(vel.angular.z <= 0.1){
+        msg.data.push_back(7);
+        msg.data.push_back(4);    
+    }
+
+    pub_mechanism_mission_.publish(msg);
+
+    
 
 }
 
@@ -115,6 +132,7 @@ int main(int argc, char** argv){
     ros::NodeHandle nh_local("~");
     ros::Subscriber sub_tracking_target = nh.subscribe("tracking_target", 1000, targetCallback);
     ros::Subscriber sub_tracking_target_stamped = nh.subscribe("destination_pose", 1000, targetStampedCallback);
+    ros::Publisher pub_mechanism_mission_ = nh.advertise<std_msgs::UInt8MultiArray>("amr_mission", 1);
     ros::Publisher pub_vel = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
     
     ros::Rate r(100);
