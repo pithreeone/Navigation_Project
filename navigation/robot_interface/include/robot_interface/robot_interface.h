@@ -42,6 +42,7 @@ public:
     ros::Publisher pub_goal_;
     ros::Publisher pub_robot_state_;
     ros::Publisher pub_mechanism_mission_;
+    ros::Publisher pub_initial_state_;
 
     // topic buffer
     pme_amr_msg::Interface interface_buf_;
@@ -94,7 +95,10 @@ public:
 
     // argument: f->floor, n->number of goal
     void publishGoalFromList(int f, int n);
-    
+
+    // argument: f->floor, n->number of goal
+    void publishInitialStateFromList(int f, int n);
+
     void timerCB(const ros::TimerEvent &);
 
     void timerVelocityCB(const ros::TimerEvent &);

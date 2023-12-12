@@ -12,10 +12,12 @@ resend_frequency: 5       # unit: Hz
 # ***REMEMBER ADD DECIMAL. CANNOT LIKE [1,0,0]*** 
 goal: [
   # Floor1
-  [[1.0,0.0,0.0],  # GOAL1
-  [1.0,1.0,1.0],   # GOAL2
-  [2.0,3.0,1.0],   # GOAL3-1 elevator left
-  [3.0,3.0,2.0],], # GOAL3-2 elevator right
+  [[1.0, 0.0, 0.0],            # GOAL1
+  [1.0, 1.0, 1.0],             # GOAL2
+  [21.12, -7.1, -1.64],        # GOAL3-1 elevator left  (outside)
+  [19.62, -8.61, -1.64],       # GOAL3-2 elevator right (outside)
+   [19.5, -5.6, -1.7],         # GOAL4-1 elevator left  (inside)
+  [17.95, -6.8, -1.7]],        # GOAL4-2 elevator right (inside)
   # Floor2
   [[1.0,0.0,0.0], 
   [1.0,1.0,1.0],  
@@ -23,7 +25,7 @@ goal: [
   [3.0,3.0,2.0],],
   # Foor3
   [[-8.1, -5.04, 0.73],      # GOAL1
-  [-6.74, -4.66, -3.05],    # GOAL2
+  [-6.74, -4.66, -3.05],     # GOAL2
   [-8.10, -5.77, 2.356],     # GOAL3-1 elevator left  (outside)
   [-8.18, -3.38, 2.356],     # GOAL3-2 elevator right (outside)
   [-9.80, -5.74, 2.356],     # GOAL4-1 elevator left  (inside)

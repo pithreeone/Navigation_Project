@@ -3,6 +3,7 @@
 #include "std_msgs/UInt8MultiArray.h"
 #include "std_msgs/Int8.h"
 #include "geometry_msgs/PoseStamped.h"
+#include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "robot_interface/fsm_item.h"
 #include "robot_interface/fsm.h"
 #include "robot_interface/robot_interface.h"
@@ -39,7 +40,7 @@ void Interface::initialize()
     pub_start_exploration_ = nh_.advertise<std_msgs::Int8>("fron_exp_mission", 1);
     pub_robot_state_ = nh_.advertise<pme_amr_msg::RobotState>("robot_state", 1);
     pub_mechanism_mission_ = nh_.advertise<std_msgs::UInt8MultiArray>("amr_mission", 1);
-
+    pub_initial_state_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose", 1);
 
     // parameter initialize
     nh_local_.param<std::string>("map_frame", map_frame_, "map");
@@ -309,6 +310,23 @@ void Interface::execute()
                         event = FSMItem::Events::E_SUCCESS_UPDOWN;
                     }
                 }
+                
+                static bool publish_map = false;
+                if(publish_map == false){
+                    std::stringstream ss;
+                    ss << interface_buf_.floor.data;
+                    std::string str = "rosrun map_server map_server ${MAP_PATH}/EngBuild" + ss.str() + ".yaml";
+                    const char *command = str.c_str();
+                    ROS_INFO("Robot_Interface: open map file using '%s'", command);
+                    auto _ = popen(command, "r");
+                    if(go_left_or_right_.compare("right") == 0){
+                        publishInitialStateFromList(interface_buf_.floor.data, 6);
+                    }else if(go_left_or_right_.compare("left") == 0){
+                        publishInitialStateFromList(interface_buf_.floor.data, 5);
+                    }
+                    publish_map = true;
+                }
+
                 return;
                 break;
             }
@@ -374,6 +392,22 @@ void Interface::publishGoalFromList(int f, int n)
     tf::quaternionTFToMsg(q, odom_quat);
     goal.pose.orientation = odom_quat;
     pub_goal_.publish(goal);
+}
+
+void Interface::publishInitialStateFromList(int f, int n)
+{
+    // publish the n'th goal in goal_list
+    geometry_msgs::PoseWithCovarianceStamped state;
+    state.header.stamp = ros::Time::now();
+    state.header.frame_id = map_frame_;
+    state.pose.pose.position.x = goal_list_[f-1][n-1][0];
+    state.pose.pose.position.y = goal_list_[f-1][n-1][1];
+    tf::Quaternion q;
+    q.setRPY(0, 0, goal_list_[f-1][n-1][2]);
+    geometry_msgs::Quaternion odom_quat;
+    tf::quaternionTFToMsg(q, odom_quat);
+    state.pose.pose.orientation = odom_quat;
+    pub_initial_state_.publish(state);
 }
 
 void Interface::timerCB(const ros::TimerEvent &)

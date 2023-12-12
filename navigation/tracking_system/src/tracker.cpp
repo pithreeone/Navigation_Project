@@ -7,13 +7,14 @@
 
 #define PI 3.1415926
 
-int mission = 0;
+int mission_hello = 0; // 0: stop, 1: start, 2: finish
 
 double target_x;
 double target_y;
 double target_yaw;
 double target_direction;  // 0: 0deg, 1: 90deg, 2: 180deg, 3: 270deg
-
+double maximum_velocity = 0.15;
+double maximum_angular_velocity = 0.7;
 
 
 void targetCallback(const geometry_msgs::Pose::ConstPtr& msg)
@@ -64,8 +65,7 @@ void trackingController(double& vx, double& vy, double& w){
     double dist = std::sqrt(target_x * target_x + target_y * target_y);
     // ROS_INFO("target_x: %f, target_y: %f", target_x, target_y);
 
-    double maximum_velocity = 0.15;
-    double maximum_angular_velocity = 0.7;
+
     vx = maximum_velocity * target_x / sqrt(target_x * target_x + target_y * target_y);
     vy = maximum_velocity * target_y / sqrt(target_x * target_x + target_y * target_y);
 
@@ -73,6 +73,10 @@ void trackingController(double& vx, double& vy, double& w){
     if(dist <= stop_distance){
         vx = 0;
         vy = 0;
+        
+        if(mission_hello == 0){
+            mission_hello = 1;
+        }
     }
 
 
@@ -100,7 +104,7 @@ void trackingController(double& vx, double& vy, double& w){
     }
 }
 
-void publishVelocity(ros::Publisher pub, double vx, double vy, double w){
+void publishVelocity(ros::Publisher pub_vel, ros::Publisher pub_mechanism, double vx, double vy, double w){
     double low_pass_filter_gain = 0.1;
 
     static double pre_vx, pre_vy, pre_w;
@@ -108,7 +112,7 @@ void publishVelocity(ros::Publisher pub, double vx, double vy, double w){
     pre_vx = vel.linear.x = pre_vx + low_pass_filter_gain * (vx - pre_vx);
     pre_vy = vel.linear.y = pre_vy + low_pass_filter_gain * (vy - pre_vy);
     pre_w = vel.angular.z = pre_w + low_pass_filter_gain * (w - pre_w);
-    pub.publish(vel);
+    pub_vel.publish(vel);
 
     std_msgs::UInt8MultiArray msg;
     if(vel.angular.z >= 0.1){
@@ -116,10 +120,13 @@ void publishVelocity(ros::Publisher pub, double vx, double vy, double w){
         msg.data.push_back(3);
     }else if(vel.angular.z <= 0.1){
         msg.data.push_back(7);
-        msg.data.push_back(4);    
+        msg.data.push_back(4);
+    }else{
+        msg.data.push_back(7);
+        msg.data.push_back(10);  
     }
 
-    pub_mechanism_mission_.publish(msg);
+    pub_mechanism.publish(msg);
 
     
 
@@ -132,16 +139,67 @@ int main(int argc, char** argv){
     ros::NodeHandle nh_local("~");
     ros::Subscriber sub_tracking_target = nh.subscribe("tracking_target", 1000, targetCallback);
     ros::Subscriber sub_tracking_target_stamped = nh.subscribe("destination_pose", 1000, targetStampedCallback);
-    ros::Publisher pub_mechanism_mission_ = nh.advertise<std_msgs::UInt8MultiArray>("amr_mission", 1);
+    ros::Publisher pub_mechanism_mission = nh.advertise<std_msgs::UInt8MultiArray>("amr_mission", 1);
     ros::Publisher pub_vel = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
     
     ros::Rate r(100);
     while(ros::ok()){
         double vx, vy, w;
         vx = vy = w = 0;
+        
+        // if(mission_hello == 1){
+        //     static int flow = 0;
+        //     static double target_temp_x = target_x;
+        //     static double target_temp_y = target_y;
+        //     static double theta = atan2(target_temp_y, target_temp_x);
+        //     switch(flow){
+        //         case 0:{
+        //             if(-PI/4 <= theta && theta <= PI/4){
+        //                 static ros::Time start = ros::Time::now();
+        //                 if((ros::Time::now() - start).toSec() <= ((PI/4) - theta)/maximum_angular_velocity){
+        //                     w = maximum_angular_velocity;
+        //                 }else{
+        //                     flow = 1;
+        //                 }
+        //             }else if(PI/4 <= theta && theta < 3*PI/4){
+        //                 static ros::Time start = ros::Time::now();
+        //                 if((ros::Time::now() - start).toSec() <= (theta - (PI/4))/maximum_angular_velocity){
+        //                     w = -maximum_angular_velocity;
+        //                 }else{
+        //                     flow = 1;
+        //                 }
+        //             }
+        //             ROS_INFO("0");
+        //             break;
+        //         }
+        //         case 1:{
+        //             flow = 2;
+        //             break;
+        //         }
+        //         case 2:{
+        //             static ros::Time start = ros::Time::now();
+        //             if((ros::Time::now() - start).toSec() <= 5){
+        //                 std_msgs::UInt8MultiArray msg;
+        //                 msg.data.push_back(1);
+        //                 msg.data.push_back(3);
+        //                 pub_mechanism_mission.publish(msg);
+        //             }else{
+        //                 flow = 3;
+        //                 mission_hello = 2;
+        //             }
+        //             break;
+        //         }
+        //     }
+
+
+        // }else{
+        //     trackingController(vx, vy, w);
+        // }
         trackingController(vx, vy, w);
-        publishVelocity(pub_vel, vx, vy, w);
+        publishVelocity(pub_vel, pub_mechanism_mission, vx, vy, w);
         // ROS_INFO_THROTTLE(0.2, "vx: %f,vy: %f,w: %f", vx, vy, w);
+
+
         r.sleep();
         ros::spinOnce();
     }
