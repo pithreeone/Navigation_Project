@@ -22,6 +22,7 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Char.h>
 #include <std_srvs/Empty.h>
+#include "std_msgs/UInt8MultiArray.h"
 
 /** process of pathTracker when each event happen **/
 
@@ -109,6 +110,7 @@ class PathTracker {
     ros::Publisher local_goal_pub_;
     ros::Publisher pose_array_pub_;
     ros::Publisher goal_reached_pub_;
+    ros::Publisher pub_mechanism_mission_;
 
     std_msgs::Char goal_reached_;
 

@@ -128,6 +128,7 @@ bool PathTracker::initializeParams(std_srvs::Empty::Request& req, std_srvs::Empt
             // local_goal_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("local_goal", 10);
             // pose_array_pub_ = nh_.advertise<geometry_msgs::PoseArray>("orientation", 10);
             goal_reached_pub_ = nh_.advertise<std_msgs::Char>("finishornot", 1);
+            pub_mechanism_mission_ = nh_.advertise<std_msgs::UInt8MultiArray>("amr_mission", 1);
         } else {
             pose_sub_.shutdown();
             goal_sub_.shutdown();
@@ -772,6 +773,21 @@ void PathTracker::Velocity_Publish() {
     vel_msg.angular.y = 0;
     vel_msg.angular.z = velocity_state_.theta_;
     vel_pub_.publish(vel_msg);
+
+    std_msgs::UInt8MultiArray msg;
+    if(vel_msg.angular.z >= 0.1){
+        msg.data.push_back(7);
+        msg.data.push_back(3);
+    }else if(vel_msg.angular.z <= 0.1){
+        msg.data.push_back(7);
+        msg.data.push_back(4);
+    }else{
+        msg.data.push_back(7);
+        msg.data.push_back(10);  
+    }
+
+    pub_mechanism_mission_.publish(msg);
+
 }
 
 int main(int argc, char** argv) {
