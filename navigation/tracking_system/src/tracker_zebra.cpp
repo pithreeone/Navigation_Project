@@ -72,13 +72,13 @@ void trackingController(double& vx, double& vy, double& w){
 
 
     // angular_kp
-    double angular_kp = 6;
+    double angular_kp = 0.5;
     // if((0 < target_direction && target_direction <= 0.5) || (1 < target_direction && target_direction <= 1.5) || (-2 < target_direction && target_direction <= -1.5) || (-1 < target_direction && target_direction <= -0.5)){
     //     w = angular_kp * fmod((target_direction + 2), 1);
     // }else if((0.5 < target_direction && target_direction <= 1) || (1.5 < target_direction && target_direction <= 2) || (-1.5 < target_direction && target_direction <= -1) || (-0.5 < target_direction && target_direction <= 0)){
     //     w = angular_kp * fmod((target_direction - 2), 1);
     // }
-    double bias_direction = 1;
+    double bias_direction = 0.5;
     w = angular_kp * fmod((target_direction - bias_direction), 1);
     
     // hard-constraint

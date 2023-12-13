@@ -105,7 +105,7 @@ void trackingController(double& vx, double& vy, double& w){
 }
 
 void publishVelocity(ros::Publisher pub_vel, ros::Publisher pub_mechanism, double vx, double vy, double w){
-    double low_pass_filter_gain = 0.1;
+    double low_pass_filter_gain = 0.03;
 
     static double pre_vx, pre_vy, pre_w;
     geometry_msgs::Twist vel;

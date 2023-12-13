@@ -778,7 +778,7 @@ void PathTracker::Velocity_Publish() {
     if(vel_msg.angular.z >= 0.1){
         msg.data.push_back(7);
         msg.data.push_back(3);
-    }else if(vel_msg.angular.z <= 0.1){
+    }else if(vel_msg.angular.z <= -0.1){
         msg.data.push_back(7);
         msg.data.push_back(4);
     }else{
