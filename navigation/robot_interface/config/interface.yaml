@@ -24,12 +24,12 @@ goal: [
   [2.0,3.0,1.0],  
   [3.0,3.0,2.0],],
   # Foor3
-  [[-8.1, -5.04, 0.73],      # GOAL1
+  [[-8.07, -4.92, 0.73],      # GOAL1
   [-6.74, -4.66, -3.05],     # GOAL2
   [-8.10, -5.77, 2.356],     # GOAL3-1 elevator left  (outside)
-  [-8.18, -3.38, 2.356],     # GOAL3-2 elevator right (outside)
-  [-9.80, -5.74, 2.356],     # GOAL4-1 elevator left  (inside)
-  [-9.80, -3.40, 2.356]],    # GOAL4-2 elevator right (inside)
+  [-8.13, -3.48, 2.356],     # GOAL3-2 elevator right (outside)
+  [-9.55, -5.98, 2.356],     # GOAL4-1 elevator left  (inside)
+  [-9.14, -3.48, 2.356]],    # GOAL4-2 elevator right (inside)
   # Floor4
   [[-8.1, -5.04, 0.73],      # GOAL1
   [-6.74, -4.66, 3.1415],    # GOAL2

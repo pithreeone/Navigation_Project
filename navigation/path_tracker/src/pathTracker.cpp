@@ -783,7 +783,7 @@ void PathTracker::Velocity_Publish() {
         msg.data.push_back(4);
     }else{
         msg.data.push_back(7);
-        msg.data.push_back(10);  
+        msg.data.push_back(9);  
     }
 
     pub_mechanism_mission_.publish(msg);

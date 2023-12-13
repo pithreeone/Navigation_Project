@@ -228,7 +228,7 @@ void Interface::execute()
                 if(time == 0){
                     std_msgs::UInt8MultiArray msg;
                     msg.data.push_back(1);
-                    msg.data.push_back(2);
+                    msg.data.push_back(1);
                     pub_mechanism_mission_.publish(msg);
                     time++;
                     return;
@@ -266,15 +266,20 @@ void Interface::execute()
             {
                 ROS_INFO("elevator_status: %d", elevator_status_);
                 if(go_left_or_right_.compare("right") == 0){
-                    publishGoalFromList(floor_, 6);
+                    publishGoalFromList(floor_, 4);
                 }else if(go_left_or_right_.compare("left") == 0){
-                    publishGoalFromList(floor_, 5);
+                    publishGoalFromList(floor_, 3);
                 }
                 
                 break;
             }
             case FSMItem::State::MOVE_INTO_ELEVATOR:
             {
+                if(go_left_or_right_.compare("right") == 0){
+                    publishGoalFromList(floor_, 6);
+                }else if(go_left_or_right_.compare("left") == 0){
+                    publishGoalFromList(floor_, 5);
+                }
                 // publishGoalFromList(floor_, 5);
                 ROS_ERROR("NOT IMPLEMENT ERROR");
                 break;
@@ -283,9 +288,9 @@ void Interface::execute()
             {
                 static int time = 0;
                 if(time == 0){
-                    std::string floor = std::to_string(interface_buf_.floor.data);
-                    floor = "4";
-                    std::string str = "mpg123 ${MUSIC_PATH}/f1/" + floor + "f.mp3";
+                    std::string floor = std::to_string(static_cast<int>(interface_buf_.floor.data));
+                    ROS_INFO("floor:%s", floor.c_str());
+                    std::string str = "mpg321 ${MUSIC_PATH}/f1/" + floor + "f.mp3";
                     const char *command1 = str.c_str();
                     auto _ = popen(command1, "r");
                     time++;
@@ -294,7 +299,7 @@ void Interface::execute()
                     time++;
                     return;
                 }else{
-                    std::string str = "mpg123 ${MUSIC_PATH}/f1/close-the-door.mp3";
+                    std::string str = "mpg321 ${MUSIC_PATH}/f1/close-the-door.mp3";
                     const char *command2 = str.c_str();
                     auto _ = popen(command2, "r");
                     event = FSMItem::Events::E_FINISH_SAY;
@@ -314,15 +319,15 @@ void Interface::execute()
                 static bool publish_map = false;
                 if(publish_map == false){
                     std::stringstream ss;
-                    ss << interface_buf_.floor.data;
+                    ss << static_cast<int>(interface_buf_.floor.data);
                     std::string str = "rosrun map_server map_server ${MAP_PATH}/EngBuild" + ss.str() + ".yaml";
                     const char *command = str.c_str();
                     ROS_INFO("Robot_Interface: open map file using '%s'", command);
                     auto _ = popen(command, "r");
                     if(go_left_or_right_.compare("right") == 0){
-                        publishInitialStateFromList(interface_buf_.floor.data, 6);
+                        publishInitialStateFromList(interface_buf_.floor.data, 4);
                     }else if(go_left_or_right_.compare("left") == 0){
-                        publishInitialStateFromList(interface_buf_.floor.data, 5);
+                        publishInitialStateFromList(interface_buf_.floor.data, 3);
                     }
                     publish_map = true;
                 }
@@ -334,9 +339,9 @@ void Interface::execute()
             {
                 int floor_now = interface_buf_.floor.data;
                 if(go_left_or_right_.compare("right") == 0){
-                    publishGoalFromList(floor_now, 4);
+                    publishGoalFromList(floor_now, 6);
                 }else if(go_left_or_right_.compare("left") == 0){
-                    publishGoalFromList(floor_now, 3);
+                    publishGoalFromList(floor_now, 5);
                 }
                 break;
             }
@@ -428,6 +433,7 @@ void Interface::timerVelocityCB(const ros::TimerEvent &)
         case FSMItem::State::MOVE_TO_GOAL_1:
         case FSMItem::State::MOVE_TO_GOAL_2:
         case FSMItem::State::MOVE_TO_GOAL_3:
+        case FSMItem::State::MOVE_INTO_ELEVATOR:
         case FSMItem::State::MOVE_TO_GOAL_4:
         case FSMItem::State::GET_OUT_OF_ELEVATOR:
         {
@@ -498,6 +504,7 @@ void Interface::finishCB(const std_msgs::CharConstPtr &msg)
        fsm->getState() != FSMItem::State::MOVE_TO_GOAL_1 &&
        fsm->getState() != FSMItem::State::MOVE_TO_GOAL_2 &&
        fsm->getState() != FSMItem::State::MOVE_TO_GOAL_3 &&
+       fsm->getState() != FSMItem::State::MOVE_INTO_ELEVATOR &&
        fsm->getState() != FSMItem::State::MOVE_TO_GOAL_4 &&
        fsm->getState() != FSMItem::State::GET_OUT_OF_ELEVATOR)
         return;

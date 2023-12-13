@@ -3,4 +3,4 @@ distance_threshold: 2.4
 
 # classify when you are in the elevator. door is open or closed
 distance_thres: 2
-n_beams_over_thres: 30
+n_beams_over_thres: 10
