@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /Obstacles1
         - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.5
@@ -28,7 +27,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: LaserScan
   - Class: Obstacle Extractor
     Name: Obstacle Extractor
   - Class: Obstacle Tracker
@@ -190,17 +189,7 @@ Visualization Manager:
         All Enabled: false
         base_link:
           Value: true
-        camera_aligned_depth_to_color_frame:
-          Value: false
-        camera_color_frame:
-          Value: false
-        camera_color_optical_frame:
-          Value: false
-        camera_depth_frame:
-          Value: false
-        camera_depth_optical_frame:
-          Value: false
-        camera_link:
+        base_scan:
           Value: false
         odom:
           Value: true
@@ -213,15 +202,8 @@ Visualization Manager:
       Tree:
         odom:
           base_link:
-            camera_link:
-              camera_aligned_depth_to_color_frame:
-                camera_color_optical_frame:
-                  {}
-              camera_color_frame:
-                {}
-              camera_depth_frame:
-                camera_depth_optical_frame:
-                  {}
+            base_scan:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -284,7 +266,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.948417663574219
+      Distance: 6.020503997802734
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -292,17 +274,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.7157751321792603
-        Y: 0.17577946186065674
-        Z: 0.00017135274538304657
+        X: 0.24033544957637787
+        Y: -0.9748243689537048
+        Z: 0.35701003670692444
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5647963285446167
+      Pitch: 0.9297969341278076
       Target Frame: <Fixed Frame>
-      Yaw: 4.133561134338379
+      Yaw: 4.543570518493652
     Saved: ~
 Window Geometry:
   Displays:
@@ -324,5 +306,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1386
-  X: 72
-  Y: 85
+  X: 454
+  Y: 110

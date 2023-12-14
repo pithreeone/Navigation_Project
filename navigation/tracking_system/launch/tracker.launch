@@ -10,7 +10,7 @@
     <arg name="odometry_port" default="/dev/USB0-1"/>
     <arg name="mechanism_port" default="/dev/USB0-3"/>
 
-    <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
+    <arg name="sim_or_run" default="run" doc="program mode [sim (Simulation), run (Run robot)]"/>
     <arg name="mode" default="other" doc=""/>
 
     <arg name="yaw" value="$(eval -3.1415926*1.07/6)"/>

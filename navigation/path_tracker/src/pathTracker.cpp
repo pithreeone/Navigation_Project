@@ -775,18 +775,26 @@ void PathTracker::Velocity_Publish() {
     vel_pub_.publish(vel_msg);
 
     std_msgs::UInt8MultiArray msg;
+    static int publish_state_pre = 0;
+    int publish_state = 0;
     if(vel_msg.angular.z >= 0.1){
         msg.data.push_back(7);
         msg.data.push_back(3);
+        publish_state = 1;
     }else if(vel_msg.angular.z <= -0.1){
         msg.data.push_back(7);
         msg.data.push_back(4);
+        publish_state = 2;
     }else{
         msg.data.push_back(7);
-        msg.data.push_back(9);  
+        msg.data.push_back(9);
+        publish_state = 3;  
     }
-
-    pub_mechanism_mission_.publish(msg);
+    if(publish_state_pre != publish_state){
+        pub_mechanism_mission_.publish(msg);
+        publish_state_pre = publish_state;
+    }
+    
 
 }
 

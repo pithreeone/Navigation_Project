@@ -5,7 +5,7 @@ odom_frame: odom
 base_frame: base_link
 control_frequency: 70
 planner_frequency: 2
-lookahead_distance: 0.1
+lookahead_distance: 0.4
 waiting_timeout: 5
 
 xy_tolerance: 0.05
