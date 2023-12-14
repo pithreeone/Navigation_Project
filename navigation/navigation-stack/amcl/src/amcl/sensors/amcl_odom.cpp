@@ -137,8 +137,10 @@ bool AMCLOdom::UpdateAction(pf_t *pf, AMCLSensorData *data)
                                alpha1 * (delta_rot*delta_rot));
     double rot_hat_stddev = (alpha4 * (delta_rot*delta_rot) +
                              alpha2 * (delta_trans*delta_trans));
-    double strafe_hat_stddev = (alpha1 * (delta_rot*delta_rot) +
-                                alpha5 * (delta_trans*delta_trans));
+    // double strafe_hat_stddev = (alpha1 * (delta_rot*delta_rot) +
+    //                             alpha5 * (delta_trans*delta_trans));
+
+    double strafe_hat_stddev = alpha5;
 
     for (int i = 0; i < set->sample_count; i++)
     {
