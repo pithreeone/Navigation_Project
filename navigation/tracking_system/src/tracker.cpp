@@ -118,7 +118,7 @@ void publishVelocity(ros::Publisher pub_vel, ros::Publisher pub_mechanism, doubl
     if(vel.angular.z >= 0.1){
         msg.data.push_back(7);
         msg.data.push_back(3);
-    }else if(vel.angular.z <= 0.1){
+    }else if(vel.angular.z <= -0.1){
         msg.data.push_back(7);
         msg.data.push_back(4);
     }else{
