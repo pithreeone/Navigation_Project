@@ -134,68 +134,77 @@ void publishVelocity(ros::Publisher pub_vel, ros::Publisher pub_mechanism, doubl
 
 int main(int argc, char** argv){
     ros::init(argc, argv, "simple_cpp_node");
-
     ros::NodeHandle nh;
     ros::NodeHandle nh_local("~");
     ros::Subscriber sub_tracking_target = nh.subscribe("tracking_target", 1000, targetCallback);
     ros::Subscriber sub_tracking_target_stamped = nh.subscribe("destination_pose", 1000, targetStampedCallback);
     ros::Publisher pub_mechanism_mission = nh.advertise<std_msgs::UInt8MultiArray>("amr_mission", 1);
     ros::Publisher pub_vel = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
-    
+    std::string mode;
+    nh_local.param<std::string>("start_mode", mode, "other");
+
+
     ros::Rate r(100);
     while(ros::ok()){
         double vx, vy, w;
         vx = vy = w = 0;
         
-        // if(mission_hello == 1){
-        //     static int flow = 0;
-        //     static double target_temp_x = target_x;
-        //     static double target_temp_y = target_y;
-        //     static double theta = atan2(target_temp_y, target_temp_x);
-        //     switch(flow){
-        //         case 0:{
-        //             if(-PI/4 <= theta && theta <= PI/4){
-        //                 static ros::Time start = ros::Time::now();
-        //                 if((ros::Time::now() - start).toSec() <= ((PI/4) - theta)/maximum_angular_velocity){
-        //                     w = maximum_angular_velocity;
-        //                 }else{
-        //                     flow = 1;
-        //                 }
-        //             }else if(PI/4 <= theta && theta < 3*PI/4){
-        //                 static ros::Time start = ros::Time::now();
-        //                 if((ros::Time::now() - start).toSec() <= (theta - (PI/4))/maximum_angular_velocity){
-        //                     w = -maximum_angular_velocity;
-        //                 }else{
-        //                     flow = 1;
-        //                 }
-        //             }
-        //             ROS_INFO("0");
-        //             break;
-        //         }
-        //         case 1:{
-        //             flow = 2;
-        //             break;
-        //         }
-        //         case 2:{
-        //             static ros::Time start = ros::Time::now();
-        //             if((ros::Time::now() - start).toSec() <= 5){
-        //                 std_msgs::UInt8MultiArray msg;
-        //                 msg.data.push_back(1);
-        //                 msg.data.push_back(3);
-        //                 pub_mechanism_mission.publish(msg);
-        //             }else{
-        //                 flow = 3;
-        //                 mission_hello = 2;
-        //             }
-        //             break;
-        //         }
-        //     }
+        if(mission_hello == 1 && mode.compare("hello") == 0){
+            static int flow = 0;
 
+            switch(flow){
+                case 0:{
+                    if(target_x == 0 && target_y == 0){
+                        break;
+                    }
+                    static double target_temp_x = target_x;
+                    static double target_temp_y = target_y;
+                    static double theta = atan2(target_temp_y, target_temp_x);
 
-        // }else{
-        //     trackingController(vx, vy, w);
-        // }
-        trackingController(vx, vy, w);
+                    if(-PI/4 <= theta && theta <= PI/4){
+                        static ros::Time start = ros::Time::now();
+                        if((ros::Time::now() - start).toSec() <= ((PI/4) - theta)/maximum_angular_velocity){
+                            w = maximum_angular_velocity;
+                        }else{
+                            flow = 1;
+                        }
+                    }else if(PI/4 <= theta && theta < 3*PI/4){
+                        static ros::Time start = ros::Time::now();
+                        if((ros::Time::now() - start).toSec() <= (theta - (PI/4))/maximum_angular_velocity){
+                            w = -maximum_angular_velocity;
+                        }else{
+                            flow = 1;
+                        }
+                    }
+                    ROS_INFO_THROTTLE(0.5, "[Tracker]: state flow:0");
+                    break;
+                }
+                case 1:{
+                    flow = 2;
+                    ROS_INFO_THROTTLE(0.5, "[Tracker]: state flow:1");
+                    break;
+                }
+                case 2:{
+                    static ros::Time start = ros::Time::now();
+                    if((ros::Time::now() - start).toSec() <= 5.0){
+                        std_msgs::UInt8MultiArray msg;
+                        msg.data.push_back(1);
+                        msg.data.push_back(3);
+                        pub_mechanism_mission.publish(msg);
+                    }else{
+                        flow = 3;
+                        mission_hello = 2;
+                        ROS_INFO("[Tracker]:Finish initial script, start tracking controller");
+                    }
+                    ROS_INFO_THROTTLE(0.5, "[Tracker]: state flow:2");
+                    break;
+                }
+            }
+        }else{
+            trackingController(vx, vy, w);
+        }
+
+        // trackingController(vx, vy, w);
         publishVelocity(pub_vel, pub_mechanism_mission, vx, vy, w);
         // ROS_INFO_THROTTLE(0.2, "vx: %f,vy: %f,w: %f", vx, vy, w);
 

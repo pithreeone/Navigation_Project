@@ -89,7 +89,10 @@
     </node>
 
     <!-- Navigation: tracking target -->
-    <node pkg="tracking_system" type="tracker" name="tracker" output="screen" if="$(eval (arg('mode')!='zebra'))"/>
+    <node pkg="tracking_system" type="tracker" name="tracker" output="screen" if="$(eval (arg('mode')!='zebra'))">
+        <!-- Two Mode: hello & other -->
+        <param name="start_mode" value="hello"/> 
+    </node>
 
     <node pkg="tracking_system" type="tracker_zebra" name="tracker" output="screen" if="$(eval (arg('mode')=='zebra'))"/>
 
