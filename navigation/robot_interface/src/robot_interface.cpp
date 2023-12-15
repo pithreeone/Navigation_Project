@@ -412,6 +412,11 @@ void Interface::publishInitialStateFromList(int f, int n)
     geometry_msgs::Quaternion odom_quat;
     tf::quaternionTFToMsg(q, odom_quat);
     state.pose.pose.orientation = odom_quat;
+
+    state.pose.covariance[0 * 6 + 0] = 1;
+    state.pose.covariance[1 * 6 + 1] = 1;
+    state.pose.covariance[5 * 6 + 6] = 1;
+
     pub_initial_state_.publish(state);
 }
 

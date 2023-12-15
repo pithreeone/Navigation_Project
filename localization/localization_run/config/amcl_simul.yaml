@@ -35,11 +35,11 @@ laser_model_type:           likelihood_field  # likelihood_field
 
 # Odometery model parameters
 odom_model_type:  omni
-odom_alpha1:      2    # 0.2 
-odom_alpha2:      20   # 0.2 rr
-odom_alpha3:      20    # 0.2,0.8 
-odom_alpha4:      50   # 0.2 rt
-odom_alpha5:      50    # 0.2,0.1
+odom_alpha1:      2    # 0.2 r->r
+odom_alpha2:      200   # 0.2 t->r
+odom_alpha3:      20    # 0.2,0.8 t->t
+odom_alpha4:      10   # 0.2 r->t
+odom_alpha5:      0.01    # 0.2,0.1
 # odom_frame_id:    odom 
 # base_frame_id:    base_footprint 
 # global_frame_id:  map 
