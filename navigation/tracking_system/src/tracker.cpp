@@ -13,9 +13,11 @@ double target_x;
 double target_y;
 double target_yaw;
 double target_direction;  // 0: 0deg, 1: 90deg, 2: 180deg, 3: 270deg
-double maximum_velocity = 0.15;
+double maximum_velocity = 0.3;
 double maximum_angular_velocity = 0.7;
-
+double kp;
+double kd;
+double low_pass_filter_gain;
 
 void targetCallback(const geometry_msgs::Pose::ConstPtr& msg)
 {
@@ -69,7 +71,7 @@ void trackingController(double& vx, double& vy, double& w){
     vx = maximum_velocity * target_x / sqrt(target_x * target_x + target_y * target_y);
     vy = maximum_velocity * target_y / sqrt(target_x * target_x + target_y * target_y);
 
-    double stop_distance = 1.0;
+    double stop_distance = 0.9;
     if(dist <= stop_distance){
         vx = 0;
         vy = 0;
@@ -81,11 +83,10 @@ void trackingController(double& vx, double& vy, double& w){
 
 
     // angular_kp
-    double angular_kp = 6;
     if((0 < target_direction && target_direction <= 0.5) || (1 < target_direction && target_direction <= 1.5) || (-2 < target_direction && target_direction <= -1.5) || (-1 < target_direction && target_direction <= -0.5)){
-        w = angular_kp * fmod((target_direction + 2), 1);
+        w = kp * fmod((target_direction + 2), 1);
     }else if((0.5 < target_direction && target_direction <= 1) || (1.5 < target_direction && target_direction <= 2) || (-1.5 < target_direction && target_direction <= -1) || (-0.5 < target_direction && target_direction <= 0)){
-        w = angular_kp * fmod((target_direction - 2), 1);
+        w = kp * fmod((target_direction - 2), 1);
     }
     
     // hard-constraint
@@ -105,15 +106,13 @@ void trackingController(double& vx, double& vy, double& w){
 }
 
 void publishVelocity(ros::Publisher pub_vel, ros::Publisher pub_mechanism, double vx, double vy, double w){
-    double low_pass_filter_gain = 0.01;
-
     static double pre_vx, pre_vy, pre_w;
     geometry_msgs::Twist vel;
     pre_vx = vel.linear.x = pre_vx + low_pass_filter_gain * (vx - pre_vx);
     pre_vy = vel.linear.y = pre_vy + low_pass_filter_gain * (vy - pre_vy);
     pre_w = vel.angular.z = pre_w + low_pass_filter_gain * (w - pre_w);
     pub_vel.publish(vel);
-
+    // ROS_INFO("vx: %f, vy: %f", vx, vy);
     std_msgs::UInt8MultiArray msg;
     if(vel.angular.z >= 0.1){
         msg.data.push_back(7);
@@ -142,6 +141,9 @@ int main(int argc, char** argv){
     ros::Publisher pub_vel = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
     std::string mode;
     nh_local.param<std::string>("start_mode", mode, "other");
+    nh_local.param<double>("kp", kp, 1.0);
+    nh_local.param<double>("kd", kd, 1.0);
+    nh_local.param<double>("low_pass_filter_gain", low_pass_filter_gain, 1.0);
 
 
     ros::Rate r(100);

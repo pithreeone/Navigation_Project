@@ -70,7 +70,7 @@
         <remap from="scan" to="scan_filtered"/>
     </node>
 
-    <node name="obstacle_tracker" pkg="obstacle_detector" type="obstacle_tracker_node" >
+    <!-- <node name="obstacle_tracker" pkg="obstacle_detector" type="obstacle_tracker_node" >
         <param name="active" value="true"/> 
         <param name="copy_segments" value="true"/>
         <param name="loop_rate" value="100"/>
@@ -81,7 +81,7 @@
         <param name="process_rate_variance" value="0.1"/>
         <param name="measurement_variance" value="1.0"/>
         <param name="frame_id" value="base_link"/>
-    </node>
+    </node> -->
 
     <!-- Pre-processing -->
     <node pkg="tracking_system" type="ekf_tracker" name="ekf_tracker" output="screen" if="$(eval (arg('mode') != 'zebra'))">
@@ -91,7 +91,11 @@
     <!-- Navigation: tracking target -->
     <node pkg="tracking_system" type="tracker" name="tracker" output="screen" if="$(eval (arg('mode')!='zebra'))">
         <!-- Two Mode: hello & other -->
-        <param name="start_mode" value="hello"/> 
+        <!-- <param name="start_mode" value="hello"/>  -->
+        <param name="start_mode" value="other"/> 
+        <param name="low_pass_filter_gain" value="0.1"/>
+        <param name="kp" value="3"/> 
+        <param name="kd" value="0.1"/> 
     </node>
 
     <node pkg="tracking_system" type="tracker_zebra" name="tracker" output="screen" if="$(eval (arg('mode')=='zebra'))"/>

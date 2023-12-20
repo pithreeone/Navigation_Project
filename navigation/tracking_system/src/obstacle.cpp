@@ -238,7 +238,7 @@ void Obstacles_handler::findNearestObstacleAndPublish()
     double x_past, y_past;
     target_obstacle_.getXY(x_past, y_past);
 
-    double max_distance_jump = 0.5;
+    double max_distance_jump = 0.35;
     ROS_INFO("x: %f, y: %f, x_past: %f, y_past: %f", x, y, x_past, y_past);
     if(sqrt(pow((x - x_past), 2) + pow((y - y_past), 2)) < max_distance_jump){
         target_obstacle_.setPose(x, y);

@@ -8,7 +8,7 @@
 
     <!-- Set Mode -->
     <arg name="mode" default="localization" doc="robot mode [slam, localization]"/>
-    <arg name="sim_or_run" default="sim" doc="program mode [sim (Simulation), run (Run robot)]"/>
+    <arg name="sim_or_run" default="run" doc="program mode [sim (Simulation), run (Run robot)]"/>
 
     <!-- SLAM-Gmapping -->
     <include file="$(find localization_run)/launch/localization.launch">
