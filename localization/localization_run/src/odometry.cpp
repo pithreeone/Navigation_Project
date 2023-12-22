@@ -24,10 +24,12 @@ int main(int argc, char** argv){
   std::string child_frame_id;
   tf::TransformBroadcaster odom_broadcaster;
   double rate;
-
+  double angle_multiplier;
+  
   nh_local.param<std::string>("odom_frame", frame_id, "odom");
   nh_local.param<std::string>("base_frame", child_frame_id, "base_link");
   nh_local.param<double>("rate", rate, 100);
+  nh_local.param<double>("angle_multiplier", angle_multiplier, 1.0);
 
   double x = 0.0;
   double y = 0.0;
@@ -47,7 +49,7 @@ int main(int argc, char** argv){
     double dt = (current_time - last_time).toSec();
     double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
     double delta_y = (vx * sin(th) + vy * cos(th)) * dt;
-    double delta_th = vth * dt;
+    double delta_th = vth * angle_multiplier * dt;
 
     x += delta_x;
     y += delta_y;

@@ -30,6 +30,7 @@
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="base_frame" value="$(arg base_frame)"/>
         <param name="rate"  value="50.0"/>
+        <param name="angle_multiplier"  value="1.19"/>
     </node>
 
     <!-- YDLidar firmware-->
