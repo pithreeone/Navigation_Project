@@ -1,6 +1,6 @@
 # Overall filter parameters
-min_particles:        500       # 100,500
-max_particles:        5000     # 5000
+min_particles:        50       # 100,500
+max_particles:        500     # 5000
 kld_err:              0.05      # 0.01, 0.05
 kld_z:                0.99      # 0.99
 update_min_d:         -1       # 0.2
@@ -36,10 +36,10 @@ laser_model_type:           likelihood_field  # likelihood_field
 # Odometery model parameters
 odom_model_type:  omni
 odom_alpha1:      10    # 0.2 rr
-odom_alpha2:      300   # 0.2 rt
-odom_alpha3:      500    # 0.2,0.8 tt
+odom_alpha2:      20   # 0.2 rt
+odom_alpha3:      20    # 0.2,0.8 tt
 odom_alpha4:      10   # 0.2 tr
-odom_alpha5:      0.01    # 0.2,0.1
+odom_alpha5:      0.003    # 0.2,0.1
 # odom_frame_id:    odom 
 # base_frame_id:    base_footprint 
 # global_frame_id:  map 

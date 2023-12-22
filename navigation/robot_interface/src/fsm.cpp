@@ -146,8 +146,12 @@ void FSM::initFSMTable()
     // Navigation-mode
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_FAST_V, FSMItem::State::CONTROL_MOVING));
     fsm_table_.push_back(new FSMItem(FSMItem::State::CONTROL_MOVING, FSMItem::Events::E_SLOW_V, FSMItem::State::STOP));
+
+    // choose-map
     fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_CHOOSE_MAP, FSMItem::State::NAVIGATION_MODE));
-    fsm_table_.push_back(new FSMItem(FSMItem::State::NAVIGATION_MODE, FSMItem::Events::E_MOVE_TO_GOAL, FSMItem::State::MOVE_TO_GOAL));
+    fsm_table_.push_back(new FSMItem(FSMItem::State::NAVIGATION_MODE, FSMItem::Events::E_NAN, FSMItem::State::STOP));
+
+    fsm_table_.push_back(new FSMItem(FSMItem::State::STOP, FSMItem::Events::E_MOVE_TO_GOAL, FSMItem::State::MOVE_TO_GOAL));
     fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL, FSMItem::Events::E_FINISH_MOVE_SUCCESS, FSMItem::State::STOP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::MOVE_TO_GOAL, FSMItem::Events::E_FINISH_MOVE_FAIL, FSMItem::State::STOP));
     fsm_table_.push_back(new FSMItem(FSMItem::State::NAVIGATION_MODE, FSMItem::Events::E_RECORD_COORDINATE, FSMItem::State::RECORD_COORDINATE));
