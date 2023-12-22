@@ -89,7 +89,7 @@ Obstacles_handler::Obstacles_handler(ros::NodeHandle& nh, ros::NodeHandle& nh_lo
 void Obstacles_handler::initializeParam()
 {
     nh_local_.param<double>("distance_threshold", dist_thres_, 0.15);
-    // ROS_INFO("distance_threshold:%f", dist_thres_);
+    ROS_INFO("distance_threshold:%f", dist_thres_);
 }
 
 void Obstacles_handler::initialize()
@@ -189,7 +189,7 @@ int Obstacles_handler::checkIfOldObstacle(double x, double y)
             iter_min = iter;
         }
     }
-    
+    ROS_INFO("d_min: %f, dist_thres %f", d_min, dist_thres_);
     if(d_min <= dist_thres_){
         return std::distance(obstacles_.begin(), iter_min);
     }else{
@@ -238,7 +238,7 @@ void Obstacles_handler::findNearestObstacleAndPublish()
     double x_past, y_past;
     target_obstacle_.getXY(x_past, y_past);
 
-    double max_distance_jump = 0.35;
+    double max_distance_jump = 0.45;
     ROS_INFO("x: %f, y: %f, x_past: %f, y_past: %f", x, y, x_past, y_past);
     if(sqrt(pow((x - x_past), 2) + pow((y - y_past), 2)) < max_distance_jump){
         target_obstacle_.setPose(x, y);

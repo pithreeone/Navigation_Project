@@ -114,18 +114,43 @@ void publishVelocity(ros::Publisher pub_vel, ros::Publisher pub_mechanism, doubl
     pub_vel.publish(vel);
     // ROS_INFO("vx: %f, vy: %f", vx, vy);
     std_msgs::UInt8MultiArray msg;
-    if(vel.angular.z >= 0.1){
+    double vel_abs = sqrt(pow(pre_vx, 2) + pow(pre_vy, 2));
+    static int accum[4];
+    int state = -1;
+    if(vel.angular.z >= 0.1 && vel_abs <= 0.03){
+        accum[0]++;
+    }else if(vel.angular.z <= -0.1  && vel_abs <= 0.03){
+        accum[1]++;
+    }else if(vel_abs >= 0.03){
+        accum[2]++;
+    }else{
+        accum[3]++;
+    }
+    int thres = 10;
+    int state_now = -1;
+    if(accum[0] >= thres){
         msg.data.push_back(7);
         msg.data.push_back(3);
-    }else if(vel.angular.z <= -0.1){
+        state_now = 0;
+    }else if(accum[1] >= thres){
         msg.data.push_back(7);
         msg.data.push_back(4);
-    }else{
+        state_now = 1;
+    }else if(accum[2] >= thres){
         msg.data.push_back(7);
-        msg.data.push_back(10);  
+        msg.data.push_back(9); 
+        state_now = 2;
+    }else if(accum[3] >= thres){
+        msg.data.push_back(7);
+        msg.data.push_back(1);
+        state_now = 3;
     }
 
-    pub_mechanism.publish(msg);
+    if(state_now != state && state_now != -1){
+        pub_mechanism.publish(msg);
+        accum[0] = accum[1] = accum[2] = accum[3] = 0;
+    }
+    
 
     
 

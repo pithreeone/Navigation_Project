@@ -42,6 +42,18 @@
         </rosparam>
     </node>
 
+    <!-- Mechanism firmware -->
+    <node pkg="rosserial_server" type="serial_node" name="rosserial_server_sb" output="screen" if="$(eval (arg('sim_or_run')=='run'))">
+        <param name="port" value="$(arg mechanism_port)"/>
+        <param name="baud" value="115200" />
+        <rosparam>
+            require:
+                publishers: [ amr_mission_return ]
+                subscribers: [ amr_mission ]
+
+        </rosparam>
+    </node>
+
     <!-- Laser filters -->
     <include file="$(find laser_filters)/launch/range_filter.launch" if="$(eval (arg('mode') != 'zebra'))">
     </include>
@@ -56,14 +68,14 @@
         <param name="discard_converted_segments" value="true"/>
         <param name="transform_coordinates"  value="true"/>
 
-        <param name="min_group_points"     value="4"/>
+        <param name="min_group_points"     value="20"/>
 
-        <param name="max_group_distance"   value="0.05"/>
+        <param name="max_group_distance"   value="0.01"/>
         <param name="distance_proportion"  value="0.00628"/>
-        <param name="max_split_distance"   value="0.1"/>
+        <param name="max_split_distance"   value="0.05"/>
         <param name="max_merge_separation" value="0.05"/>
         <param name="max_merge_spread"     value="0.2"/>
-        <param name="max_circle_radius"    value="0.2"/>
+        <param name="max_circle_radius"    value="0.25"/>
         <param name="radius_enlargement"   value="0.1"/>
 
         <param name="frame_id"             value="base_link"/>
@@ -86,6 +98,7 @@
     <!-- Pre-processing -->
     <node pkg="tracking_system" type="ekf_tracker" name="ekf_tracker" output="screen" if="$(eval (arg('mode') != 'zebra'))">
         <rosparam file="$(find tracking_system)/config/ekf_tracker.yaml" command="load"/>
+        
     </node>
 
     <!-- Navigation: tracking target -->
@@ -93,7 +106,7 @@
         <!-- Two Mode: hello & other -->
         <!-- <param name="start_mode" value="hello"/>  -->
         <param name="start_mode" value="other"/> 
-        <param name="low_pass_filter_gain" value="0.1"/>
+        <param name="low_pass_filter_gain" value="0.035"/>
         <param name="kp" value="3"/> 
         <param name="kd" value="0.1"/> 
     </node>
